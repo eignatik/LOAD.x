@@ -14,7 +14,10 @@ import java.io.IOException;
 public class Main {
     public static final Logger logger = LogManager.getLogger(Main.class.getName());
     public static void main(String[] args){
-        String address = "http://localhost:8802";
+        testConnection("http://localhost/");
+    }
+
+    private static void testConnection(String address){
         CloseableHttpClient httpClient = HttpClients.createDefault();
         HttpGet httpGet = new HttpGet(address);
 
