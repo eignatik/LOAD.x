@@ -8,26 +8,31 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import ru.loadtest.app.Pasrser.Parser;
 
 import java.io.IOException;
 
 public class Main {
     public static final Logger logger = LogManager.getLogger(Main.class.getName());
+
+    private static String html = "<!DOCTYPE html>"
+            + "<html>"
+            + "<head>"
+            + "<title>JSoup Example</title>"
+            + "</head>"
+            + "<body>"
+            + "<a href=\"link\">Text</a>"
+            + "<a href=\"link1\">Text1</a>"
+            + "<a href=\"link2\">Text2</a>"
+            + "<a href=\"link3\">Text3</a>"
+            + "</table>"
+            + "</body>"
+            + "</html>";
+
     public static void main(String[] args){
-        testConnection("http://localhost/");
-    }
-
-    private static void testConnection(String address){
-        CloseableHttpClient httpClient = HttpClients.createDefault();
-        HttpGet httpGet = new HttpGet(address);
-
-        try (CloseableHttpResponse httpResponse = httpClient.execute(httpGet)){
-            logger.info(httpResponse.getStatusLine());
-            HttpEntity httpEntity = httpResponse.getEntity();
-            EntityUtils.consume(httpEntity);
-            logger.info(address + " make query");
-        } catch (IOException e){
-            logger.error("Can't get querry from " + address);
-        }
+        HTTPConnection connection = HTTPConnection.getInstance();
+        connection.testConnection("http://google.com/");
+        Parser parser = new Parser();
+        parser.parseLinks(html);
     }
 }
