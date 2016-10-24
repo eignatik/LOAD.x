@@ -23,17 +23,19 @@ public class HTTPConnection {
         return instance;
     }
 
-    public void testConnection(String address){
+    public String getHTMLPageByURL(String address){
         CloseableHttpClient httpClient = HttpClients.createDefault();
-        HttpGet httpGet = new HttpGet(address);
-
-        try (CloseableHttpResponse httpResponse = httpClient.execute(httpGet)){
-            logger.info(httpResponse.getStatusLine());
-            HttpEntity httpEntity = httpResponse.getEntity();
-            EntityUtils.consume(httpEntity);
-            logger.info(address + " make query");
+        HttpGet request = new HttpGet(address);
+        String entityContent = new String("");
+        try (CloseableHttpResponse response = httpClient.execute(request)){
+            logger.info(response.getStatusLine());
+            HttpEntity entity = response.getEntity();
+            entityContent = EntityUtils.toString(entity);
+            logger.info(entityContent);
         } catch (IOException e){
-            logger.error("Can't get querry from " + address);
+            logger.error("\nCan't get response from " + address + "\n");
+        } finally {
+            return entityContent;
         }
     }
 
