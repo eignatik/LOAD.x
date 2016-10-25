@@ -20,12 +20,11 @@ public class Parser {
         for(Element link : links){
             StringBuilder linkBuilder = new StringBuilder();
             linkBuilder
-                    .append("LinkText:\"")
+                    .append("\"")
                     .append(link.text())
-                    .append("\", ")
-                    .append("Link:\"")
+                    .append("\": \"")
                     .append(link.attr("href"))
-                    .append("\"");
+                    .append("\", ");
             listOfLinks.add(linkBuilder.toString());
             logger.info(link.toString() +  "\n");
             logger.info(linkBuilder.toString() +  "\n");
