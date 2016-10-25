@@ -8,10 +8,11 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.util.LinkedList;
+import java.util.List;
 
 public class Parser {
     public static final Logger logger = LogManager.getLogger(Parser.class.getName());
-    private LinkedList<String> listOfLinks = new LinkedList<>();
+    private List<String> listOfLinks = new LinkedList<>();
 
     public void parseLinks(String HTMLString){
         Document html = Jsoup.parse(HTMLString);
@@ -31,7 +32,7 @@ public class Parser {
         }
     }
 
-    public LinkedList<String> getListOfLinks() throws Exception{
+    public List<String> getListOfLinks() throws Exception{
         if(!listOfLinks.isEmpty()){
             return listOfLinks;
         } else {
