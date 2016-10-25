@@ -32,11 +32,6 @@ public class Parser {
     }
 
     public List<String> getListOfLinks() throws Exception{
-        if(!listOfLinks.isEmpty()){
-            return listOfLinks;
-        } else {
-            logger.error("\nList of links is empty\n");
-            throw new Exception();
-        }
+        return listOfLinks;
     }
 }
