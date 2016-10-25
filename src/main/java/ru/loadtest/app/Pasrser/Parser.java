@@ -26,8 +26,9 @@ public class Parser {
                     .append(link.attr("href"))
                     .append("\", ");
             listOfLinks.add(linkBuilder.toString());
-            logger.info(link.toString() +  "\n");
-            logger.info(linkBuilder.toString() +  "\n");
+            //testing comments. Output links
+//            logger.info(link.toString() +  "\n");
+//            logger.info(linkBuilder.toString() +  "\n");
         }
     }
 
