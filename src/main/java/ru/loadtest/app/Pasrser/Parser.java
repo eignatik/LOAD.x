@@ -31,7 +31,7 @@ public class Parser {
         }
     }
 
-    public List<String> getListOfLinks() throws Exception{
+    public List<String> getListOfLinks(){
         return listOfLinks;
     }
 }
