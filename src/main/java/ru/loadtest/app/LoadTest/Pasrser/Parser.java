@@ -27,8 +27,8 @@ public class Parser {
                     .append("\", ");
             listOfLinks.add(linkBuilder.toString());
             //testing comments. Output links
-            logger.info(link.toString() +  "\n");
-            logger.info(linkBuilder.toString() +  "\n");
+//            logger.info(link.toString() +  "\n");
+//            logger.info(linkBuilder.toString() +  "\n");
         }
     }
 

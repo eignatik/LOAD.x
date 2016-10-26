@@ -29,7 +29,7 @@ public class ConnectionAPI {
         }
 
         parser.parseLinks(connection.getHTMLPageByURL(randomLink));
-        if (i > 10) {
+        if (i > 1000) {
             return;
         }
         exploreLinks(randomLink);
@@ -40,8 +40,6 @@ public class ConnectionAPI {
     }
 
     private boolean isCorrectLink(String URL) {
-        boolean tmp1 = isLinkInBaseDomain(URL);
-        boolean tmp2 = !isLinkMailto(URL);
         return isLinkInBaseDomain(URL) && !isLinkMailto(URL);
     }
 

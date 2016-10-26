@@ -22,11 +22,11 @@ public class HTTPConnection {
         String entityContent = new String("");
         try (CloseableHttpResponse response = httpClient.execute(request)) {
             //commented lines is testing lines to output results
-            logger.info(response.getStatusLine());
+//            logger.info(response.getStatusLine());
             HttpEntity entity = response.getEntity();
             entityContent = EntityUtils.toString(entity);
             logger.info(address);
-            logger.info(entityContent);
+//            logger.info(entityContent);
         } catch (IOException e) {
             logger.error("\nCan't get response from " + address + "\n");
         } finally {
