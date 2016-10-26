@@ -1,4 +1,4 @@
-package ru.loadtest.app.Pasrser;
+package ru.loadtest.app.LoadTest.Pasrser;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -14,10 +14,10 @@ public class Parser {
     public static final Logger logger = LogManager.getLogger(Parser.class.getName());
     private List<String> listOfLinks = new LinkedList<>();
 
-    public void parseLinks(String HTMLString){
+    public void parseLinks(String HTMLString) {
         Document html = Jsoup.parse(HTMLString);
         Elements links = html.select("a[href]");
-        for(Element link : links){
+        for (Element link : links) {
             StringBuilder linkBuilder = new StringBuilder();
             linkBuilder
                     .append("\"")
@@ -27,12 +27,12 @@ public class Parser {
                     .append("\", ");
             listOfLinks.add(linkBuilder.toString());
             //testing comments. Output links
-//            logger.info(link.toString() +  "\n");
-//            logger.info(linkBuilder.toString() +  "\n");
+            logger.info(link.toString() +  "\n");
+            logger.info(linkBuilder.toString() +  "\n");
         }
     }
 
-    public List<String> getListOfLinks(){
+    public List<String> getListOfLinks() {
         return listOfLinks;
     }
 }
