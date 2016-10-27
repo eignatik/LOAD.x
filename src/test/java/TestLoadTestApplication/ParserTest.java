@@ -1,78 +1,88 @@
 package TestLoadTestApplication;
 
-import org.junit.Assert;
 import org.junit.Test;
 import ru.loadtest.app.LoadTest.Pasrser.Parser;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 public class ParserTest {
+    private Parser parser = new Parser();
+    private HTMLGetter HTMLGetter = new HTMLGetter();
+
     @Test
     public void parseLinkWithCorrectView(){
-        String HTML = "<a href=\"http://testlink.zone\">Link text</a>";
-        String result;
-        Parser parser = new Parser();
-        parser.parseLinks(HTML);
-        result = parser.getListOfLinks().get(0);
-        Assert.assertEquals(result, "\"Link text\":\u0020\"http://testlink.zone\",\u0020");
+        parser.parseLinks(HTMLGetter.getCorrectViewHTML());
+        String result = parser.getListOfLinks().get(0);
+        assertEquals(result, "\"Link text\": \"http://testlink.zone\", ");
+    }
+
+    @Test
+    public void parseLinkWithoutHref(){
+        parser.parseLinks(HTMLGetter.getLinkWithoutHref());
+        assertTrue(parser.getListOfLinks().isEmpty());
+    }
+
+    @Test
+    public void parseLinkWithEmptyHref(){
+        parser.parseLinks(HTMLGetter.getLinkWithEmptyHref());
+        String result = parser.getListOfLinks().get(0);
+        assertEquals(result, "\"Text\": \"\", ");
+    }
+
+    @Test
+    public void parseLinkWithHrefSharp(){
+        parser.parseLinks(HTMLGetter.getLinkWithHrefSharp());
+        String result = parser.getListOfLinks().get(0);
+        assertEquals(result, "\"Text\": \"#\", ");
     }
 
     @Test
     public void parseLinkWithShortLink(){
-        String HTML = "<a href=\"/testlink.zone\">Link text</a>";
-        String result;
-        Parser parser = new Parser();
-        parser.parseLinks(HTML);
-        result = parser.getListOfLinks().get(0);
-        Assert.assertEquals(result, "\"Link text\":\u0020\"/testlink.zone\",\u0020");
+        parser.parseLinks(HTMLGetter.getShortLinkHTML());
+        String result = parser.getListOfLinks().get(0);
+        assertEquals(result, "\"Link text\": \"/testlink.zone\", ");
     }
 
     @Test
     public void parseLinkFromBigHtml(){
-        String HTML = "<!DOCTYPE html>"
-                            + "<html>"
-                            + "<head>"
-                            + "<title>Example</title>"
-                            + "</head>"
-                            + "<body>"
-                            + "<a href=\"link\">Text</a>"
-                            + "</table>"
-                            + "</body>"
-                            + "</html>";
-        String result;
-        Parser parser = new Parser();
-        parser.parseLinks(HTML);
-        result = parser.getListOfLinks().get(0);
-        Assert.assertEquals(result, "\"Text\":\u0020\"link\",\u0020");
+        parser.parseLinks(HTMLGetter.getLinkFromBigHTML());
+        String result = parser.getListOfLinks().get(0);
+        assertEquals(result, "\"Text\": \"link\", ");
     }
 
     @Test
     public void parseLinksFromBigHtml(){
-        String HTML = "<!DOCTYPE html>"
-                + "<html>"
-                + "<head>"
-                + "<title>Example</title>"
-                + "</head>"
-                + "<body>"
-                + "<a href=\"link\">Text</a>"
-                + "<a href=\"link\">Text</a>"
-                + "<a href=\"link\">Text</a>"
-                + "<a href=\"link\">Text</a>"
-                + "</table>"
-                + "</body>"
-                + "</html>";
-        Parser parser = new Parser();
-        parser.parseLinks(HTML);
+        parser.parseLinks(HTMLGetter.getLinksFromBigHTML());
+        assertTrue(parser.getListOfLinks().size() == 4);
         for(String result : parser.getListOfLinks()){
-            Assert.assertEquals(result, "\"Text\":\u0020\"link\",\u0020");
+            assertEquals(result, "\"Text\": \"link\", ");
         }
     }
 
     @Test
     public void parseLinkWithDifficultLinkTag(){
-        String HTML = "<a href=\"http://testlink.zone\" class=\"class class2\"><div><span>Text</span></div></a>";
-        String result;
-        Parser parser = new Parser();
-        parser.parseLinks(HTML);
-        result = parser.getListOfLinks().get(0);
-        Assert.assertEquals(result, "\"Text\":\u0020\"http://testlink.zone\",\u0020");
+        parser.parseLinks(HTMLGetter.getDifficultLinkHTML());
+        String result = parser.getListOfLinks().get(0);
+        assertEquals(result, "\"Text\": \"http://testlink.zone\", ");
     }
+
+    @Test
+    public void parseLinkWithWrongTag(){
+        parser.parseLinks(HTMLGetter.getWrongLinkHTML());
+        assertTrue(parser.getListOfLinks().isEmpty());
+    }
+
+    @Test
+    public void pareLinksWithWrongTags(){
+        parser.parseLinks(HTMLGetter.getWrongLinksHTML());
+        assertTrue(parser.getListOfLinks().isEmpty());
+    }
+
+    @Test
+    public void parseLinksFromRealPage(){
+        parser.parseLinks(HTMLGetter.getLinksFromRealPage());
+        assertTrue(parser.getListOfLinks().size() == 24);
+    }
+
 }
