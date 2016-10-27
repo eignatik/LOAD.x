@@ -18,6 +18,26 @@ public class ParserTest {
     }
 
     @Test
+    public void parseLinkWithoutHref(){
+        parser.parseLinks(HTMLGetter.getLinkWithoutHref());
+        assertTrue(parser.getListOfLinks().isEmpty());
+    }
+
+    @Test
+    public void parseLinkWithEmptyHref(){
+        parser.parseLinks(HTMLGetter.getLinkWithEmptyHref());
+        String result = parser.getListOfLinks().get(0);
+        assertEquals(result, "\"Text\": \"\", ");
+    }
+
+    @Test
+    public void parseLinkWithHrefSharp(){
+        parser.parseLinks(HTMLGetter.getLinkWithHrefSharp());
+        String result = parser.getListOfLinks().get(0);
+        assertEquals(result, "\"Text\": \"#\", ");
+    }
+
+    @Test
     public void parseLinkWithShortLink(){
         parser.parseLinks(HTMLGetter.getShortLinkHTML());
         String result = parser.getListOfLinks().get(0);
@@ -53,5 +73,16 @@ public class ParserTest {
         assertTrue(parser.getListOfLinks().isEmpty());
     }
 
+    @Test
+    public void pareLinksWithWrongTags(){
+        parser.parseLinks(HTMLGetter.getWrongLinksHTML());
+        assertTrue(parser.getListOfLinks().isEmpty());
+    }
+
+    @Test
+    public void parseLinksFromRealPage(){
+        parser.parseLinks(HTMLGetter.getLinksFromRealPage());
+        assertTrue(parser.getListOfLinks().size() == 24);
+    }
 
 }

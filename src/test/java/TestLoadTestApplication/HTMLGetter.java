@@ -35,8 +35,27 @@ public class HTMLGetter {
     }
 
     public String getWrongLinkHTML(){
-        return getHTMLFromResourceURL(classLoader.getResource("Parser/WrongLink.html"));
+        return getHTMLFromResourceURL(classLoader.getResource("Parser/WrongLinkTag.html"));
+    }
 
+    public String getWrongLinksHTML(){
+        return getHTMLFromResourceURL(classLoader.getResource("Parser/WrongLinks.html"));
+    }
+
+    public String getLinkWithoutHref(){
+        return getHTMLFromResourceURL(classLoader.getResource("Parser/LinkWithoutHref.html"));
+    }
+
+    public String getLinkWithEmptyHref(){
+        return getHTMLFromResourceURL(classLoader.getResource("Parser/LinkWithEmptyHref.html"));
+    }
+
+    public String getLinkWithHrefSharp() {
+        return getHTMLFromResourceURL(classLoader.getResource("Parser/LinkWithHrefSharp.html"));
+    }
+
+    public String getLinksFromRealPage(){
+        return getHTMLFromResourceURL(classLoader.getResource("Parser/RealPage.html"));
     }
 
     private String getHTMLFromResourceURL(URL resource){
@@ -54,5 +73,4 @@ public class HTMLGetter {
         }
         return HTML.toString();
     }
-
 }
