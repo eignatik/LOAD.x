@@ -12,8 +12,12 @@ public class ConnectionAPI {
 
     private List<String> links;
     private Parser parser = new Parser();
-    HTTPConnection connection = new HTTPConnection();
+    private HTTPConnection connection = new HTTPConnection();
     private int i = 0;
+
+    public ConnectionAPI(String baseURL){
+        setBaseURL(baseURL);
+    }
 
     public void exploreLinks(String address) {
 
@@ -27,7 +31,7 @@ public class ConnectionAPI {
                 break;
             }
         }
-
+        printLinks();
         parser.parseLinks(connection.getHTMLPageByURL(randomLink));
         if (i > 1000) {
             return;
@@ -35,7 +39,7 @@ public class ConnectionAPI {
         exploreLinks(randomLink);
     }
 
-    public void setBaseURL(String URL) {
+    private void setBaseURL(String URL) {
         HTTPConnection.setBaseAddress(URL);
     }
 
