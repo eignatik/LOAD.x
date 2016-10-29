@@ -1,5 +1,6 @@
 package TestLoadTestApplication;
 
+import TestLoadTestApplication.ResourceGetter.HTMLGetter;
 import org.junit.Test;
 import ru.loadtest.app.LoadTest.Pasrser.Parser;
 
@@ -8,7 +9,7 @@ import static org.junit.Assert.assertTrue;
 
 public class ParserTest {
     private Parser parser = new Parser();
-    private HTMLGetter HTMLGetter = new HTMLGetter();
+    private TestLoadTestApplication.ResourceGetter.HTMLGetter HTMLGetter = new HTMLGetter();
 
     @Test
     public void parseLinkWithCorrectView(){
