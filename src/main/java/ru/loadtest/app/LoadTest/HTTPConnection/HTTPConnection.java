@@ -15,23 +15,8 @@ public class HTTPConnection {
     public static final Logger logger = LogManager.getLogger(HTTPConnection.class.getName());
     private static String baseAddress;
 
-    public String getHTMLPageByURL(String address) {
-        address = appendFullPath(address);
-        CloseableHttpClient httpClient = HttpClients.createDefault();
-        HttpGet request = new HttpGet(address);
-        String entityContent = new String("");
-        try (CloseableHttpResponse response = httpClient.execute(request)) {
-            //commented lines is testing lines to output results
-//            logger.info(response.getStatusLine());
-            HttpEntity entity = response.getEntity();
-            entityContent = EntityUtils.toString(entity);
-            logger.info(address);
-//            logger.info(entityContent);
-        } catch (IOException e) {
-            logger.error("\nCan't get response from " + address + "\n");
-        } finally {
-            return entityContent;
-        }
+    String getHTMLPageByURL(String address) {
+        return getHTTPEntityContent(appendFullPath(address));
     }
 
     private String appendFullPath(String address) {
@@ -43,11 +28,29 @@ public class HTTPConnection {
         return path.toString();
     }
 
-    public static void setBaseAddress(String address) {
+    private String getHTTPEntityContent(String address) {
+        CloseableHttpClient httpClient = HttpClients.createDefault();
+        HttpGet request = new HttpGet(address);
+        String entityContent = "";
+        try (CloseableHttpResponse response = httpClient.execute(request)) {
+            entityContent = getEntityContentFromResponse(response);
+            logger.info(address);
+        } catch (IOException e) {
+            logger.error("\nCan't get content from " + address + "\n");
+        }
+        return entityContent;
+    }
+
+    private String getEntityContentFromResponse(CloseableHttpResponse response) throws IOException {
+        HttpEntity entity = response.getEntity();
+        return EntityUtils.toString(entity);
+    }
+
+    static void setBaseAddress(String address) {
         baseAddress = address;
     }
 
-    public static String getBaseAddress() {
+    static String getBaseAddress() {
         return baseAddress;
     }
 }
