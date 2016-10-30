@@ -15,15 +15,32 @@ public class ConnectionAPI {
     private HTTPConnection connection = new HTTPConnection();
     private int i = 0;
 
-    public ConnectionAPI(String baseURL){
+    public ConnectionAPI(String baseURL) {
         setBaseURL(baseURL);
     }
 
+    /**
+     * method that starts exploring the site from address. Reqursive method
+     * @param address address that will be first link address in exploring. Empty quotes mean start from base URL
+     */
     public void exploreLinks(String address) {
-
         i++;
-        Random random = new Random();
         links = getLinksFromURL(address);
+        String nextRandomLink = getNextRandomLink();
+        parser.parseLinks(connection.getHTMLPageByURL(nextRandomLink));
+        if (i > 10) {
+            return;
+        }
+        exploreLinks(nextRandomLink);
+    }
+
+    private List<String> getLinksFromURL(String URL) {
+        parser.parseLinks(connection.getHTMLPageByURL(URL));
+        return parser.getListOfLinks();
+    }
+
+    private String getNextRandomLink(){
+        Random random = new Random();
         String randomLink;
         while (true) {
             randomLink = getRandomLink(random.nextInt(links.size()));
@@ -31,37 +48,7 @@ public class ConnectionAPI {
                 break;
             }
         }
-        printLinks();
-        parser.parseLinks(connection.getHTMLPageByURL(randomLink));
-        if (i > 1000) {
-            return;
-        }
-        exploreLinks(randomLink);
-    }
-
-    private void setBaseURL(String URL) {
-        HTTPConnection.setBaseAddress(URL);
-    }
-
-    private boolean isCorrectLink(String URL) {
-        return isLinkInBaseDomain(URL) && !isLinkMailto(URL);
-    }
-
-    private boolean isLinkInBaseDomain(String URL) {
-        return URL.contains(removeTransferProtocols(HTTPConnection.getBaseAddress())) || URL.charAt(0) == '\u002f';
-    }
-
-    private String removeTransferProtocols(String URL){
-        return URL.replaceAll("http://|https://|www\u002e", "");
-    }
-
-    private boolean isLinkMailto(String URL) {
-        return URL.contains("mailto");
-    }
-
-    private List<String> getLinksFromURL(String URL) {
-        parser.parseLinks(connection.getHTMLPageByURL(URL));
-        return parser.getListOfLinks();
+        return randomLink;
     }
 
     private String getRandomLink(int number) {
@@ -72,6 +59,26 @@ public class ConnectionAPI {
     private String deleteUnnecessaryChars(String source) {
         String pattern = "\\u002c|\\u0022|\\u0020";
         return source.replaceAll(pattern, "");
+    }
+
+    private boolean isCorrectLink(String URL) {
+        return isLinkInBaseDomain(URL) && !isLinkMailto(URL);
+    }
+
+    private boolean isLinkInBaseDomain(String URL) {
+        return URL.contains(removeTransferProtocols(HTTPConnection.getBaseAddress())) || URL.charAt(0) == '\u002f';
+    }
+
+    private String removeTransferProtocols(String URL) {
+        return URL.replaceAll("http://|https://|www\u002e", "");
+    }
+
+    private boolean isLinkMailto(String URL) {
+        return URL.contains("mailto");
+    }
+
+    private void setBaseURL(String URL) {
+        HTTPConnection.setBaseAddress(URL);
     }
 
     private void printLinks() {
