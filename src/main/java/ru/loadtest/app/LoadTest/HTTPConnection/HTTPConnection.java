@@ -24,6 +24,11 @@ public class HTTPConnection {
         if (!address.contains("http") && !address.contains("mailto")) {
             path.append(baseAddress);
         }
+        if(!address.isEmpty()){
+            if(address.charAt(0) != '/'){
+                path.append("/");
+            }
+        }
         path.append(address);
         return path.toString();
     }

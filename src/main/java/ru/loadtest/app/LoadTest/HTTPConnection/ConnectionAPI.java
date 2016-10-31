@@ -66,7 +66,23 @@ public class ConnectionAPI {
     }
 
     private boolean isLinkInBaseDomain(String URL) {
-        return URL.contains(removeTransferProtocols(HTTPConnection.getBaseAddress())) || URL.charAt(0) == '\u002f';
+        return URL.contains(getClearBaseAddress()) || URL.charAt(0) == '\u002f' || isBaseDomainShortSlashLink(URL);
+    }
+
+    private String getClearBaseAddress(){
+        return removeTransferProtocols(HTTPConnection.getBaseAddress());
+    }
+
+    private boolean isBaseDomainShortSlashLink(String URL) {
+        if(!URL.contains("http://") && !URL.contains("https://") && !URL.contains("www.")){
+            return isEnglishCharacter(URL);
+        } else {
+            return false;
+        }
+    }
+
+    private boolean isEnglishCharacter(String URL){
+        return URL.charAt(0) >= 'a' && URL.charAt(0) <= 'z';
     }
 
     private String removeTransferProtocols(String URL) {
