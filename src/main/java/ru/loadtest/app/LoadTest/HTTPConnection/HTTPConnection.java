@@ -25,7 +25,8 @@ public class HTTPConnection {
             path.append(baseAddress);
         }
         if(!address.isEmpty()){
-            if(address.charAt(0) != '/'){
+            String str = address.substring(0, 4);
+            if(address.charAt(0) != '/' && !str.equals("http")){
                 path.append("/");
             }
         }
