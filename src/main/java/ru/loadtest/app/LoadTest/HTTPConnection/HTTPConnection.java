@@ -16,22 +16,15 @@ import java.io.IOException;
 public class HTTPConnection {
     public static final Logger logger = LogManager.getLogger(HTTPConnection.class.getName());
 
-    private static HTTPConnection httpConnection;
     private String baseAddress;
-    private BasicCookieStore cookieStore = new BasicCookieStore();
+    private BasicCookieStore cookieStore;
     private CloseableHttpClient httpClient;
     private RequestConfig requestConfig;
     private static int TIMEOUT_MS = 60000;
 
-    synchronized public static HTTPConnection getHTTPCOnnection(String baseURL){
-        if(httpConnection == null) {
-            httpConnection = new HTTPConnection(baseURL);
-        }
-        return httpConnection;
-    }
-
-    private HTTPConnection(String baseAddress) {
+    HTTPConnection(String baseAddress) {
         this.baseAddress = baseAddress;
+        cookieStore = new BasicCookieStore();
         httpClient = HttpClients.custom().setDefaultCookieStore(cookieStore).build();
         requestConfig = RequestConfig.custom()
                 .setSocketTimeout(TIMEOUT_MS)
