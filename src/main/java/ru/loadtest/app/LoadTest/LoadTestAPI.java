@@ -1,6 +1,6 @@
 package ru.loadtest.app.LoadTest;
 
-import ru.loadtest.app.LoadTest.HTTPConnection.ConnectionAPI;
+import ru.loadtest.app.LoadTest.AppCore.ConnectionAPI;
 
 /**
  * The class provide you several public methods to operate with LoadTest Application. Use this class in your applications.
@@ -30,7 +30,7 @@ public class LoadTestAPI {
      * @param startURL This is the first point of exploring. Explore is started from address.zone if @param startURL is empty string.
      */
     public void executeRandomTest(String startURL){
-        ConnectionAPI connection = new ConnectionAPI(this.URL);
-        connection.exploreLinks(startURL);
+        ConnectionAPI connection = new ConnectionAPI();
+        connection.exploreLinks(startURL, this.URL);
     }
 }
