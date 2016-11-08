@@ -6,12 +6,12 @@ package ru.loadtest.app.LoadTest.AppCore;
 public class Util {
     private static String workURL;
 
-    private static boolean isInDomain(String URL){
-        boolean result = URL.contains(workURL) || URL.charAt(0) == '/' || URL.matches("^(?!http|https|www.).*");
+    public static boolean isLinkInDomain(String URL){
+        boolean result = URL.contains(workURL) || URL.charAt(0) == '/' || URL.matches("^(?!http://|https://|www\u002e|#).*");
         return result;
     }
 
-    static void setWorkURL(String URL){
+    public static void setWorkURL(String URL){
         workURL = removeProtocols(URL);
     }
 
