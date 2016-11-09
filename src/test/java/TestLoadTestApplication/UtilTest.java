@@ -12,80 +12,99 @@ import static ru.loadtest.app.LoadTest.AppCore.Util.*;
 
 public class UtilTest {
     private static String URL = "http://test.link";
+
     @BeforeClass
-    public static void setUtilURL(){
+    public static void setUtilURL() {
         setWorkURL(URL);
     }
 
     @Test
-    public void isLinkInBaseDomainCorrectLink(){
+    public void isLinkInBaseDomainCorrectLink() {
         boolean result = isLinkInDomain("http://test.link/index");
         assertTrue(result);
     }
 
     @Test
-    public void isLinkBaseDomainIncorrectLink(){
+    public void isLinkBaseDomainIncorrectLink() {
         boolean result = isLinkInDomain("http://another-site.link/index");
         assertFalse(result);
     }
 
     @Test
-    public void isLinkBaseDomainSharp(){
+    public void isLinkBaseDomainSharp() {
         boolean result = isLinkInDomain("#");
         assertFalse(result);
     }
 
     @Test
-    public void isLinkBaseDomainDollar(){
+    public void isLinkBaseDomainDollar() {
         boolean result = isLinkInDomain("$sgf");
         assertTrue(result);
     }
 
     @Test
-    public void isLinkBaseDomainStartFromhttp(){
+    public void isLinkBaseDomainStartFromhttp() {
         boolean result = isLinkInDomain("httpget");
         assertTrue(result);
     }
 
     @Test
-    public void isLinkBaseDomainStartFromwww(){
+    public void isLinkBaseDomainStartFromwww() {
         boolean result = isLinkInDomain("wwwdfgdfg");
         assertTrue(result);
     }
 
     @Test
-    public void isLinkBaseDomainShortSlashedLink(){
+    public void isLinkBaseDomainShortSlashedLink() {
         boolean result = isLinkInDomain("/index");
         assertTrue(result);
     }
 
     @Test
-    public void isLinkBaseDomainShortLink(){
+    public void isLinkBaseDomainShortLink() {
         boolean result = isLinkInDomain("index");
         assertTrue(result);
     }
 
     @Test
-    public void isLinkBaseDomainWWW(){
+    public void isLinkBaseDomainWWW() {
         boolean result = isLinkInDomain("www.test.link/index");
         assertTrue(result);
     }
 
     @Test
-    public void isLinkBaseDomainLinkWithExt(){
+    public void isLinkBaseDomainLinkWithExt() {
         boolean result = isLinkInDomain("/index.html");
         assertTrue(result);
     }
 
     @Test
-    public void isLinkBaseDomainHTTPS(){
+    public void isLinkBaseDomainHTTPS() {
         boolean result = isLinkInDomain("https://test.link/index");
         assertTrue(result);
     }
 
     @Test
-    public void isLinkBaseDomainWWWAndHTTP(){
+    public void isLinkBaseDomainWWWAndHTTP() {
         boolean result = isLinkInDomain("http://www.test.link/index");
         assertTrue(result);
+    }
+
+    @Test
+    public void isLinkContainProtocolsCorrectHTTP() {
+        boolean result = isLinkContainProtocols("http://link.test/");
+        assertTrue(result);
+    }
+
+    @Test
+    public void isLinkContainProtocolsCorrectHTTPS() {
+        boolean result = isLinkContainProtocols("https://link.test/");
+        assertTrue(result);
+    }
+
+    @Test
+    public void isLinkContainProtocolsIncorrect() {
+        boolean result = isLinkContainProtocols("httpp://link.test/");
+        assertFalse(result);
     }
 }

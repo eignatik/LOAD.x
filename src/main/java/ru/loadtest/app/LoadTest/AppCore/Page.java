@@ -9,7 +9,7 @@ public class Page {
     private String URL;
     private List<String> links;
 
-    public Page(String URL, List<String> links){
+    public Page(String URL, List<String> links) {
         this.URL = URL;
         this.links = links;
     }

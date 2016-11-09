@@ -13,6 +13,8 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 
+import static ru.loadtest.app.LoadTest.AppCore.Util.*;
+
 public class HTTPConnection {
     public static final Logger logger = LogManager.getLogger(HTTPConnection.class.getName());
 
@@ -60,8 +62,8 @@ public class HTTPConnection {
         if (!address.contains("http") && !address.contains("mailto")) {
             path.append(baseAddress);
         }
-        if(!address.isEmpty()){
-            if(address.charAt(0) != '/'){
+        if (!address.isEmpty()) {
+            if (address.charAt(0) != '/' && !isLinkContainProtocols(address)) {
                 path.append("/");
             }
         }
