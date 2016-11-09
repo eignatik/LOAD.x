@@ -22,6 +22,10 @@ public class Page {
         return links;
     }
 
+    public String getLinkByIndex(int index) {
+        return links.get(index);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

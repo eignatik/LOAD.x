@@ -6,6 +6,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -15,7 +16,7 @@ public class Parser {
     public static final Logger logger = LogManager.getLogger(Parser.class.getName());
 
     public static List<String> getLinksFromHTML(String HTMLString) {
-        List<String> listOfLinks = new LinkedList<>();
+        List<String> listOfLinks = new ArrayList<>();
         Document html = parse(HTMLString);
         Elements links = html.select("a[href]");
         for (Element link : links) {

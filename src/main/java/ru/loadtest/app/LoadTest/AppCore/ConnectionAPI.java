@@ -10,7 +10,6 @@ import java.util.Map;
 
 public class ConnectionAPI {
     public static final Logger logger = LogManager.getLogger(ConnectionAPI.class.getName());
-    private List<Page> pages;
 
     /**
      * method that starts exploring the site from address.
@@ -22,7 +21,7 @@ public class ConnectionAPI {
         Util.setWorkURL(baseURL);
         String htmlPage = connection.getHTMLPageByURL(address);
         List<String> links = Parser.getLinksFromHTML(htmlPage);
-        pages = new ArrayList<>();
+        List<Page> pages = new ArrayList<>();
         for (String link : links) {
             pages.add(new Page(link, Parser.getLinksFromHTML(connection.getHTMLPageByURL(link))));
         }
