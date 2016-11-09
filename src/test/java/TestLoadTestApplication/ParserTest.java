@@ -13,71 +13,69 @@ public class ParserTest {
     private TestLoadTestApplication.ResourceGetter.HTMLGetter HTMLGetter = new HTMLGetter();
 
     @Test
-    public void parseLinkWithCorrectView(){
+    public void parseLinkWithCorrectView() {
         String result = getLinksFromHTML(HTMLGetter.getCorrectViewHTML()).get(0);
-        assertEquals(result, "\"Link text\": \"http://testlink.zone\", ");
+        assertEquals(result, "http://testlink.zone");
     }
 
     @Test
-    public void parseLinkWithoutHref(){
+    public void parseLinkWithoutHref() {
         boolean result = getLinksFromHTML(HTMLGetter.getLinkWithoutHref()).isEmpty();
         assertTrue(result);
     }
 
     @Test
-    public void parseLinkWithEmptyHref(){
+    public void parseLinkWithEmptyHref() {
         boolean result = getLinksFromHTML(HTMLGetter.getLinkWithEmptyHref()).isEmpty();
         assertTrue(result);
     }
 
     @Test
-    public void parseLinkWithHrefSharp(){
+    public void parseLinkWithHrefSharp() {
         boolean result = getLinksFromHTML(HTMLGetter.getLinkWithHrefSharp()).isEmpty();
         assertTrue(result);
     }
 
     @Test
-    public void parseLinkWithShortLink(){
+    public void parseLinkWithShortLink() {
         String result = getLinksFromHTML(HTMLGetter.getShortLinkHTML()).get(0);
-        assertEquals(result, "\"Link text\": \"/testlink.zone\", ");
+        assertEquals(result, "/testlink.zone");
     }
 
     @Test
-    public void parseLinkFromBigHtml(){
+    public void parseLinkFromBigHtml() {
         String result = getLinksFromHTML(HTMLGetter.getLinkFromBigHTML()).get(0);
-        assertEquals(result, "\"Text\": \"link\", ");
+        assertEquals(result, "link");
     }
 
     @Test
-    public void parseLinksFromBigHtml(){
+    public void parseLinksFromBigHtml() {
         Collection<String> list = getLinksFromHTML(HTMLGetter.getLinksFromBigHTML());
-        assertTrue(list.size() == 4);
-        for(String result : list){
-            assertEquals(result, "\"Text\": \"link\", ");
+        assertTrue(list.size() == 1);
+        for (String result : list) {
+            assertEquals(result, "link");
         }
     }
 
     @Test
-    public void parseLinkWithDifficultLinkTag(){
+    public void parseLinkWithDifficultLinkTag() {
         String result = getLinksFromHTML(HTMLGetter.getDifficultLinkHTML()).get(0);
-        assertEquals(result, "\"Text\": \"http://testlink.zone\", ");
+        assertEquals(result, "http://testlink.zone");
     }
-
-    //TODO Uncomment test and refactor
 
 
     @Test
-    public void parseLinkWithWrongTag(){
+    public void parseLinkWithWrongTag() {
         assertTrue(getLinksFromHTML(HTMLGetter.getWrongLinkHTML()).isEmpty());
     }
 
     @Test
-    public void pareLinksWithWrongTags(){
+    public void pareLinksWithWrongTags() {
         assertTrue(getLinksFromHTML(HTMLGetter.getWrongLinksHTML()).isEmpty());
     }
 
     @Test
-    public void parseLinksFromRealPage(){
+    public void parseLinksFromRealPage() {
         Collection<String> list = getLinksFromHTML(HTMLGetter.getLinksFromRealPage());
         assertTrue(list.size() == 9);
     }
