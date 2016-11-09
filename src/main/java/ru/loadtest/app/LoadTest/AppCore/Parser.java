@@ -20,29 +20,22 @@ public class Parser {
         Elements links = html.select("a[href]");
         for (Element link : links) {
             String currentLink = link.attr("href");
-            if(!currentLink.isEmpty() && isLink(currentLink)){
-                if(!hasSameLink(listOfLinks, currentLink)){
-                    StringBuilder linkBuilder = new StringBuilder();
-                    linkBuilder
-                            .append("\"")
-                            .append(link.text())
-                            .append("\": \"")
-                            .append(link.attr("href"))
-                            .append("\", ");
-                    listOfLinks.add(linkBuilder.toString());
+            if (!currentLink.isEmpty() && isLink(currentLink)) {
+                if (!hasSameLink(listOfLinks, currentLink)) {
+                    listOfLinks.add(link.attr("href"));
                 }
             }
         }
         return listOfLinks;
     }
 
-    private static boolean isLink(String URL){
+    private static boolean isLink(String URL) {
         return URL.charAt(0) != '#' && !URL.contains("mailto:");
     }
 
-    private static boolean hasSameLink(List<String> list, String currentLink){
+    private static boolean hasSameLink(List<String> list, String currentLink) {
         boolean hasLink = false;
-        for(String link : list){
+        for (String link : list) {
             hasLink = link.contains(currentLink);
         }
         return hasLink;
