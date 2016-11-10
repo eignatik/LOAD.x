@@ -5,34 +5,50 @@ import org.apache.logging.log4j.Logger;
 
 import java.util.*;
 
-public class ConnectionAPI {
+public class ConnectionAPI extends Thread {
     public static final Logger logger = LogManager.getLogger(ConnectionAPI.class.getName());
     private Random random = new Random();
     private HTTPConnection connection;
     private List<Page> visitedPages = new LinkedList<>();
+    private String baseURL;
+    private String startURL;
+    private long period = 300000;
 
-    /**
-     * method that starts exploring the site from address.
-     *
-     * @param address address that will be first link address in exploring. Empty quotes mean start from base URL
-     */
-    public void exploreLinks(String address, String baseURL) {
-        connection = new HTTPConnection(baseURL);
-        Util.setWorkURL(baseURL);
-        startExplore(address);
+    public ConnectionAPI(String baseURL, String startURL) {
+        this.baseURL = baseURL;
+        this.startURL = startURL;
+    }
+    
+    @Override
+    public void run() {
+        startExplore();
     }
 
-    private void startExplore(String address) {
+    private void startExplore() {
+        connection = new HTTPConnection(this.baseURL);
+        Util.setWorkURL(this.baseURL);
+        long startTime = System.currentTimeMillis();
+        long currentTime;
         while(true) {
-            String htmlPage = connection.getHTMLPageByURL(address);
-            visitedPages.add(new Page(address));
-            List<String> links = Parser.getLinksFromHTML(htmlPage);
-            if(links.isEmpty()) {
-                address = "";
-            } else {
-                int index = getRandomValue(links.size());
-                address = links.get(index);
+            currentTime = System.currentTimeMillis() - startTime;
+            if(currentTime > this.period){
+                logger.info("Timeout. (" + currentTime + ")");
+                break;
             }
+            explore();
+
+        }
+    }
+
+    private void explore(){
+        String htmlPage = connection.getHTMLPageByURL(this.startURL);
+        visitedPages.add(new Page(this.startURL));
+        List<String> links = Parser.getLinksFromHTML(htmlPage);
+        if(links.isEmpty()) {
+            this.startURL = "";
+        } else {
+            int index = getRandomValue(links.size());
+            this.startURL = links.get(index);
         }
     }
 
@@ -42,5 +58,9 @@ public class ConnectionAPI {
 
     public List<Page> getVisitedPages() {
         return visitedPages;
+    }
+
+    public void setPeriod(long period) {
+        this.period = period;
     }
 }

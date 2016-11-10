@@ -31,7 +31,9 @@ public class LoadTestAPI {
      * @param startURL This is the first point of exploring. Explore is started from address.zone if @param startURL is empty string.
      */
     public void executeRandomTest(String startURL) {
-        ConnectionAPI connection = new ConnectionAPI();
-        connection.exploreLinks(startURL, this.URL);
+        ConnectionAPI connection = new ConnectionAPI(this.URL, startURL);
+//        ConnectionAPI connection1 = new ConnectionAPI(this.URL, startURL);
+        connection.start();
+//        connection1.start();
     }
 }
