@@ -14,39 +14,39 @@ public class HTMLGetter {
 
     private ClassLoader classLoader = this.getClass().getClassLoader();
 
-    public String getCorrectViewHTML(){
+    public String getCorrectViewHTML() {
         return getHTMLFromResourceURL(classLoader.getResource("Parser/CorrectView.html"));
     }
 
-    public String getShortLinkHTML(){
+    public String getShortLinkHTML() {
         return getHTMLFromResourceURL(classLoader.getResource("Parser/ShortLink.html"));
     }
 
-    public String getLinkFromBigHTML(){
+    public String getLinkFromBigHTML() {
         return getHTMLFromResourceURL(classLoader.getResource("Parser/BigHTML.html"));
     }
 
-    public String getLinksFromBigHTML(){
+    public String getLinksFromBigHTML() {
         return getHTMLFromResourceURL(classLoader.getResource("Parser/LinksBigHTML.html"));
     }
 
-    public String getDifficultLinkHTML(){
+    public String getDifficultLinkHTML() {
         return getHTMLFromResourceURL(classLoader.getResource("Parser/DifficultLink.html"));
     }
 
-    public String getWrongLinkHTML(){
+    public String getWrongLinkHTML() {
         return getHTMLFromResourceURL(classLoader.getResource("Parser/WrongLinkTag.html"));
     }
 
-    public String getWrongLinksHTML(){
+    public String getWrongLinksHTML() {
         return getHTMLFromResourceURL(classLoader.getResource("Parser/WrongLinks.html"));
     }
 
-    public String getLinkWithoutHref(){
+    public String getLinkWithoutHref() {
         return getHTMLFromResourceURL(classLoader.getResource("Parser/LinkWithoutHref.html"));
     }
 
-    public String getLinkWithEmptyHref(){
+    public String getLinkWithEmptyHref() {
         return getHTMLFromResourceURL(classLoader.getResource("Parser/LinkWithEmptyHref.html"));
     }
 
@@ -54,21 +54,21 @@ public class HTMLGetter {
         return getHTMLFromResourceURL(classLoader.getResource("Parser/LinkWithHrefSharp.html"));
     }
 
-    public String getLinksFromRealPage(){
+    public String getLinksFromRealPage() {
         return getHTMLFromResourceURL(classLoader.getResource("Parser/RealPage.html"));
     }
 
-    private String getHTMLFromResourceURL(URL resource){
+    private String getHTMLFromResourceURL(URL resource) {
         StringBuilder HTML = new StringBuilder();
         try {
             Scanner input = new Scanner(new File(resource.getFile()));
-            while(input.hasNext()){
+            while (input.hasNext()) {
                 HTML.append(input.nextLine());
             }
             input.close();
         } catch (FileNotFoundException e) {
             logger.error(e);
-        } catch(Exception e) {
+        } catch (Exception e) {
             logger.error(e);
         }
         return HTML.toString();
