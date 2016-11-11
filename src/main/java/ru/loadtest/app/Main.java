@@ -9,6 +9,7 @@ public class Main {
 
     public static void main(String[] args) {
         LoadTestAPI test = new LoadTestAPI("http://github.com");
-        test.executeRandomTest("");
+//        test.executeRandomTest("");
+        test.executeRandomTest("", 10000);
     }
 }

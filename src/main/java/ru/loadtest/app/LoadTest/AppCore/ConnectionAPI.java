@@ -12,7 +12,7 @@ public class ConnectionAPI extends Thread {
     private List<Page> visitedPages = new LinkedList<>();
     private String baseURL;
     private String startURL;
-    private long period = 300000;
+    private static long period = 300000;
 
     public ConnectionAPI(String baseURL, String startURL) {
         this.baseURL = baseURL;
@@ -60,7 +60,7 @@ public class ConnectionAPI extends Thread {
         return visitedPages;
     }
 
-    public void setPeriod(long period) {
-        this.period = period;
+    public static void setTimeout(long timeout) {
+        period = timeout;
     }
 }
