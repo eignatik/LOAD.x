@@ -1,12 +1,16 @@
 package ru.loadtest.app.LoadTest.AppCore;
 
 import org.apache.http.HttpEntity;
+import org.apache.http.client.config.CookieSpecs;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.http.protocol.BasicHttpContext;
+import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -20,6 +24,7 @@ public class HTTPConnection {
 
     private String baseAddress;
     private BasicCookieStore cookieStore;
+    private HttpContext context;
     private CloseableHttpClient httpClient;
     private RequestConfig requestConfig;
     private static int TIMEOUT_MS = 60000;
@@ -27,12 +32,18 @@ public class HTTPConnection {
     HTTPConnection(String baseAddress) {
         this.baseAddress = baseAddress;
         cookieStore = new BasicCookieStore();
-        httpClient = HttpClients.custom().setDefaultCookieStore(cookieStore).build();
         requestConfig = RequestConfig.custom()
+                .setCookieSpec(CookieSpecs.STANDARD)
                 .setSocketTimeout(TIMEOUT_MS)
                 .setConnectTimeout(TIMEOUT_MS)
                 .setConnectionRequestTimeout(TIMEOUT_MS)
                 .build();
+        httpClient = HttpClients.custom()
+                .setDefaultCookieStore(cookieStore)
+                .setDefaultRequestConfig(requestConfig)
+                .build();
+        context = new BasicHttpContext();
+        context.setAttribute(HttpClientContext.COOKIE_STORE, cookieStore);
     }
 
     String getHTMLPageByURL(String address) {
@@ -43,7 +54,7 @@ public class HTTPConnection {
         HttpGet request = new HttpGet(address);
         request.setConfig(requestConfig);
         String entityContent = "";
-        try (CloseableHttpResponse response = httpClient.execute(request)) {
+        try (CloseableHttpResponse response = httpClient.execute(request, context)) {
             entityContent = getEntityContentFromResponse(response);
             logger.info(address);
         } catch (IOException e) {
