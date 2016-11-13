@@ -40,9 +40,12 @@ public class LoadTestAPI {
      * @param startURL This is the first point of exploring. Explore is started from address.zone if @param startURL is empty string.
      * @param timeout value in ms that set timeout for testing time
      */
-    public void executeRandomTest(String startURL, long timeout) {
-        ConnectionAPI connection = new ConnectionAPI(this.URL, startURL);
+    public void executeRandomTest(String startURL, long timeout, int userNumber) {
         ConnectionAPI.setTimeout(timeout);
-        connection.start();
+        Thread[] threads = new Thread[userNumber];
+        for(int i=0; i<threads.length; i++) {
+            threads[i] = new ConnectionAPI(this.URL, startURL);
+            threads[i].start();
+        }
     }
 }
