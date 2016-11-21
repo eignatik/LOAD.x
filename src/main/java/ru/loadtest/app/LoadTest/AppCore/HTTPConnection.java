@@ -12,6 +12,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 
 import static ru.loadtest.app.LoadTest.AppCore.Util.*;
 
@@ -36,8 +38,36 @@ public class HTTPConnection {
     }
 
     String getHTMLPageByURL(String address) {
+        address = getEncodedAddress(address);
         return getHTTPEntityContent(appendFullPath(address));
     }
+
+    private String getEncodedAddress(String address) {
+        try {
+            address = URLEncoder.encode(address, "UTF-8");
+        } catch(UnsupportedEncodingException e) {
+            logger.error(e.getMessage());
+        } catch(Exception e) {
+            logger.error(e.getMessage());
+        }
+        return address;
+    }
+
+    private String appendFullPath(String address) {
+        StringBuilder path = new StringBuilder();
+        if (!address.contains("http") && !address.contains("mailto")) {
+            path.append(baseAddress);
+        }
+        if (!address.isEmpty()) {
+            if (address.charAt(0) != '/' && !isLinkContainProtocols(address)) {
+                path.append("/");
+            }
+        }
+        path.append(address);
+        return path.toString();
+    }
+
+
 
     private String getHTTPEntityContent(String address) {
         HttpGet request = new HttpGet(address);
@@ -57,19 +87,6 @@ public class HTTPConnection {
         return EntityUtils.toString(entity);
     }
 
-    private String appendFullPath(String address) {
-        StringBuilder path = new StringBuilder();
-        if (!address.contains("http") && !address.contains("mailto")) {
-            path.append(baseAddress);
-        }
-        if (!address.isEmpty()) {
-            if (address.charAt(0) != '/' && !isLinkContainProtocols(address)) {
-                path.append("/");
-            }
-        }
-        path.append(address);
-        return path.toString();
-    }
 
     String getBaseAddress() {
         return baseAddress;
