@@ -10,11 +10,12 @@ public class ConnectionAPI extends Thread {
 
     private Random random = new Random();
     private HTTPConnection connection;
-    private List<Page> visitedPages = new LinkedList<>();
     private Map<String, Page> sitePages = new HashMap<>();
     private String baseURL;
     private String URL;
+
     private static long period = 300000;
+    private int topRange = 10000;
 
     public ConnectionAPI(String baseURL, String startURL) {
         this.baseURL = baseURL;
@@ -39,7 +40,18 @@ public class ConnectionAPI extends Thread {
                 logger.info("Timeout. (" + currentTime + ")");
                 break;
             }
+            sleepByCondition();
             explore();
+        }
+    }
+
+    private void sleepByCondition() {
+        int interval = random.nextInt(topRange);
+        try {
+            Thread.sleep(interval);
+            logger.info(interval + " sleep interval");
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
     }
 
@@ -69,11 +81,11 @@ public class ConnectionAPI extends Thread {
         return random.nextInt(size);
     }
 
-    public List<Page> getVisitedPages() {
-        return visitedPages;
-    }
-
     public static void setTimeout(long timeout) {
         period = timeout;
+    }
+
+    public void setRequestIntervals(int topRange) {
+        this.topRange = topRange;
     }
 }
