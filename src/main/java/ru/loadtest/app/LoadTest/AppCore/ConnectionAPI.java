@@ -15,11 +15,12 @@ public class ConnectionAPI extends Thread {
     private String URL;
 
     private static long period = 300000;
-    private int topRange = 10000;
+    private static int topRange = 10000;
 
     public ConnectionAPI(String baseURL, String startURL) {
         this.baseURL = baseURL;
         this.URL = startURL;
+        Util.setWorkURL(this.baseURL);
     }
 
     @Override
@@ -29,20 +30,16 @@ public class ConnectionAPI extends Thread {
 
     private void startExplore() {
         connection = new HTTPConnection(this.baseURL);
-        Util.setWorkURL(this.baseURL);
         logger.info("Current work URL is " + this.baseURL + " Exploring starts from " + this.URL + "/");
-        logger.info("Timeout in " + (this.period/1000)/60 + " min. (" + this.period/1000 + " sec.)");
+        logger.info("Timeout in " + (period/1000)/60 + " min. (" + period/1000 + " sec.)");
         long startTime = System.currentTimeMillis();
-        long currentTime;
-        while (true) {
+        long currentTime = 0;
+        while (currentTime <= period) {
             currentTime = System.currentTimeMillis() - startTime;
-            if (currentTime > this.period) {
-                logger.info("Timeout. (" + currentTime + ")");
-                break;
-            }
             sleepByCondition();
             explore();
         }
+        logger.info("Timeout. (" + currentTime + ")");
     }
 
     private void sleepByCondition() {
@@ -81,11 +78,15 @@ public class ConnectionAPI extends Thread {
         return random.nextInt(size);
     }
 
+    /**
+     * Set timeout in seconds
+     * @param timeout
+     */
     public static void setTimeout(long timeout) {
-        period = timeout;
+        period = timeout*1000;
     }
 
-    public void setRequestIntervals(int topRange) {
-        this.topRange = topRange;
+    public static void setRequestIntervals(int topLimit) {
+        topRange = topLimit;
     }
 }
