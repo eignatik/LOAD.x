@@ -10,15 +10,12 @@ import java.util.Random;
 public class Page {
     private String URL;
     private List<String> links;
-    private List<Integer> requests;
-
-    private int requestCount = requests.size();
-    private int maxRequest = getMaxValue();
-    private int minRequest = getMinValue();
-    private int avgRequest = getAverageValue();
+    private int requestCount;
+    private int maxRequest;
+    private int minRequest;
+    private int avgRequest;
 
     private Random random;
-
 
     Page(String URL) {
         this.URL = URL;
@@ -27,36 +24,7 @@ public class Page {
     Page(String URL, List<String> links) {
         this.URL = URL;
         this.links = links;
-        requests = new ArrayList<>();
         random = new Random();
-    }
-
-    private int getMaxValue() {
-        int max = 0;
-        for (Integer elem : requests) {
-            if(elem >= max) {
-                max = elem;
-            }
-        }
-        return max;
-    }
-
-    private int getMinValue() {
-        int min = 0;
-        for (Integer elem : requests) {
-            if(elem <= min) {
-                min = elem;
-            }
-        }
-        return min;
-    }
-
-    private int getAverageValue() {
-        int sum = 0;
-        for (Integer elem : requests) {
-            sum += elem;
-        }
-        return sum/requests.size();
     }
 
     public String getURL() {
@@ -72,6 +40,9 @@ public class Page {
     }
 
     public String getRandomLink() {
+        if(links.size() == 0) {
+            return "";
+        }
         int index = random.nextInt(links.size()-1);
         return links.get(index);
     }
@@ -96,10 +67,6 @@ public class Page {
                 .append(URL)
                 .append(links)
                 .toHashCode();
-    }
-
-    public List<Integer> getRequests() {
-        return requests;
     }
 
     /**
