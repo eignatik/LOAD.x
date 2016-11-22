@@ -15,15 +15,15 @@ import static org.jsoup.Jsoup.*;
 public class Parser {
     public static final Logger logger = LogManager.getLogger(Parser.class.getName());
 
-    public static List<String> getLinksFromHTML(String HTMLString) {
-        List<String> listOfLinks = new ArrayList<>();
+    public static List<Link> getLinksFromHTML(String HTMLString) {
+        List<Link> listOfLinks = new ArrayList<>();
         Document html = parse(HTMLString);
         Elements links = html.select("a[href]");
         for (Element link : links) {
             String currentLink = link.attr("href");
             if (!currentLink.isEmpty() && isLink(currentLink)) {
                 if (!hasSameLink(listOfLinks, currentLink)) {
-                    listOfLinks.add(link.attr("href"));
+                    listOfLinks.add(new Link(link.attr("href")));
                 }
             }
         }
@@ -34,10 +34,10 @@ public class Parser {
         return URL.charAt(0) != '#' && !URL.contains("mailto:");
     }
 
-    private static boolean hasSameLink(List<String> list, String currentLink) {
+    private static boolean hasSameLink(List<Link> list, String currentLink) {
         boolean hasLink = false;
-        for (String link : list) {
-            hasLink = link.contains(currentLink);
+        for (Link link : list) {
+            hasLink = link.getURL().contains(currentLink);
         }
         return hasLink;
     }

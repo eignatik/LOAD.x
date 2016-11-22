@@ -9,7 +9,7 @@ import java.util.Random;
 
 public class Page {
     private String URL;
-    private List<String> links;
+    private List<Link> links;
     private long requestsTimeSum;
     private long requestCount;
     private long maxRequest;
@@ -22,7 +22,7 @@ public class Page {
         this.URL = URL;
     }
 
-    Page(String URL, List<String> links) {
+    Page(String URL, List<Link> links) {
         this.URL = URL;
         this.links = links;
     }
@@ -31,12 +31,12 @@ public class Page {
         return URL;
     }
 
-    public List<String> getLinks() {
+    public List<Link> getLinks() {
         return links;
     }
 
     public String getLinkByIndex(int index) {
-        return links.get(index);
+        return links.get(index).getURL();
     }
 
     public String getRandomLink() {
@@ -44,7 +44,7 @@ public class Page {
             return "";
         }
         int index = (links.size() == 1)? 1 : random.nextInt(links.size()-1);
-        return links.get(index);
+        return links.get(index).getURL();
     }
 
     @Override

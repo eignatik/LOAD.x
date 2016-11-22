@@ -52,6 +52,7 @@ public class ConnectionAPI extends Thread {
     }
 
     private void explore() {
+        logger.info(this.URL);
         requestTime = System.currentTimeMillis();
         String htmlPage = connection.getHTMLPageByURL(this.URL);
         requestTime = System.currentTimeMillis() - requestTime;
@@ -68,7 +69,7 @@ public class ConnectionAPI extends Thread {
     }
 
     private String getNextParsedLink(String htmlPage) {
-        List<String> links = Parser.getLinksFromHTML(htmlPage);
+        List<Link> links = Parser.getLinksFromHTML(htmlPage);
         String url;
         sitePages.put(this.URL, new Page(this.URL, links));
         sitePages.get(this.URL).addRequest(requestTime);
@@ -76,7 +77,7 @@ public class ConnectionAPI extends Thread {
             url = "";
         } else {
             int index = getRandomValue(links.size());
-            url = links.get(index);
+            url = links.get(index).getURL();
         }
         return url;
     }
