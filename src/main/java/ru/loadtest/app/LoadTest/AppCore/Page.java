@@ -16,7 +16,7 @@ public class Page {
     private long minRequest;
     private long avgRequest;
 
-    private Random random;
+    private static Random random = new Random();
 
     Page(String URL) {
         this.URL = URL;
@@ -25,7 +25,6 @@ public class Page {
     Page(String URL, List<String> links) {
         this.URL = URL;
         this.links = links;
-        random = new Random();
     }
 
     public String getURL() {
