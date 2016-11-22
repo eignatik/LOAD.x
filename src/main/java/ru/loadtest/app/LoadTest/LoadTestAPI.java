@@ -3,9 +3,13 @@ package ru.loadtest.app.LoadTest;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import ru.loadtest.app.LoadTest.AppCore.ConnectionAPI;
+import ru.loadtest.app.LoadTest.AppCore.Page;
+import ru.loadtest.app.LoadTest.AppCore.Statistic.RequestsStatistic;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static ru.loadtest.app.LoadTest.AppCore.ConnectionAPI.*;
 
@@ -20,6 +24,7 @@ public class LoadTestAPI {
     public static final Logger logger = LogManager.getLogger(LoadTestAPI.class.getName());
     private String URL;
     private int port = 8802;
+    private Map<String, Page> listOfPages;
 
     public LoadTestAPI() {
         URL = "localhost:" + port;
@@ -70,6 +75,17 @@ public class LoadTestAPI {
         for (ConnectionAPI thread : threads) {
             thread.start();
         }
+        listOfPages = getSitePages();
+    }
+
+    public void printStatistic() {
+        try {
+            Thread.sleep(ConnectionAPI.getTimeout() + 3000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        RequestsStatistic requestsStatistic = new RequestsStatistic(listOfPages);
+        requestsStatistic.printPagesStatistic();
     }
 
     /**
@@ -78,6 +94,10 @@ public class LoadTestAPI {
      */
     public void setMaxIntervalVal(int limit) {
         setRequestIntervals(limit);
+    }
+
+    public Map<String, Page> getListOfPages() {
+        return listOfPages;
     }
 
     private void showDebugInfo(String startURL, long period) {

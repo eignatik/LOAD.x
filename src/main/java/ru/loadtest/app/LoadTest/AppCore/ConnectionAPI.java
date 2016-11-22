@@ -82,6 +82,10 @@ public class ConnectionAPI extends Thread {
         return url;
     }
 
+    public static Map<String, Page> getSitePages() {
+        return sitePages;
+    }
+
     private int getRandomValue(int size) {
         return random.nextInt(size);
     }
