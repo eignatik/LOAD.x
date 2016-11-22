@@ -46,7 +46,6 @@ public class ConnectionAPI extends Thread {
         int interval = random.nextInt(topRange);
         try {
             Thread.sleep(interval);
-            logger.info(interval + " sleep interval Thread: " + Thread.currentThread().getName());
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

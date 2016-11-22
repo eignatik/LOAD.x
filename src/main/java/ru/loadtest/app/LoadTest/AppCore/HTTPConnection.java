@@ -75,7 +75,6 @@ public class HTTPConnection {
         String entityContent = "";
         try (CloseableHttpResponse response = httpClient.execute(request)) {
             entityContent = getEntityContentFromResponse(response);
-            logger.info(address  + " Thread (" + Thread.currentThread().getName() + ")");
         } catch (IOException e) {
             logger.error("\nCan't get content from " + address + "\n");
         }

@@ -43,7 +43,7 @@ public class Page {
         if(links.size() == 0) {
             return "";
         }
-        int index = random.nextInt(links.size()-1);
+        int index = (links.size() == 1)? 1 : random.nextInt(links.size()-1);
         return links.get(index);
     }
 
