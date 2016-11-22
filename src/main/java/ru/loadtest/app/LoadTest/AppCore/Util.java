@@ -19,7 +19,7 @@ public class Util {
         workURL = removeProtocols(URL);
     }
 
-    private static String removeProtocols(String URL) {
+    public static String removeProtocols(String URL) {
         return URL.replaceAll("http://|https://|www.", "");
     }
 }

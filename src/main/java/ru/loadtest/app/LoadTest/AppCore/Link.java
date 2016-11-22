@@ -8,7 +8,7 @@ public class Link {
         this.URL = URL;
     }
 
-    String getURL() {
+    public String getURL() {
         return this.URL;
     }
 
@@ -33,5 +33,13 @@ public class Link {
         int result = URL != null ? URL.hashCode() : 0;
         result = 31 * result + reqCount;
         return result;
+    }
+
+    @Override
+    public String toString() {
+        return "\"Link\": {" +
+                "\"URL\": \"" + URL + "\"" +
+                ", \"reqCount\": \"" + reqCount + "\"" +
+                '}';
     }
 }

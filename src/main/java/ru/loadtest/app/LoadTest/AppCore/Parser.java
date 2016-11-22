@@ -23,7 +23,7 @@ public class Parser {
             String currentLink = link.attr("href");
             if (!currentLink.isEmpty() && isLink(currentLink)) {
                 if (!hasSameLink(listOfLinks, currentLink)) {
-                    listOfLinks.add(link.attr("href"));
+                    listOfLinks.add(new Link(link.attr("href")));
                 }
             }
         }
@@ -36,8 +36,8 @@ public class Parser {
 
     private static boolean hasSameLink(List<Link> list, String currentLink) {
         boolean hasLink = false;
-        for (String link : list) {
-            hasLink = link.contains(currentLink);
+        for (Link link : list) {
+            hasLink = link.getURL().contains(currentLink);
         }
         return hasLink;
     }
