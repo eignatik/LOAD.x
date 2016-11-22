@@ -15,8 +15,8 @@ import static org.jsoup.Jsoup.*;
 public class Parser {
     public static final Logger logger = LogManager.getLogger(Parser.class.getName());
 
-    public static List<String> getLinksFromHTML(String HTMLString) {
-        List<String> listOfLinks = new ArrayList<>();
+    public static List<Link> getLinksFromHTML(String HTMLString) {
+        List<Link> listOfLinks = new ArrayList<>();
         Document html = parse(HTMLString);
         Elements links = html.select("a[href]");
         for (Element link : links) {
@@ -34,7 +34,7 @@ public class Parser {
         return URL.charAt(0) != '#' && !URL.contains("mailto:");
     }
 
-    private static boolean hasSameLink(List<String> list, String currentLink) {
+    private static boolean hasSameLink(List<Link> list, String currentLink) {
         boolean hasLink = false;
         for (String link : list) {
             hasLink = link.contains(currentLink);

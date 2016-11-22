@@ -9,7 +9,7 @@ import java.util.Random;
 
 public class Page {
     private String URL;
-    private List<String> links;
+    private List<Link> links;
     private long requestsTimeSum;
     private long requestCount;
     private long maxRequest;
