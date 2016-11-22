@@ -10,10 +10,11 @@ import java.util.Random;
 public class Page {
     private String URL;
     private List<String> links;
-    private int requestCount;
-    private int maxRequest;
-    private int minRequest;
-    private int avgRequest;
+    private long requestsTimeSum;
+    private long requestCount;
+    private long maxRequest;
+    private long minRequest;
+    private long avgRequest;
 
     private Random random;
 
@@ -73,7 +74,7 @@ public class Page {
      *
      * @return get requests count
      */
-    public int getRequestCount() {
+    public long getRequestCount() {
         return requestCount;
     }
 
@@ -81,7 +82,7 @@ public class Page {
      * get max request value in ms
      * @return
      */
-    public int getMaxRequest() {
+    public long getMaxRequest() {
         return maxRequest;
     }
 
@@ -89,7 +90,7 @@ public class Page {
      * get min request value in ms
      * @return
      */
-    public int getMinRequest() {
+    public long getMinRequest() {
         return minRequest;
     }
 
@@ -97,7 +98,36 @@ public class Page {
      * get average request value in ms
      * @return
      */
-    public int getAvgRequest() {
+    public long getAvgRequest() {
         return avgRequest;
     }
+
+    public void addRequest(long requestTime) {
+        this.requestsTimeSum += requestTime;
+        requestCount++;
+        calculateStatistic(requestTime);
+    }
+
+
+    private void calculateStatistic(long requestTime) {
+        changeMinAndMax(requestTime);
+        changeAverage();
+    }
+
+    private void changeMinAndMax(long requestTime) {
+        if (requestCount == 1) {
+            maxRequest = requestTime;
+            minRequest = requestTime;
+            return;
+        }
+        maxRequest = (requestTime > maxRequest)? requestTime : maxRequest;
+        minRequest = (requestTime < minRequest)? requestTime : minRequest;
+    }
+
+    private void changeAverage() {
+        avgRequest = requestsTimeSum / requestCount;
+    }
+
+
+
 }
