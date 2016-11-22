@@ -1,9 +1,13 @@
 package ru.loadtest.app.LoadTest;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import ru.loadtest.app.LoadTest.AppCore.ConnectionAPI;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static ru.loadtest.app.LoadTest.AppCore.ConnectionAPI.*;
 
 /**
  * The class provide you several public methods to operate with LoadTest Application. Use this class in your applications.
@@ -13,6 +17,7 @@ import java.util.List;
  * Use other constructors if you want to get access to remote web-sites.
  */
 public class LoadTestAPI {
+    public static final Logger logger = LogManager.getLogger(LoadTestAPI.class.getName());
     private String URL;
     private int port = 8802;
 
@@ -34,6 +39,7 @@ public class LoadTestAPI {
      * @param startURL This is the first point of exploring. Explore is started from address.zone if @param startURL is empty string.
      */
     public void executeRandomTest(String startURL) {
+        showDebugInfo(startURL, getTimeout());
         ConnectionAPI connection = new ConnectionAPI(this.URL, startURL);
         connection.start();
     }
@@ -43,7 +49,8 @@ public class LoadTestAPI {
      * @param timeout values in seconds that set timeout for testing time
      */
     public void executeRandomTest(String startURL, long timeout) {
-        ConnectionAPI.setTimeout(timeout);
+        showDebugInfo(startURL, timeout);
+        setTimeout(timeout);
         ConnectionAPI connection = new ConnectionAPI(this.URL, startURL);
         connection.start();
     }
@@ -54,8 +61,9 @@ public class LoadTestAPI {
      * @param timeout value in seconds that set timeout for testing time
      */
     public void executeRandomTest(String startURL, long timeout, int usersCount) {
+        showDebugInfo(startURL, timeout);
         List<ConnectionAPI> threads = new ArrayList<>();
-        ConnectionAPI.setTimeout(timeout);
+        setTimeout(timeout);
         for (int i = 0; i < usersCount; i++) {
             threads.add(new ConnectionAPI(this.URL, startURL));
         }
@@ -69,6 +77,11 @@ public class LoadTestAPI {
      * @param limit value in mileseconds
      */
     public void setMaxIntervalVal(int limit) {
-        ConnectionAPI.setRequestIntervals(limit);
+        setRequestIntervals(limit);
+    }
+
+    private void showDebugInfo(String startURL, long period) {
+        logger.info("Current work URL is " + this.URL + " Exploring starts from " + startURL + "/");
+        logger.info("Timeout in " + (period/1000)/60 + " min. (" + period/1000 + " sec.)");
     }
 }
