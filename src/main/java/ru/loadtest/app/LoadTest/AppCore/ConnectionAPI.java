@@ -4,21 +4,27 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class ConnectionAPI extends Thread {
     public static final Logger logger = LogManager.getLogger(ConnectionAPI.class.getName());
+
     private Random random = new Random();
     private HTTPConnection connection;
-    private List<Page> visitedPages = new LinkedList<>();
+    private static Map<String, Page> sitePages = new ConcurrentHashMap<>();
     private String baseURL;
-    private String startURL;
-    private static long period = 300000;
+    private String URL;
+    private long requestTime;
+
+    private static long timeout = 300000;
+    private static int topRange = 10000;
 
     public ConnectionAPI(String baseURL, String startURL) {
         this.baseURL = baseURL;
-        this.startURL = startURL;
+        this.URL = startURL;
+        Util.setWorkURL(this.baseURL);
     }
-    
+
     @Override
     public void run() {
         startExplore();
@@ -26,41 +32,76 @@ public class ConnectionAPI extends Thread {
 
     private void startExplore() {
         connection = new HTTPConnection(this.baseURL);
-        Util.setWorkURL(this.baseURL);
         long startTime = System.currentTimeMillis();
-        long currentTime;
-        while(true) {
+        long currentTime = 0;
+        while (currentTime <= timeout) {
             currentTime = System.currentTimeMillis() - startTime;
-            if(currentTime > this.period){
-                logger.info("Timeout. (" + currentTime + ")");
-                break;
-            }
+            sleepByCondition();
             explore();
+        }
+        logger.info("Timeout. (" + currentTime + ")");
+    }
 
+    private void sleepByCondition() {
+        int interval = random.nextInt(topRange);
+        try {
+            Thread.sleep(interval);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
     }
 
-    private void explore(){
-        String htmlPage = connection.getHTMLPageByURL(this.startURL);
-        visitedPages.add(new Page(this.startURL));
+    private void explore() {
+        requestTime = System.currentTimeMillis();
+        String htmlPage = connection.getHTMLPageByURL(this.URL);
+        requestTime = System.currentTimeMillis() - requestTime;
+        setNextLink(htmlPage);
+    }
+
+    private void setNextLink(String htmlPage) {
+        if (sitePages.containsKey(this.URL)) {
+            sitePages.get(this.URL).addRequest(requestTime);
+            this.URL = sitePages.get(this.URL).getRandomLink();
+        } else {
+            this.URL = getNextParsedLink(htmlPage);
+        }
+    }
+
+    private String getNextParsedLink(String htmlPage) {
         List<String> links = Parser.getLinksFromHTML(htmlPage);
-        if(links.isEmpty()) {
-            this.startURL = "";
+        String url;
+        sitePages.put(this.URL, new Page(this.URL, links));
+        sitePages.get(this.URL).addRequest(requestTime);
+        if (links.isEmpty()) {
+            url = "";
         } else {
             int index = getRandomValue(links.size());
-            this.startURL = links.get(index);
+            url = links.get(index);
         }
+        return url;
+    }
+
+    public static Map<String, Page> getSitePages() {
+        return sitePages;
     }
 
     private int getRandomValue(int size) {
         return random.nextInt(size);
     }
 
-    public List<Page> getVisitedPages() {
-        return visitedPages;
+    /**
+     * Set timeout in seconds
+     * @param timeout values in seconds
+     */
+    public static void setTimeout(long timeout) {
+        ConnectionAPI.timeout = timeout*1000;
     }
 
-    public static void setTimeout(long timeout) {
-        period = timeout;
+    public static long getTimeout() {
+        return timeout;
+    }
+
+    public static void setRequestIntervals(int topLimit) {
+        topRange = topLimit;
     }
 }

@@ -8,8 +8,10 @@ public class Main {
     public static final Logger logger = LogManager.getLogger(Main.class.getName());
 
     public static void main(String[] args) {
-        LoadTestAPI test = new LoadTestAPI("http://wikipedia.org");
+        LoadTestAPI test = new LoadTestAPI("http://google.com");
 //        test.executeRandomTest("");
-        test.executeRandomTest("", 10000, 10);
+        test.setMaxIntervalVal(2000);
+        test.executeRandomTest("", 60, 5);
+        test.printStatistic();
     }
 }

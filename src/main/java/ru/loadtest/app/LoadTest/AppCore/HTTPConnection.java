@@ -16,6 +16,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 
 import static ru.loadtest.app.LoadTest.AppCore.Util.*;
 
@@ -47,25 +49,19 @@ public class HTTPConnection {
     }
 
     String getHTMLPageByURL(String address) {
+        address = getEncodedAddress(address);
         return getHTTPEntityContent(appendFullPath(address));
     }
 
-    private String getHTTPEntityContent(String address) {
-        HttpGet request = new HttpGet(address);
-        request.setConfig(requestConfig);
-        String entityContent = "";
-        try (CloseableHttpResponse response = httpClient.execute(request, context)) {
-            entityContent = getEntityContentFromResponse(response);
-            logger.info(address);
-        } catch (IOException e) {
-            logger.error("\nCan't get content from " + address + "\n");
+    private String getEncodedAddress(String address) {
+        try {
+            address = URLEncoder.encode(address, "UTF-8");
+        } catch(UnsupportedEncodingException e) {
+            logger.error(e.getMessage());
+        } catch(Exception e) {
+            logger.error(e.getMessage());
         }
-        return entityContent;
-    }
-
-    private String getEntityContentFromResponse(CloseableHttpResponse response) throws IOException {
-        HttpEntity entity = response.getEntity();
-        return EntityUtils.toString(entity);
+        return address;
     }
 
     private String appendFullPath(String address) {
@@ -81,6 +77,26 @@ public class HTTPConnection {
         path.append(address);
         return path.toString();
     }
+
+
+
+    private String getHTTPEntityContent(String address) {
+        HttpGet request = new HttpGet(address);
+        request.setConfig(requestConfig);
+        String entityContent = "";
+        try (CloseableHttpResponse response = httpClient.execute(request, context)) {
+            entityContent = getEntityContentFromResponse(response);
+        } catch (IOException e) {
+            logger.error("\nCan't get content from " + address + "\n");
+        }
+        return entityContent;
+    }
+
+    private String getEntityContentFromResponse(CloseableHttpResponse response) throws IOException {
+        HttpEntity entity = response.getEntity();
+        return EntityUtils.toString(entity);
+    }
+
 
     String getBaseAddress() {
         return baseAddress;
