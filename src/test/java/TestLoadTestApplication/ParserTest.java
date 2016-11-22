@@ -2,6 +2,7 @@ package TestLoadTestApplication;
 
 import TestLoadTestApplication.ResourceGetter.HTMLGetter;
 import org.junit.Test;
+import ru.loadtest.app.LoadTest.AppCore.Link;
 
 import java.util.Collection;
 
@@ -14,7 +15,7 @@ public class ParserTest {
 
     @Test
     public void parseLinkWithCorrectView() {
-        String result = getLinksFromHTML(HTMLGetter.getCorrectViewHTML()).get(0);
+        String result = getLinksFromHTML(HTMLGetter.getCorrectViewHTML()).get(0).getURL();
         assertEquals(result, "http://testlink.zone");
     }
 
@@ -38,28 +39,28 @@ public class ParserTest {
 
     @Test
     public void parseLinkWithShortLink() {
-        String result = getLinksFromHTML(HTMLGetter.getShortLinkHTML()).get(0);
+        String result = getLinksFromHTML(HTMLGetter.getShortLinkHTML()).get(0).getURL();
         assertEquals(result, "/testlink.zone");
     }
 
     @Test
     public void parseLinkFromBigHtml() {
-        String result = getLinksFromHTML(HTMLGetter.getLinkFromBigHTML()).get(0);
+        String result = getLinksFromHTML(HTMLGetter.getLinkFromBigHTML()).get(0).getURL();
         assertEquals(result, "link");
     }
 
     @Test
     public void parseLinksFromBigHtml() {
-        Collection<String> list = getLinksFromHTML(HTMLGetter.getLinksFromBigHTML());
+        Collection<Link> list = getLinksFromHTML(HTMLGetter.getLinksFromBigHTML());
         assertTrue(list.size() == 1);
-        for (String result : list) {
-            assertEquals(result, "link");
+        for (Link result : list) {
+            assertEquals(result.getURL(), "link");
         }
     }
 
     @Test
     public void parseLinkWithDifficultLinkTag() {
-        String result = getLinksFromHTML(HTMLGetter.getDifficultLinkHTML()).get(0);
+        String result = getLinksFromHTML(HTMLGetter.getDifficultLinkHTML()).get(0).getURL();
         assertEquals(result, "http://testlink.zone");
     }
 
@@ -76,7 +77,7 @@ public class ParserTest {
 
     @Test
     public void parseLinksFromRealPage() {
-        Collection<String> list = getLinksFromHTML(HTMLGetter.getLinksFromRealPage());
+        Collection<Link> list = getLinksFromHTML(HTMLGetter.getLinksFromRealPage());
         assertTrue(list.size() == 9);
     }
 }
