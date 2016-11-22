@@ -4,17 +4,19 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class ConnectionAPI extends Thread {
     public static final Logger logger = LogManager.getLogger(ConnectionAPI.class.getName());
 
     private Random random = new Random();
     private HTTPConnection connection;
-    private Map<String, Page> sitePages = new HashMap<>();
+    private static Map<String, Page> sitePages = new ConcurrentHashMap<>();
     private String baseURL;
     private String URL;
+    private long requestTime;
 
-    private static long period = 300000;
+    private static long timeout = 300000;
     private static int topRange = 10000;
 
     public ConnectionAPI(String baseURL, String startURL) {
@@ -30,11 +32,9 @@ public class ConnectionAPI extends Thread {
 
     private void startExplore() {
         connection = new HTTPConnection(this.baseURL);
-        logger.info("Current work URL is " + this.baseURL + " Exploring starts from " + this.URL + "/");
-        logger.info("Timeout in " + (period/1000)/60 + " min. (" + period/1000 + " sec.)");
         long startTime = System.currentTimeMillis();
         long currentTime = 0;
-        while (currentTime <= period) {
+        while (currentTime <= timeout) {
             currentTime = System.currentTimeMillis() - startTime;
             sleepByCondition();
             explore();
@@ -46,15 +46,22 @@ public class ConnectionAPI extends Thread {
         int interval = random.nextInt(topRange);
         try {
             Thread.sleep(interval);
-            logger.info(interval + " sleep interval");
+            logger.info(interval + " sleep interval Thread: " + Thread.currentThread().getName());
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
     }
 
     private void explore() {
+        requestTime = System.currentTimeMillis();
         String htmlPage = connection.getHTMLPageByURL(this.URL);
+        requestTime = System.currentTimeMillis() - requestTime;
+        setNextLink(htmlPage);
+    }
+
+    private void setNextLink(String htmlPage) {
         if (sitePages.containsKey(this.URL)) {
+            sitePages.get(this.URL).addRequest(requestTime);
             this.URL = sitePages.get(this.URL).getRandomLink();
         } else {
             this.URL = getNextParsedLink(htmlPage);
@@ -65,6 +72,7 @@ public class ConnectionAPI extends Thread {
         List<String> links = Parser.getLinksFromHTML(htmlPage);
         String url;
         sitePages.put(this.URL, new Page(this.URL, links));
+        sitePages.get(this.URL).addRequest(requestTime);
         if (links.isEmpty()) {
             url = "";
         } else {
@@ -80,10 +88,14 @@ public class ConnectionAPI extends Thread {
 
     /**
      * Set timeout in seconds
-     * @param timeout
+     * @param timeout values in seconds
      */
     public static void setTimeout(long timeout) {
-        period = timeout*1000;
+        ConnectionAPI.timeout = timeout*1000;
+    }
+
+    public static long getTimeout() {
+        return timeout;
     }
 
     public static void setRequestIntervals(int topLimit) {
