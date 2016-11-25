@@ -76,8 +76,8 @@ public class ConnectionAPI extends Thread {
         if (links.isEmpty()) {
             url = "";
         } else {
-            int index = getRandomValue(links.size());
-            url = links.get(index).getURL();
+//            int index = getRandomValue(links.size());
+            url =  sitePages.get(this.URL).getRandomLink(); //links.get(index).getURL();
         }
         return url;
     }
