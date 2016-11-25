@@ -16,6 +16,10 @@ public class Link {
         return this.reqCount;
     }
 
+    void incrementReqCount() {
+        this.reqCount ++;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
