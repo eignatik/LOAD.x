@@ -52,7 +52,6 @@ public class ConnectionAPI extends Thread {
     }
 
     private void explore() {
-        logger.info(this.URL);
         requestTime = System.currentTimeMillis();
         String htmlPage = connection.getHTMLPageByURL(this.URL);
         requestTime = System.currentTimeMillis() - requestTime;

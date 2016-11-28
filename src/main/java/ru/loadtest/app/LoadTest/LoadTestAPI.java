@@ -72,20 +72,24 @@ public class LoadTestAPI {
         for (int i = 0; i < usersCount; i++) {
             threads.add(new ConnectionAPI(this.URL, startURL));
         }
+        logger.info("All threads are created");
         for (ConnectionAPI thread : threads) {
             thread.start();
         }
+        logger.info("All threads are started");
+        System.out.println("\nProcessing...\n");
         listOfPages = getSitePages();
     }
 
     public void printStatistic() {
         try {
-            Thread.sleep(ConnectionAPI.getTimeout() + 3000);
+            Thread.sleep(ConnectionAPI.getTimeout() + 15000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
         RequestsStatistic requestsStatistic = new RequestsStatistic(listOfPages);
-        requestsStatistic.printPagesStatistic();
+//        requestsStatistic.printPagesStatistic();
+        requestsStatistic.printStatisticTable();
     }
 
     /**
