@@ -91,7 +91,6 @@ public class ConnectionAPI extends Thread {
             this.URL = getRandomLinkFromList(littleRequestCountLinks);
             sitePages.get(this.URL).addRequest(requestTime);
         }
-
     }
 
     private void fillQueue() {
@@ -147,9 +146,9 @@ public class ConnectionAPI extends Thread {
         sitePages.put(this.URL, new Page(this.URL, links));
         sitePages.get(this.URL).addRequest(requestTime);
         if (links.isEmpty()) {
-            url = "";
+            url = getRandomLinkToRedirect();
         } else {
-            url =  sitePages.get(this.URL).getRandomLink(); //links.get(index).getURL();
+            url =  sitePages.get(this.URL).getRandomLink();
         }
         return url;
     }
