@@ -49,7 +49,7 @@ public class HTTPConnection {
     }
 
     String getHTMLPageByURL(String address) {
-        address = getEncodedAddress(address);
+        address = getEncodedAddress(removeProtocols(address));
         return getHTTPEntityContent(appendFullPath(address));
     }
 

@@ -7,8 +7,7 @@ public class Util {
     private static String workURL;
 
     public static boolean isLinkInDomain(String URL) {
-        boolean result = URL.contains(workURL) || URL.charAt(0) == '/' || URL.matches("^(?!http://|https://|www\u002e|#).*");
-        return result;
+        return URL.contains(workURL) || URL.charAt(0) == '/' || URL.matches("^(?!http://|https://|www\u002e|#).*");
     }
 
     public static boolean isLinkContainProtocols(String address) {
