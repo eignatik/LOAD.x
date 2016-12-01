@@ -32,4 +32,19 @@ public class RequestsStatistic {
             logger.error("Something went wrong. \n Results didn't recieved and can't be showed");
         }
     }
+
+    public void printStatisticTable() {
+        if (!pageMap.isEmpty()) {
+            Set<Map.Entry<String, Page>> pageSet = pageMap.entrySet();
+            logger.info("RESULT STATISTIC");
+            for (Map.Entry<String, Page> element : pageSet) {
+                StringBuilder result = new StringBuilder();
+                result.append(element.getValue().getURL() + "\t")
+                        .append(element.getValue().getRequestCount() + "\n");
+                System.out.println(result.toString());
+            }
+        } else {
+            logger.error("Something went wrong. \n Results didn't recieved and can't be showed");
+        }
+    }
 }

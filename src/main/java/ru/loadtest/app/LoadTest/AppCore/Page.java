@@ -3,15 +3,15 @@ package ru.loadtest.app.LoadTest.AppCore;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
+import java.util.concurrent.PriorityBlockingQueue;
 
-public class Page {
+public class Page implements Comparable<Page> {
     private String URL;
-    private List<String> links;
-    private long requestsTimeSum;
+    private List<Link> links;
+    private boolean enabled = true;
     private long requestCount;
+    private long requestsTimeSum;
     private long maxRequest;
     private long minRequest;
     private long avgRequest;
@@ -22,29 +22,75 @@ public class Page {
         this.URL = URL;
     }
 
-    Page(String URL, List<String> links) {
+    Page(String URL, List<Link> links) {
         this.URL = URL;
         this.links = links;
+        if (links.size() == 0) {
+            links.add(new Link(""));
+        }
     }
 
     public String getURL() {
         return URL;
     }
 
-    public List<String> getLinks() {
+    public boolean getEnabled() {
+        return this.enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    public List<Link> getLinks() {
         return links;
     }
 
     public String getLinkByIndex(int index) {
-        return links.get(index);
+        return links.get(index).getURL();
     }
 
-    public String getRandomLink() {
+
+    /**
+     *
+      * @return random link from page links list
+     */
+    String getRandomLink() {
+        return getRandomLinkFromList(links);
+    }
+
+    private String getRandomLinkFromList(List<Link> links) {
         if(links.size() == 0) {
             return "";
         }
-        int index = (links.size() == 1)? 1 : random.nextInt(links.size()-1);
-        return links.get(index);
+        int index = (links.size() == 1)? 0 : random.nextInt(links.size()-1);
+        return links.get(index).getURL();
+    }
+
+    public void addRequest(long requestTime) {
+        this.requestsTimeSum += requestTime;
+        requestCount++;
+        calculateStatistic(requestTime);
+    }
+
+
+    private void calculateStatistic(long requestTime) {
+        changeMinAndMax(requestTime);
+        changeAverage();
+    }
+
+    private void changeMinAndMax(long requestTime) {
+        if (requestCount == 1) {
+            maxRequest = requestTime;
+            minRequest = requestTime;
+            return;
+        }
+        maxRequest = (requestTime > maxRequest)? requestTime : maxRequest;
+        minRequest = (requestTime < minRequest)? requestTime : minRequest;
+    }
+
+    private void changeAverage() {
+        avgRequest = requestsTimeSum / requestCount;
     }
 
     @Override
@@ -68,6 +114,8 @@ public class Page {
                 .append(links)
                 .toHashCode();
     }
+
+
 
     /**
      *
@@ -101,32 +149,8 @@ public class Page {
         return avgRequest;
     }
 
-    public void addRequest(long requestTime) {
-        this.requestsTimeSum += requestTime;
-        requestCount++;
-        calculateStatistic(requestTime);
+    @Override
+    public int compareTo(Page page) {
+        return (int)(this.requestCount - page.requestCount);
     }
-
-
-    private void calculateStatistic(long requestTime) {
-        changeMinAndMax(requestTime);
-        changeAverage();
-    }
-
-    private void changeMinAndMax(long requestTime) {
-        if (requestCount == 1) {
-            maxRequest = requestTime;
-            minRequest = requestTime;
-            return;
-        }
-        maxRequest = (requestTime > maxRequest)? requestTime : maxRequest;
-        minRequest = (requestTime < minRequest)? requestTime : minRequest;
-    }
-
-    private void changeAverage() {
-        avgRequest = requestsTimeSum / requestCount;
-    }
-
-
-
 }
