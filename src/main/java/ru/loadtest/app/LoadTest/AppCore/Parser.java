@@ -31,14 +31,14 @@ public class Parser {
     }
 
     private static boolean isLink(String URL) {
-        return URL.charAt(0) != '#' && !URL.contains("mailto:");
+        boolean isURLLink = true;
+        if (URL.length() >= 5) {
+            isURLLink = !URL.substring(0, 5).equals("//www");
+        }
+        return URL.charAt(0) != '#' && !URL.contains("mailto:") && isURLLink;
     }
 
     private static boolean hasSameLink(List<Link> list, String currentLink) {
-        boolean hasLink = false;
-        for (Link link : list) {
-            hasLink = link.getURL().contains(currentLink);
-        }
-        return hasLink;
+        return  list.contains(new Link(currentLink));
     }
 }
