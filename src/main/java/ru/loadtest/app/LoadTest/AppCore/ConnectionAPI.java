@@ -41,7 +41,6 @@ public class ConnectionAPI extends Thread {
             sleepByCondition();
             explore();
         }
-        logger.info("Timeout. (" + currentTime + ")");
     }
 
     private void sleepByCondition() {
