@@ -107,4 +107,13 @@ public class UtilTest {
         boolean result = isLinkContainProtocols("httpp://link.test/");
         assertFalse(result);
     }
+
+    @Test
+    public void isRemoveProtocolsCorrect() {
+        assertEquals(removeProtocols("http://google.com/"), "google.com/");
+        assertEquals(removeProtocols("https://google.com/"), "google.com/");
+        assertEquals(removeProtocols("www.google.com/"), "google.com/");
+        assertEquals(removeProtocols("http://www.google.com/"), "google.com/");
+        assertEquals(removeProtocols("https://www.google.com/"), "google.com/");
+    }
 }
