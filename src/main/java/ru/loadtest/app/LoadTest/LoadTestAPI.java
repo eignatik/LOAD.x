@@ -4,6 +4,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import ru.loadtest.app.LoadTest.AppCore.ConnectionAPI;
 import ru.loadtest.app.LoadTest.AppCore.Page;
+import ru.loadtest.app.LoadTest.AppCore.Progress;
 import ru.loadtest.app.LoadTest.AppCore.Statistic.RequestsStatistic;
 
 import java.util.ArrayList;
@@ -77,16 +78,13 @@ public class LoadTestAPI {
             thread.start();
         }
         logger.info("All threads are started");
-        System.out.println("\nProcessing...\n");
+        Runnable runnable = new Progress(timeout*1000);
+        runnable.run();
+        System.out.println("\nProcessing with data...\n");
         listOfPages = getSitePages();
     }
 
     public void printStatistic() {
-        try {
-            Thread.sleep(ConnectionAPI.getTimeout() + 15000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
         RequestsStatistic requestsStatistic = new RequestsStatistic(listOfPages);
 //        requestsStatistic.printPagesStatistic();
         requestsStatistic.printStatisticTable();
@@ -106,6 +104,6 @@ public class LoadTestAPI {
 
     private void showDebugInfo(String startURL, long period) {
         logger.info("Current work URL is " + this.URL + " Exploring starts from " + startURL + "/");
-        logger.info("Timeout in " + (period/1000)/60 + " min. (" + period/1000 + " sec.)");
+        logger.info("Timeout in " + (period/60)/60 + " hours and " + (period/60) + " min. (" + period + " sec.)");
     }
 }
