@@ -13,19 +13,17 @@ public class Progress implements Runnable {
 
     @Override
     public void run() {
-       long time = 0;
-       long step = timeout/50;
-       while (time < timeout) {
-           try {
-               time += step;
-               Thread.sleep(step);
-               System.out.print("\rProgress: " + (time*100)/timeout + " %");
-
-//               System.out.format(pattern, (time*100)/timeout);
-           } catch (InterruptedException e) {
-               e.printStackTrace();
-           }
-       }
+        long time = 0;
+        long step = timeout / 50;
+        while (time < timeout) {
+            try {
+                time += step;
+                Thread.sleep(step);
+                System.out.print("\rProgress: " + (time * 100) / timeout + " %");
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
 }
