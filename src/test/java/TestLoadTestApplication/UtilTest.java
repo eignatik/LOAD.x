@@ -116,4 +116,25 @@ public class UtilTest {
         assertEquals(removeProtocols("http://www.google.com/"), "google.com/");
         assertEquals(removeProtocols("https://www.google.com/"), "google.com/");
     }
+
+    @Test
+    public void isShortLinkCorrect() {
+        assertTrue(isShortLink("link/test"));
+    }
+
+    @Test
+    public void isShortLinkIncorrect() {
+        assertFalse(isShortLink("http://link.ru"));
+        assertFalse(isShortLink("mailto:test@test.ru"));
+    }
+
+    @Test
+    public void isShortLinkWithoutSlashCorrect() {
+        assertTrue(isShortLinkWithoutSlash("link/without/firstslash"));
+    }
+
+    @Test
+    public void isShortWithoutSlashIncorrect() {
+        assertFalse(isShortLinkWithoutSlash("/link/with/firstslash"));
+    }
 }
