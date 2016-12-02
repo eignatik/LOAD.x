@@ -85,9 +85,7 @@ public class LoadTestAPI {
     }
 
     public void printStatistic() {
-        RequestsStatistic requestsStatistic = new RequestsStatistic(listOfPages);
-//        requestsStatistic.printPagesStatistic();
-        requestsStatistic.printStatisticTable();
+        RequestsStatistic.printStatistic();
     }
 
     /**

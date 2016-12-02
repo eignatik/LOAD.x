@@ -14,11 +14,13 @@ import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import ru.loadtest.app.LoadTest.AppCore.Statistic.RequestsStatistic;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
+import static ru.loadtest.app.LoadTest.AppCore.Statistic.RequestsStatistic.*;
 import static ru.loadtest.app.LoadTest.AppCore.Util.*;
 
 public class HTTPConnection {
@@ -78,8 +80,6 @@ public class HTTPConnection {
         return path.toString();
     }
 
-
-
     private String getHTTPEntityContent(String address) {
         HttpGet request = new HttpGet(address);
         request.setConfig(requestConfig);
@@ -87,7 +87,7 @@ public class HTTPConnection {
         try (CloseableHttpResponse response = httpClient.execute(request, context)) {
             entityContent = getEntityContentFromResponse(response);
         } catch (IOException e) {
-            logger.error("\nCan't get content from " + address + "\n");
+            addBrokenLink(address);
         }
         return entityContent;
     }
