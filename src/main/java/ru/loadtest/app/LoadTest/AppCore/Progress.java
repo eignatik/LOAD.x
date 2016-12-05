@@ -14,7 +14,7 @@ public class Progress implements Runnable {
     @Override
     public void run() {
         long time = 0;
-        long step = timeout / 50;
+        long step = timeout / 100;
         while (time < timeout) {
             try {
                 time += step;

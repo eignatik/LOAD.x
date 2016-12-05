@@ -14,6 +14,14 @@ public class Util {
         return address.contains("https://") || address.contains("http://");
     }
 
+    public static boolean isShortLink(String address) {
+        return !address.contains("http") && !address.contains("mailto");
+    }
+
+    public static boolean isShortLinkWithoutSlash(String address) {
+        return !address.isEmpty() && address.charAt(0) != '/' && !isLinkContainProtocols(address);
+    }
+
     public static void setWorkURL(String URL) {
         workURL = removeProtocols(URL);
     }

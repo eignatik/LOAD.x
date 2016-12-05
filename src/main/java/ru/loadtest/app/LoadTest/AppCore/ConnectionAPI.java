@@ -2,10 +2,13 @@ package ru.loadtest.app.LoadTest.AppCore;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import ru.loadtest.app.LoadTest.AppCore.Statistic.RequestsStatistic;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.PriorityBlockingQueue;
+
+import static ru.loadtest.app.LoadTest.AppCore.Statistic.RequestsStatistic.*;
 
 public class ConnectionAPI extends Thread {
     public static final Logger logger = LogManager.getLogger(ConnectionAPI.class.getName());
@@ -36,7 +39,7 @@ public class ConnectionAPI extends Thread {
         connection = new HTTPConnection(this.baseURL);
         long startTime = System.currentTimeMillis();
         long currentTime = 0;
-        while (currentTime <= timeout) {
+        while (currentTime < timeout) {
             currentTime = System.currentTimeMillis() - startTime;
             sleepByCondition();
             explore();
@@ -56,7 +59,10 @@ public class ConnectionAPI extends Thread {
         requestTime = System.currentTimeMillis();
         String htmlPage = connection.getHTMLPageByURL(this.URL);
         requestTime = System.currentTimeMillis() - requestTime;
+        String URLToCollect = this.URL;
         setNextLink(htmlPage);
+        collect(URLToCollect, sitePages.get(URLToCollect));
+        incrementVisitedPagesCounter();
     }
 
     /**
@@ -141,6 +147,7 @@ public class ConnectionAPI extends Thread {
 
     private String getNextParsedLink(String htmlPage) {
         List<Link> links = Parser.getLinksFromHTML(htmlPage);
+        addParsedPagesCount(links.size());
         String url;
         sitePages.put(this.URL, new Page(this.URL, links));
         sitePages.get(this.URL).addRequest(requestTime);
