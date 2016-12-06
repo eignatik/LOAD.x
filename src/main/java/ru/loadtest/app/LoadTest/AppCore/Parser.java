@@ -6,14 +6,87 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 import static org.jsoup.Jsoup.*;
 
 public class Parser {
     public static final Logger logger = LogManager.getLogger(Parser.class.getName());
+
+    private static HTTPConnection connection;
+    private static String currentURL;
+    private static Map<String, Page> pageList = new HashMap<>();
+    private static Random random = new Random();
+    private static final long DEFAULT_TIMEOUT = 60000;
+
+    /**
+     * Parse links from the site during timeout
+     * @param timeout in seconds
+     * @return
+     */
+    public static Map<String, Page> getCollectedLinks(String url, long timeout) {
+        return collect(url, timeout);
+    }
+
+    /**
+     * Parse links from the site during default timeout in 60 seconds
+     * @return
+     */
+    public static Map<String, Page> getCollectedLinks(String url) {
+        return collect(url, DEFAULT_TIMEOUT);
+    }
+
+    private static Map<String, Page> collect(String url, long time) {
+        currentURL = "";
+        connection = new HTTPConnection(url);
+        long startTime = System.currentTimeMillis();
+        long currentTime = 0;
+        while (currentTime < time) {
+            currentTime = System.currentTimeMillis() - startTime;
+            getLinks();
+        }
+        return pageList;
+    }
+
+    private static void getLinks() {
+        String htmlPage = connection.getHTMLPageByURL(currentURL);
+        currentURL = setNextURL(htmlPage, currentURL);
+    }
+
+    private static String setNextURL(String htmlPage, String address) {
+        if (pageList.containsKey(address)) {
+            address = pageList.get(address).getRandomLink();
+        } else {
+            address = getNextParsedLink(htmlPage);
+        }
+        return address;
+    }
+
+    private static String getNextParsedLink(String html) {
+        List<Link> links = getLinksFromHTML(html);
+        String url;
+        pageList.put(currentURL, new Page(currentURL, links));
+        if (links.isEmpty()) {
+            url = getRandomLinkToRedirect();
+        } else {
+            url = pageList.get(currentURL).getRandomLink();
+        }
+        return url;
+    }
+
+    private static String getRandomLinkToRedirect() {
+        int index = random.nextInt(pageList.size());
+        int i = 0;
+        Page page = null;
+        Set<Map.Entry<String, Page>> sitePagesSet = pageList.entrySet();
+        for (Map.Entry<String, Page> element : sitePagesSet) {
+            if (i == index) {
+                page = element.getValue();
+                break;
+            }
+        }
+        return page!=null? page.getURL() : "";
+    }
 
     public static List<Link> getLinksFromHTML(String HTMLString) {
         List<Link> listOfLinks = new ArrayList<>();
