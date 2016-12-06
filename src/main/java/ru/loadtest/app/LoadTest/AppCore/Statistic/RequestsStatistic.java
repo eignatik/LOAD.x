@@ -44,6 +44,29 @@ public class RequestsStatistic {
 
     public static void printStatistic() {
         logger.info("Request statistic: { Parsed links:" + parsedPagesCounter + ", Visited links:" + visitedPagesCounter + "  (" + (double)visitedPagesCounter/parsedPagesCounter + ")" + " Broken links: "  + brokenLinks.size());
+        printTable();
+        //printBasicStatistic();
+    }
+
+    public static void addBrokenLink(String URL) {
+        brokenLinks.add(URL);
+    }
+
+    private static void printTable() {
+        if (!collectedPages.isEmpty()) {
+            Set<Map.Entry<String, Page>> pageSet = collectedPages.entrySet();
+            for (Map.Entry<String, Page> element : pageSet) {
+                StringBuilder result = new StringBuilder();
+                result.append(element.getValue().getURL() + "\t")
+                        .append(element.getValue().getRequestCount());
+                System.out.println(result.toString());
+            }
+        } else {
+            logger.error("Something went wrong. \n Results didn't recieved and can't be showed");
+        }
+    }
+
+    private static void printBasicStatistic() {
         if (!collectedPages.isEmpty()) {
             Set<Map.Entry<String, Page>> pageSet = collectedPages.entrySet();
             for (Map.Entry<String, Page> element : pageSet) {
@@ -59,12 +82,6 @@ public class RequestsStatistic {
             logger.error("Something went wrong. \n Results haven't recieved and can't be showed");
         }
     }
-
-    public static void addBrokenLink(String URL) {
-        brokenLinks.add(URL);
-    }
-
-
 
 //    public RequestsStatistic(Map<String, Page> pageMap) {
 //        this.pageMap = pageMap;

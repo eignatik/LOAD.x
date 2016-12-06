@@ -6,6 +6,7 @@ import ru.loadtest.app.LoadTest.AppCore.ConnectionAPI;
 import ru.loadtest.app.LoadTest.AppCore.Page;
 import ru.loadtest.app.LoadTest.AppCore.Progress;
 import ru.loadtest.app.LoadTest.AppCore.Statistic.RequestsStatistic;
+import ru.loadtest.app.LoadTest.AppCore.exceptions.ValueException;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -25,7 +26,6 @@ public class LoadTestAPI {
     public static final Logger logger = LogManager.getLogger(LoadTestAPI.class.getName());
     private String URL;
     private int port = 8802;
-    private Map<String, Page> listOfPages;
 
     public LoadTestAPI() {
         URL = "localhost:" + port;
@@ -40,7 +40,7 @@ public class LoadTestAPI {
     }
 
     /**
-     * Execute test with random visits of pages.
+     * Execute test with random visits of pages, one user and default timeout
      * Timeout for exploring is standart value that referenced in Core
      * @param startURL This is the first point of exploring. Explore is started from address.zone if @param startURL is empty string.
      */
@@ -48,9 +48,10 @@ public class LoadTestAPI {
         showDebugInfo(startURL, getTimeout());
         ConnectionAPI connection = new ConnectionAPI(this.URL, startURL);
         connection.start();
+        progressInfo(getTimeout());
     }
     /**
-     * Overloaded method with manual timeout
+     * Overloaded method with manual timeout, one user only
      * @param startURL This is th first point of exploring. Explore is started from address.zone if @param startUrl is empty string
      * @param timeout values in seconds that set timeout for testing time
      */
@@ -59,6 +60,7 @@ public class LoadTestAPI {
         setTimeout(timeout);
         ConnectionAPI connection = new ConnectionAPI(this.URL, startURL);
         connection.start();
+        progressInfo(timeout);
     }
 
     /**
@@ -78,10 +80,7 @@ public class LoadTestAPI {
             thread.start();
         }
         logger.info("All threads are started");
-        Runnable runnable = new Progress(timeout*1000);
-        runnable.run();
-        System.out.println("\nProcessing with data...\n");
-        listOfPages = getSitePages();
+        progressInfo(timeout);
     }
 
     public void printStatistic() {
@@ -96,12 +95,14 @@ public class LoadTestAPI {
         setRequestIntervals(limit);
     }
 
-    public Map<String, Page> getListOfPages() {
-        return listOfPages;
-    }
 
     private void showDebugInfo(String startURL, long period) {
         logger.info("Current work URL is " + this.URL + " Exploring starts from " + startURL + "/");
         logger.info("Timeout in " + (period/60)/60 + " hours and " + (period/60) + " min. (" + period + " sec.)");
     }
+     private void progressInfo(long timeout) {
+         Runnable runnable = new Progress(timeout*1000);
+         runnable.run();
+         System.out.println("\nProcessing with data...\n");
+     }
 }
