@@ -37,7 +37,7 @@ public class AppTestAPI {
         this.URL = URL;
     }
 
-    public void execute(String startURL, long timeout, int usersCount, TestType type) {
+    public void execute(long timeout, int usersCount, TestType type) {
         switch (type) {
             case LOAD:
                 executeLoad(timeout, usersCount);
