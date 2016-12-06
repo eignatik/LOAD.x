@@ -45,7 +45,8 @@ public class RequestsStatistic {
     public static void printStatistic() {
         logger.info("Request statistic: { Parsed links:" + parsedPagesCounter + ", Visited links:" + visitedPagesCounter + "  (" + (double)visitedPagesCounter/parsedPagesCounter + ")" + " Broken links: "  + brokenLinks.size());
         printTable();
-        //printBasicStatistic();
+        logger.info("Extended statistic:");
+        printBasicStatistic();
     }
 
     public static void addBrokenLink(String URL) {

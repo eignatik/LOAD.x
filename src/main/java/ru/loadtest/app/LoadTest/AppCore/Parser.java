@@ -7,6 +7,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static org.jsoup.Jsoup.*;
 
@@ -15,7 +16,7 @@ public class Parser {
 
     private static HTTPConnection connection;
     private static String currentURL;
-    private static Map<String, Page> pageList = new HashMap<>();
+    private static Map<String, Page> pageList = new ConcurrentHashMap<>();
     private static Random random = new Random();
     private static final long DEFAULT_TIMEOUT = 60000;
 
@@ -37,6 +38,7 @@ public class Parser {
     }
 
     private static Map<String, Page> collect(String url, long time) {
+        System.out.print("\nParsing... (it keeps " + time/1000 + "sec.)");
         currentURL = "";
         connection = new HTTPConnection(url);
         long startTime = System.currentTimeMillis();
@@ -45,6 +47,7 @@ public class Parser {
             currentTime = System.currentTimeMillis() - startTime;
             getLinks();
         }
+        System.out.print(".............DONE  (" + pageList.size() + " links parsed, speed is " + pageList.size()/(time/1000.0) + " links per second)\n");
         return pageList;
     }
 

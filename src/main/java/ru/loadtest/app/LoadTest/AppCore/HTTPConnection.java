@@ -33,7 +33,7 @@ public class HTTPConnection {
     private RequestConfig requestConfig;
     private static int TIMEOUT_MS = 60000;
 
-    HTTPConnection(String baseAddress) {
+    public HTTPConnection(String baseAddress) {
         this.baseAddress = baseAddress;
         cookieStore = new BasicCookieStore();
         requestConfig = RequestConfig.custom()
@@ -50,7 +50,7 @@ public class HTTPConnection {
         context.setAttribute(HttpClientContext.COOKIE_STORE, cookieStore);
     }
 
-    String getHTMLPageByURL(String address) {
+    public String getHTMLPageByURL(String address) {
         address = getEncodedAddress(removeProtocols(address));
         return getHTTPEntityContent(appendFullPath(address));
     }
@@ -98,7 +98,7 @@ public class HTTPConnection {
     }
 
 
-    String getBaseAddress() {
+    public String getBaseAddress() {
         return baseAddress;
     }
 }
