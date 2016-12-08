@@ -3,7 +3,9 @@ package ru.loadtest.app.LoadTest;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import ru.loadtest.app.LoadTest.AppCore.Progress;
-import ru.loadtest.app.LoadTest.AppCore.Statistic.RequestsStatistic;
+import ru.loadtest.app.LoadTest.AppCore.Statistic.Availability.AvailabilityStatistic;
+import ru.loadtest.app.LoadTest.AppCore.Statistic.Load.RequestsStatistic;
+import ru.loadtest.app.LoadTest.AppCore.testsModels.Availability;
 import ru.loadtest.app.LoadTest.AppCore.testsModels.Load;
 
 import java.util.ArrayList;
@@ -43,7 +45,7 @@ public class AppTestAPI {
                 executeLoad(timeout, usersCount);
                 break;
             case AVAILABILITY:
-                executeAvailability(timeout, usersCount);
+                executeAvailability();
                 break;
             case SIMULATION:
                 executeSimulation(timeout, usersCount);
@@ -69,8 +71,14 @@ public class AppTestAPI {
         System.out.print(".........DONE\nProcessing with data...\n");
     }
 
-    private void executeAvailability(long timeout, int usersCount) {
-
+    private void executeAvailability() {
+        Availability test = new Availability(this.URL, this.parsingTimeout);
+        test.execute();
+        try {
+            Thread.sleep(120000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     private void executeSimulation(long timeout, int usersCount) {
@@ -78,7 +86,8 @@ public class AppTestAPI {
     }
 
     public void printStatistic() {
-        RequestsStatistic.printStatistic();
+        AvailabilityStatistic.printStatistic();
+//        RequestsStatistic.printStatistic();
     }
 
 

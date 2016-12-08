@@ -14,13 +14,12 @@ import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import ru.loadtest.app.LoadTest.AppCore.Statistic.RequestsStatistic;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
-import static ru.loadtest.app.LoadTest.AppCore.Statistic.RequestsStatistic.*;
+import static ru.loadtest.app.LoadTest.AppCore.Statistic.Load.RequestsStatistic.*;
 import static ru.loadtest.app.LoadTest.AppCore.Util.*;
 
 public class HTTPConnection {

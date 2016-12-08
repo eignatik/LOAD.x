@@ -5,14 +5,13 @@ import org.apache.logging.log4j.Logger;
 import ru.loadtest.app.LoadTest.AppCore.HTTPConnection;
 import ru.loadtest.app.LoadTest.AppCore.Page;
 import ru.loadtest.app.LoadTest.AppCore.Parser;
-import ru.loadtest.app.LoadTest.AppCore.Statistic.RequestsStatistic;
-import ru.loadtest.app.LoadTest.AppCore.Util;
+import ru.loadtest.app.LoadTest.AppCore.Statistic.Load.RequestsStatistic;
 
 import java.util.*;
 import java.util.concurrent.PriorityBlockingQueue;
 
-import static ru.loadtest.app.LoadTest.AppCore.Statistic.RequestsStatistic.collect;
-import static ru.loadtest.app.LoadTest.AppCore.Statistic.RequestsStatistic.incrementVisitedPagesCounter;
+import static ru.loadtest.app.LoadTest.AppCore.Statistic.Load.RequestsStatistic.collect;
+import static ru.loadtest.app.LoadTest.AppCore.Statistic.Load.RequestsStatistic.incrementVisitedPagesCounter;
 import static ru.loadtest.app.LoadTest.AppCore.Util.*;
 
 /**
@@ -138,5 +137,10 @@ public class Load extends Thread implements ITest {
 
     public static void setRequestTimeTopRange(int range) {
         REQUEST_TIME_TOP_RANGE = range;
+    }
+
+    @Override
+    public void execute() {
+
     }
 }
