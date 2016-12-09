@@ -19,14 +19,12 @@ public class Availability extends Thread implements ITest {
     public static final Logger logger = LogManager.getLogger(Availability.class.getName());
 
     private static List<Page> pages;
-    private HTTPConnection connection;
+    private static String URL;
 
-    public Availability(String URL, long parsingTimeout) {
-        pages = getPageListFromMap(URL, parsingTimeout);
-        connection = new HTTPConnection(URL);
+    private Availability() {
     }
 
-    private List<Page> getPageListFromMap(String URL, long parsingTimeout) {
+    private static List<Page> getPageListFromMap(String URL, long parsingTimeout) {
         Set<Map.Entry<String, Page>> pageSet =  Parser.getCollectedLinks(URL, parsingTimeout).entrySet();
         List<Page> list = new LinkedList<>();
         for (Map.Entry<String, Page> element : pageSet) {
@@ -35,18 +33,13 @@ public class Availability extends Thread implements ITest {
         return list;
     }
 
-    @Override
-    public void execute() {
-        Thread thread = this;
-        thread.run();
-    }
-
-    @Override
-    public void run() {
+    public static void execute() {
         exploreIfPagesExist();
     }
 
-    private void exploreIfPagesExist() {
+    private static void exploreIfPagesExist() {
+        HTTPConnection connection = new HTTPConnection(URL);
+        int i = 0;
         if (pages.isEmpty()) {
             logger.error("No available links");
         } else {
@@ -58,23 +51,32 @@ public class Availability extends Thread implements ITest {
                 } else {
                     collect(page.getURL(), new PageInfo(page.getURL(), true, getPageStatus(response)));
                 }
+                System.out.print("\r Pages:" + ++i + "/" + pages.size());
             }
         }
     }
 
-    private String getPageStatus(String html) {
-        String status = "Available";
+    private static String getPageStatus(String html) {
+        String status = "Page is available";
         if (isPageFound(html)) {
             status = "Page not found (Error 404)";
         } else {
             if (html == null) {
-                status = "Unavailable";
+                status = "Page is not available";
             }
         }
         return status;
     }
 
-    private boolean isPageFound(String html) {
+    private static boolean isPageFound(String html) {
         return html.contains("not found") || html.contains("error 404");
+    }
+
+    public static void parseLinks(long parsingTimeout) {
+        pages = getPageListFromMap(URL, parsingTimeout);
+    }
+
+    public static void setURL(String url) {
+        URL = url;
     }
 }

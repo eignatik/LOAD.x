@@ -6,10 +6,9 @@ import ru.loadtest.app.LoadTest.AppCore.Progress;
 import ru.loadtest.app.LoadTest.AppCore.Statistic.Availability.AvailabilityStatistic;
 import ru.loadtest.app.LoadTest.AppCore.Statistic.Load.RequestsStatistic;
 import ru.loadtest.app.LoadTest.AppCore.testsModels.Availability;
-import ru.loadtest.app.LoadTest.AppCore.testsModels.Load;
 
-import java.util.ArrayList;
-import java.util.List;
+import static ru.loadtest.app.LoadTest.AppCore.testsModels.Availability.*;
+import static ru.loadtest.app.LoadTest.AppCore.testsModels.Load.*;
 
 /**
  * The class provide you several public methods to operate with LoadTest Application. Use this class in your applications.
@@ -22,9 +21,7 @@ public class AppTestAPI {
     public static final Logger logger = LogManager.getLogger(AppTestAPI.class.getName());
     private String URL;
     private int port = 8802;
-    public enum TestType {
-        LOAD, AVAILABILITY, SIMULATION
-    }
+
     private long parsingTimeout = 60000;
 
     public AppTestAPI() {
@@ -39,55 +36,30 @@ public class AppTestAPI {
         this.URL = URL;
     }
 
-    public void execute(long timeout, int usersCount, TestType type) {
-        switch (type) {
-            case LOAD:
-                executeLoad(timeout, usersCount);
-                break;
-            case AVAILABILITY:
-                executeAvailability();
-                break;
-            case SIMULATION:
-                executeSimulation(timeout, usersCount);
-                break;
-            default: logger.error("Test type have not selected");
-        }
-    }
-
-    private void executeLoad(long timeout, int usersCount) {
+    public void executeLoad(long timeout, int usersCount) {
         showDebugInfo(timeout);
-        Load.setPages(URL, parsingTimeout);
-        Load.setTimeout(timeout);
-        List<Load> threads = new ArrayList<>();
-        for (int i = 0; i < usersCount; i++) {
-            threads.add(new Load(this.URL));
-        }
-        logger.info(usersCount + " threads are created");
-        for (Load thread : threads) {
-            thread.start();
-        }
-        logger.info("All threads are started");
-        progressInfo(timeout);
-        System.out.print(".........DONE\nProcessing with data...\n");
+        setPages(URL, parsingTimeout);
+        setTimeout(timeout);
+        execute(usersCount, this.URL);
+        runProgress(timeout);
+        RequestsStatistic.printStatistic();
     }
 
-    private void executeAvailability() {
-        Availability test = new Availability(this.URL, this.parsingTimeout);
-        test.execute();
-        try {
-            Thread.sleep(120000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
+     public void executeAvailability() {
+        showDebugInfo(0);
+        setURL(this.URL);
+        parseLinks(this.parsingTimeout);
+        execute();
+        AvailabilityStatistic.printStatistic();
+     }
 
-    private void executeSimulation(long timeout, int usersCount) {
+    public void executeSimulation(long timeout, int usersCount) {
 
     }
 
     public void printStatistic() {
         AvailabilityStatistic.printStatistic();
-//        RequestsStatistic.printStatistic();
+        RequestsStatistic.printStatistic();
     }
 
 
@@ -96,9 +68,10 @@ public class AppTestAPI {
         logger.info("Timeout in " + (period/60)/60 + " hours and " + (period/60) + " min. (" + period + " sec.).\n All tasks will be finished in " + (period + this.parsingTimeout/1000) + "( parsing: " + parsingTimeout/1000 + "sec, testing: " + period + " sec.)");
     }
 
-     private void progressInfo(long timeout) {
+     private void runProgress(long timeout) {
          Runnable runnable = new Progress(timeout*1000);
          runnable.run();
+         System.out.print(".........DONE\nData processing...\n");
      }
 
     /**

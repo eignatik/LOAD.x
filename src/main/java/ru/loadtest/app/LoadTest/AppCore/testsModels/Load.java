@@ -33,8 +33,20 @@ public class Load extends Thread implements ITest {
     private long requestTime;
 
 
-    public Load(String baseURL) {
+    private Load(String baseURL) {
         this.baseURL = baseURL;
+    }
+
+    public static void execute(int usersCount, String URL) {
+        List<Load> threads = new ArrayList<>();
+        for (int i = 0; i < usersCount; i++) {
+            threads.add(new Load(URL));
+        }
+        logger.info(usersCount + " threads are created");
+        for (Load thread : threads) {
+            thread.start();
+        }
+        logger.info("All threads are started");
     }
 
     @Override
@@ -137,10 +149,5 @@ public class Load extends Thread implements ITest {
 
     public static void setRequestTimeTopRange(int range) {
         REQUEST_TIME_TOP_RANGE = range;
-    }
-
-    @Override
-    public void execute() {
-
     }
 }

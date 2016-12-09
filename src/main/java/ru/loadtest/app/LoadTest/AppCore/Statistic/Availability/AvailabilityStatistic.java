@@ -28,16 +28,22 @@ public class AvailabilityStatistic {
     }
 
     public static void printStatistic() {
+        System.out.println("\n");
         if (!statistic.isEmpty()) {
             Set<Map.Entry<String, PageInfo>> statisticSet = statistic.entrySet();
             for (Map.Entry<String, PageInfo> element : statisticSet) {
                 PageInfo pageInfo = element.getValue();
                 StringBuilder result = new StringBuilder();
                 result
+                        .append("\"")
                         .append(pageInfo.getURL())
-                        .append("\t")
-                        .append(pageInfo.isAvailable()? "Available":"Unavailable")
-                        .append(pageInfo.getStatus());
+                        .append("\":{")
+                        .append("\n\t\"available\":")
+                        .append(pageInfo.isAvailable()? "\"Available\"":"\"Unavailable\"")
+                        .append(",\n\t")
+                        .append("\"status\":\"")
+                        .append(pageInfo.getStatus())
+                        .append("\"\n}, ");
                 System.out.println(result.toString());
             }
         } else {
