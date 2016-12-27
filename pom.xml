@@ -8,7 +8,7 @@
     <artifactId>LTApp</artifactId>
     <version>1.0-SNAPSHOT</version>
     <properties>
-        <mainClass>ru.loadtest.app.Main</mainClass>
+        <mainClass>com.ngload.Main</mainClass>
         <programmVersionMajor>1</programmVersionMajor>
         <programmVersionMinor>0</programmVersionMinor>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
