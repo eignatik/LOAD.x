@@ -1,5 +1,7 @@
 package ru.loadtest.app.LoadTest.AppCore;
 
+import java.util.List;
+
 /**
  * Util class provide several static methods for operating with links, parsed data, and so on.
  */
@@ -28,5 +30,13 @@ public class Util {
 
     public static String removeProtocols(String URL) {
         return URL.replaceAll("http://|https://|www.", "");
+    }
+
+    public static void setSleeping(int time) {
+        try {
+            Thread.sleep(time);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 }

@@ -1,4 +1,4 @@
-package ru.loadtest.app.LoadTest.AppCore.Statistic;
+package ru.loadtest.app.LoadTest.AppCore.Statistic.Load;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -6,7 +6,6 @@ import ru.loadtest.app.LoadTest.AppCore.Page;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 
 /**
  * the class provides statistic about pages requests, page count, coverage, and so on
@@ -45,7 +44,8 @@ public class RequestsStatistic {
     public static void printStatistic() {
         logger.info("Request statistic: { Parsed links:" + parsedPagesCounter + ", Visited links:" + visitedPagesCounter + "  (" + (double)visitedPagesCounter/parsedPagesCounter + ")" + " Broken links: "  + brokenLinks.size());
         printTable();
-        //printBasicStatistic();
+        logger.info("Extended statistic:");
+        printBasicStatistic();
     }
 
     public static void addBrokenLink(String URL) {
