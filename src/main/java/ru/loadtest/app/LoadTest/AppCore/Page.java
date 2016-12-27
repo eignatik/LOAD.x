@@ -18,11 +18,11 @@ public class Page implements Comparable<Page> {
 
     private static Random random = new Random();
 
-    Page(String URL) {
+    public Page(String URL) {
         this.URL = URL;
     }
 
-    Page(String URL, List<Link> links) {
+    public Page(String URL, List<Link> links) {
         this.URL = URL;
         this.links = links;
         if (links.size() == 0) {
@@ -55,11 +55,11 @@ public class Page implements Comparable<Page> {
      *
       * @return random link from page links list
      */
-    String getRandomLink() {
+    public String getRandomLink() {
         return getRandomLinkFromList(links);
     }
 
-    private String getRandomLinkFromList(List<Link> links) {
+    public String getRandomLinkFromList(List<Link> links) {
         if(links.size() == 0) {
             return "";
         }

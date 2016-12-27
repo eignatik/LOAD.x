@@ -5,7 +5,7 @@ import org.apache.logging.log4j.Logger;
 import ru.loadtest.app.LoadTest.AppCore.Progress;
 import ru.loadtest.app.LoadTest.AppCore.Statistic.Availability.AvailabilityStatistic;
 import ru.loadtest.app.LoadTest.AppCore.Statistic.Load.RequestsStatistic;
-import ru.loadtest.app.LoadTest.AppCore.testsModels.Availability;
+import ru.loadtest.app.LoadTest.AppCore.testsModels.Simulation;
 
 import static ru.loadtest.app.LoadTest.AppCore.testsModels.Availability.*;
 import static ru.loadtest.app.LoadTest.AppCore.testsModels.Load.*;
@@ -23,6 +23,7 @@ public class AppTestAPI {
     private int port = 8802;
 
     private long parsingTimeout = 60000;
+    private int timeBetweenRequests = 10000;
 
     public AppTestAPI() {
         URL = "localhost:" + port;
@@ -36,6 +37,11 @@ public class AppTestAPI {
         this.URL = URL;
     }
 
+    /**
+     * Execute load test that make equable loading on web-resource and provie statistic
+     * @param timeout maximal executable time in seconds
+     * @param usersCount
+     */
     public void executeLoad(long timeout, int usersCount) {
         showDebugInfo(timeout);
         setPages(URL, parsingTimeout);
@@ -45,7 +51,10 @@ public class AppTestAPI {
         RequestsStatistic.printStatistic();
     }
 
-     public void executeAvailability() {
+    /**
+     * Execute availability test that represents accessable pages
+     */
+    public void executeAvailability() {
         showDebugInfo(0);
         setURL(this.URL);
         parseLinks(this.parsingTimeout);
@@ -53,8 +62,19 @@ public class AppTestAPI {
         AvailabilityStatistic.printStatistic();
      }
 
-    public void executeSimulation(long timeout, int usersCount) {
-
+    /**
+     *
+     * @param timeout time in ms that is maximal executable time
+     * @param usersCount count of users
+     * @param startURL url that will be first point of site exploring
+     */
+    public void executeSimulation(long timeout, int usersCount, String startURL) {
+        Simulation.setBaseURL(this.URL);
+        Simulation.setTimeout(timeout);
+        Simulation.setTopRange(this.timeBetweenRequests);
+        Simulation.execute(usersCount, startURL);
+        runProgress(timeout);
+        RequestsStatistic.printStatistic();
     }
 
     public void printStatistic() {
@@ -78,7 +98,15 @@ public class AppTestAPI {
      * set parsing timeout on seconds
      * @param timeout
      */
-    public void setParsingTimeout(long timeout) {
+     public void setParsingTimeout(long timeout) {
          this.parsingTimeout = timeout*1000;
      }
+
+    /**
+     * Set time between requests in ms
+     * @param
+     */
+    public void setTimeBetweenRequests(int time) {
+        this.timeBetweenRequests = time;
+    }
 }

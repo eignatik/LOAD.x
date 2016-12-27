@@ -43,9 +43,7 @@ public class Load extends Thread implements ITest {
             threads.add(new Load(URL));
         }
         logger.info(usersCount + " threads are created");
-        for (Load thread : threads) {
-            thread.start();
-        }
+        threads.parallelStream().forEach(Thread::start);
         logger.info("All threads are started");
     }
 

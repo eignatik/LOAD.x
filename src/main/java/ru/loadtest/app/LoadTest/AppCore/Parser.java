@@ -11,7 +11,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import static org.jsoup.Jsoup.*;
 
-public class Parser {
+public class Parser extends Thread {
     public static final Logger logger = LogManager.getLogger(Parser.class.getName());
 
     private static HTTPConnection connection;
@@ -19,6 +19,18 @@ public class Parser {
     private static Map<String, Page> pageList = new ConcurrentHashMap<>();
     private static Random random = new Random();
     private static final long DEFAULT_TIMEOUT = 60000;
+
+
+
+    @Override
+    public void run() {
+
+    }
+
+    public static String getNextLinkFromHTML(String html) {
+        List<Link> links = getLinksFromHTML(html);
+        return links.size() == 0? "":links.get(random.nextInt(links.size()-1)).getURL();
+    }
 
     /**
      * Parse links from the site during timeout
