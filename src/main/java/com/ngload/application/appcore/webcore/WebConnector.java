@@ -48,6 +48,10 @@ public class WebConnector {
     }
 
     public String getHtmlByURL(String sourceURL) {
+        return getEntityContent(buildUrl(sourceURL));
+    }
+
+    private URI buildUrl(String sourceURL) {
         URI url = null;
         try {
             URIBuilder uriBuilder = new URIBuilder(this.workURL + sourceURL);
@@ -55,7 +59,11 @@ public class WebConnector {
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }
-        return getEntityContent(url);
+        return url;
+    }
+
+    private String deleteLastSlashCharIfExists(String URL) {
+        return URL.replaceAll("\\b\\/*", "");
     }
 
     private String getEntityContent(URI url) {
@@ -73,5 +81,13 @@ public class WebConnector {
     private String getEntityContentFromResponse(CloseableHttpResponse response) throws IOException {
         HttpEntity entity = response.getEntity();
         return EntityUtils.toString(entity);
+    }
+
+    public String getWorkURL() {
+        return workURL;
+    }
+
+    public void setWorkURL(String workURL) {
+        this.workURL = deleteLastSlashCharIfExists(workURL);
     }
 }

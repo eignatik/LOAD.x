@@ -2,6 +2,7 @@ package com.ngload.application.appcore.webcore;
 
 import com.ngload.application.HTMLGetter;
 import org.testng.annotations.BeforeTest;
+import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import static org.testng.Assert.assertEquals;
@@ -18,21 +19,35 @@ public class WebConnectorTest {
         connector = new WebConnector("http://localhost:8082");
     }
 
-    @Test
-    public void getHtmlByURLSimpleCorrectPath() {
-        String html = connector.getHtmlByURL("/test");
+    @DataProvider
+    public Object[][] prepareEndPoints() {
+        return new Object[][]{
+                {"/test"},
+                {"test"},
+                {"http://localhost:8082/test"}
+        };
+    }
+
+    @DataProvider
+    public Object[][] prepareBaseURLS() {
+        return new Object[][]{
+                {"http://localhost:8802", "http://localhost:8802"},
+                {"http://localhost:8802/", "http://localhost:8802"},
+                {"http://localhost:8802//", "http://localhost:8802"},
+                {"http://localhost:8802///", "http://localhost:8802"},
+                {"http://test.ru/", "http://test.ru"}
+        };
+    }
+
+    @Test(dataProvider = "prepareEndPoints")
+    public void getHTMLByURLTest(String url) {
+        String html = connector.getHtmlByURL(url);
         assertEquals(html, htmlGetter.getBasicHTML());
     }
 
-    @Test
-    public void getHtmlByURLSimplePathWithoutSlash() {
-        String html = connector.getHtmlByURL("test");
-        assertEquals(html, htmlGetter.getBasicHTML());
-    }
-
-    @Test
-    public void getHtmlByURLFullPath() {
-        String html = connector.getHtmlByURL("http://localhost:8082/test");
-        assertEquals(html, htmlGetter.getBasicHTML());
+    @Test(dataProvider = "prepareBaseURLS")
+    public void deleteLastSlashIfExists(String URL, String expected) {
+        connector.setWorkURL(URL);
+        assertEquals(connector.getWorkURL(), expected);
     }
 }
