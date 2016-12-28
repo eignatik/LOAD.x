@@ -31,7 +31,7 @@ public class WebConnector {
     private RequestConfig requestConfig;
 
     public WebConnector(String workURL) {
-        this.workURL = workURL;
+        this.workURL = addEndSlash(workURL);
         cookieStore = new BasicCookieStore();
         requestConfig = RequestConfig.custom()
                 .setCookieSpec(CookieSpecs.STANDARD)
@@ -62,8 +62,8 @@ public class WebConnector {
         return url;
     }
 
-    private String deleteLastSlashCharIfExists(String URL) {
-        return URL.replaceAll("\\b\\/*", "");
+    private String addEndSlash(String URL) {
+        return URL.replaceAll("\\b\\/*", "") + "/";
     }
 
     private String getEntityContent(URI url) {
@@ -88,6 +88,6 @@ public class WebConnector {
     }
 
     public void setWorkURL(String workURL) {
-        this.workURL = deleteLastSlashCharIfExists(workURL);
+        this.workURL = addEndSlash(workURL);
     }
 }

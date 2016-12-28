@@ -31,11 +31,11 @@ public class WebConnectorTest {
     @DataProvider
     public Object[][] prepareBaseURLS() {
         return new Object[][]{
-                {"http://localhost:8802", "http://localhost:8802"},
-                {"http://localhost:8802/", "http://localhost:8802"},
-                {"http://localhost:8802//", "http://localhost:8802"},
-                {"http://localhost:8802///", "http://localhost:8802"},
-                {"http://test.ru/", "http://test.ru"}
+                {"http://localhost:8802", "http://localhost:8802/"},
+                {"http://localhost:8802/", "http://localhost:8802/"},
+                {"http://localhost:8802//", "http://localhost:8802/"},
+                {"http://localhost:8802///", "http://localhost:8802/"},
+                {"http://test.ru/", "http://test.ru/"}
         };
     }
 
@@ -46,7 +46,7 @@ public class WebConnectorTest {
     }
 
     @Test(dataProvider = "prepareBaseURLS")
-    public void deleteLastSlashIfExists(String URL, String expected) {
+    public void addEndSlashTest(String URL, String expected) {
         connector.setWorkURL(URL);
         assertEquals(connector.getWorkURL(), expected);
     }
