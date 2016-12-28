@@ -1,17 +1,17 @@
 package com.ngload.application.appcore.webcore;
 
 import com.ngload.application.HTMLGetter;
-import org.junit.Before;
-import org.junit.Test;
+import org.testng.annotations.BeforeTest;
+import org.testng.annotations.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.testng.Assert.assertEquals;
 import static spark.Spark.*;
 
 public class WebConnectorTest {
     private WebConnector connector;
     private HTMLGetter htmlGetter = new HTMLGetter();
 
-    @Before
+    @BeforeTest
     public void createTestConnection() {
         port(8082);
         get("/test", (req, res) -> htmlGetter.getBasicHTML());
