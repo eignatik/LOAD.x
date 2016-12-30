@@ -52,14 +52,22 @@ public class WebConnector {
     }
 
     private URI buildUrl(String sourceURL) {
-        URI url = null;
+        return buildPath(sourceURL);
+    }
+
+    private URI buildPath(String url) {
+        URIBuilder uriBuilder;
         try {
-            URIBuilder uriBuilder = new URIBuilder(this.workURL + sourceURL);
-            url = new URI(uriBuilder.toString());
+            uriBuilder = (url.contains(this.workURL))? new URIBuilder(url):new URIBuilder(this.workURL + removeFirstSlashes(url));
+            return new URI(uriBuilder.toString());
         } catch (URISyntaxException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage());
         }
-        return url;
+        return null;
+    }
+
+    private String removeFirstSlashes(String URL) {
+        return (URL.charAt(0) == '/')? URL.replaceFirst("/", ""):URL;
     }
 
     private String addEndSlash(String URL) {

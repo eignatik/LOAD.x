@@ -20,7 +20,7 @@ public class WebConnectorTest {
     }
 
     @DataProvider
-    public Object[][] prepareEndPoints() {
+    public Object[][] prepareEndPointsForHTML() {
         return new Object[][]{
                 {"/test"},
                 {"test"},
@@ -39,7 +39,7 @@ public class WebConnectorTest {
         };
     }
 
-    @Test(dataProvider = "prepareEndPoints")
+    @Test(dataProvider = "prepareEndPointsForHTML")
     public void getHTMLByURLTest(String url) {
         String html = connector.getHtmlByURL(url);
         assertEquals(html, htmlGetter.getBasicHTML());
