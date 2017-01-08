@@ -30,7 +30,7 @@ public class WebConnector {
     private CloseableHttpClient httpClient;
     private RequestConfig requestConfig;
 
-    public WebConnector(String workURL) {
+    WebConnector(String workURL) {
         this.workURL = addEndSlash(workURL);
         cookieStore = new BasicCookieStore();
         requestConfig = RequestConfig.custom()
@@ -95,7 +95,8 @@ public class WebConnector {
         return workURL;
     }
 
-    public void setWorkURL(String workURL) {
+    //TODO move editing workURL to WebHelper
+    void setWorkURL(String workURL) {
         this.workURL = addEndSlash(workURL);
     }
 }
