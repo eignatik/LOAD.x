@@ -15,6 +15,7 @@ public class ParserTest {
     public void createTestConnection() {
         Spark.port(8802);
         Spark.get("/testLinks", (req, res) -> htmlGetter.getLinksHTML());
+        Spark.get("/alotoflinksTest", (req, res) -> htmlGetter.getLotOfLinksHTML());
         WebHelper.setWorkURL("http://localhost:8802/");
         connector = new WebConnector(WebHelper.getWorkURL());
     }
@@ -22,5 +23,10 @@ public class ParserTest {
     @Test
     public void getLinksFromURLTest() {
         Assert.assertTrue(Parser.getLinksFromURL("testLinks").size()==4);
+    }
+
+    @Test
+    public void getLotOfLinksFromURL() {
+        Assert.assertTrue(Parser.getLinksFromURL("alotoflinksTest").size()==41);
     }
 }

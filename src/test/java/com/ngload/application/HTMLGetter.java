@@ -18,6 +18,9 @@ public class HTMLGetter {
     public String getLinksHTML() {
         return getHTMLFromResourceURL(loader.getResource("html/linksTest.html"));
     }
+    public String getLotOfLinksHTML() {
+        return getHTMLFromResourceURL(loader.getResource("html/alotoflinks.html"));
+    }
 
     private String getHTMLFromResourceURL(URL resource) {
         StringBuilder HTML = new StringBuilder();

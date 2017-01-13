@@ -21,7 +21,7 @@ public class Parser {
     public static List<Link> getLinksFromURL(String URL) {
         List<Link> links = new ArrayList<>();
         Elements elements = selectElements(URL, "a[href]");
-        elements.parallelStream().forEach((Parser) -> addLink(links, elements.attr("href")));
+        elements.stream().forEach((Parser) -> addLink(links, elements.attr("href")));
         return links;
     }
 
