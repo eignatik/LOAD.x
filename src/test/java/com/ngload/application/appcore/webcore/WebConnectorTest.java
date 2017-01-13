@@ -28,16 +28,6 @@ public class WebConnectorTest {
         };
     }
 
-    @DataProvider
-    public Object[][] prepareBaseURLS() {
-        return new Object[][]{
-                {"http://localhost:8802", "http://localhost:8802/"},
-                {"http://localhost:8802/", "http://localhost:8802/"},
-                {"http://localhost:8802//", "http://localhost:8802/"},
-                {"http://localhost:8802///", "http://localhost:8802/"},
-                {"http://test.ru/", "http://test.ru/"}
-        };
-    }
 
     @Test(dataProvider = "prepareEndPointsForHTML")
     public void getHTMLByURLTest(String url) {
@@ -45,9 +35,9 @@ public class WebConnectorTest {
         assertEquals(html, htmlGetter.getBasicHTML());
     }
 
-    @Test(dataProvider = "prepareBaseURLS")
-    public void addEndSlashTest(String URL, String expected) {
-        connector.setWorkURL(URL);
-        assertEquals(connector.getWorkURL(), expected);
-    }
+//    @Test(dataProvider = "prepareBaseURLS")
+//    public void addEndSlashTest(String URL, String expected) {
+//        connector.setWorkURL(URL);
+//        assertEquals(connector.getWorkURL(), expected);
+//    }
 }

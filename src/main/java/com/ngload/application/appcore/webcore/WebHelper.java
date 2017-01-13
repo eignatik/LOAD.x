@@ -15,11 +15,17 @@ public class WebHelper {
         return workURL;
     }
 
-    public static void setWorkURL(String workURL) {
-        WebHelper.workURL = workURL;
+    public static void setWorkURL(String URL) {
+        WebHelper.workURL = addEndSlash(URL);
     }
 
     public static Random getRandom() {
         return random;
+    }
+
+    private static String addEndSlash(String URL) {
+        String url = URL.replaceAll("\\b\\/*", "");
+        url += "/";
+        return url;
     }
 }
