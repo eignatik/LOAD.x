@@ -12,11 +12,20 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class Parser {
+public class Parser extends Thread {
     public static final Logger logger = LogManager.getLogger(Parser.class.getName());
     private static WebConnector connection;
     private static String workURL;
     private static final long DEFAULT_TIMEOUT = 60000;
+
+    @Override
+    public void run() {
+
+    }
+
+    private void collectRandomLinks() {
+
+    }
 
     public static List<Link> getLinksFromURL(String URL) {
         List<Link> links = new ArrayList<>();
