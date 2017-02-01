@@ -1,22 +1,17 @@
 package com.ngload.application.appcore.webcore;
 
-import com.ngload.application.HTMLGetter;
+import com.ngload.application.FakeServer;
 import org.testng.Assert;
-import org.testng.annotations.BeforeTest;
-import org.testng.annotations.DataProvider;
+import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.Test;
-import spark.Spark;
 
 public class ParserTest {
     private WebConnector connector;
-    private HTMLGetter htmlGetter = new HTMLGetter();
 
-    @BeforeTest
+    @BeforeSuite
     public void createTestConnection() {
-        Spark.port(8802);
-        Spark.get("/testLinks", (req, res) -> htmlGetter.getLinksHTML());
-        Spark.get("/alotoflinksTest", (req, res) -> htmlGetter.getLotOfLinksHTML());
-        WebHelper.setWorkURL("http://localhost:8802/");
+        FakeServer.runServer();
+        WebHelper.setWorkURL("http://localhost:8082/");
         connector = new WebConnector(WebHelper.getWorkURL());
     }
 

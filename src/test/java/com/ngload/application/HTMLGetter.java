@@ -10,19 +10,19 @@ import java.util.Scanner;
 
 public class HTMLGetter {
     public static final Logger logger = LogManager.getLogger(HTMLGetter.class.getName());
-    private ClassLoader loader = this.getClass().getClassLoader();
+    private static ClassLoader loader = HTMLGetter.class.getClassLoader();
 
-    public String getBasicHTML() {
+    public static String getBasicHTML() {
         return getHTMLFromResourceURL(loader.getResource("html/test.html"));
     }
-    public String getLinksHTML() {
+    public static String getLinksHTML() {
         return getHTMLFromResourceURL(loader.getResource("html/linksTest.html"));
     }
-    public String getLotOfLinksHTML() {
+    public static String getLotOfLinksHTML() {
         return getHTMLFromResourceURL(loader.getResource("html/alotoflinks.html"));
     }
 
-    private String getHTMLFromResourceURL(URL resource) {
+    private static String getHTMLFromResourceURL(URL resource) {
         StringBuilder HTML = new StringBuilder();
         try {
             Scanner input = new Scanner(new File(resource.getFile()));
