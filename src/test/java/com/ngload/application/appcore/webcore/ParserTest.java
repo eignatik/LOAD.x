@@ -1,11 +1,14 @@
 package com.ngload.application.appcore.webcore;
 
 import com.ngload.application.FakeServer;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.testng.Assert;
 import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.Test;
 
 public class ParserTest {
+    public static final Logger logger = LogManager.getLogger(ParserTest.class.getName());
     private WebConnector connector;
 
     @BeforeSuite
