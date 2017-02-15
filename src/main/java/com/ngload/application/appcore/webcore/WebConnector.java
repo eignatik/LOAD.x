@@ -24,14 +24,13 @@ public class WebConnector {
     public static final Logger logger = LogManager.getLogger(WebConnector.class.getName());
     private static int TIMEOUT_MS = 60000;
 
-    private String workURL;
     private BasicCookieStore cookieStore;
     private HttpContext httpContext;
     private CloseableHttpClient httpClient;
     private RequestConfig requestConfig;
 
-    public WebConnector(String workURL) {
-        this.workURL = addEndSlash(workURL);
+    WebConnector(String workURL) {
+        WebHelper.setWorkURL(workURL);
         cookieStore = new BasicCookieStore();
         requestConfig = RequestConfig.custom()
                 .setCookieSpec(CookieSpecs.STANDARD)
@@ -58,7 +57,7 @@ public class WebConnector {
     private URI buildPath(String url) {
         URIBuilder uriBuilder;
         try {
-            uriBuilder = (url.contains(this.workURL))? new URIBuilder(url):new URIBuilder(this.workURL + removeFirstSlashes(url));
+            uriBuilder = (url.contains(WebHelper.getWorkURL()))? new URIBuilder(url):new URIBuilder(WebHelper.getWorkURL() + removeFirstSlashes(url));
             return new URI(uriBuilder.toString());
         } catch (URISyntaxException e) {
             logger.error(e.getMessage());
@@ -68,10 +67,6 @@ public class WebConnector {
 
     private String removeFirstSlashes(String URL) {
         return (URL.charAt(0) == '/')? URL.replaceFirst("/", ""):URL;
-    }
-
-    private String addEndSlash(String URL) {
-        return URL.replaceAll("\\b\\/*", "") + "/";
     }
 
     private String getEntityContent(URI url) {
@@ -89,13 +84,5 @@ public class WebConnector {
     private String getEntityContentFromResponse(CloseableHttpResponse response) throws IOException {
         HttpEntity entity = response.getEntity();
         return EntityUtils.toString(entity);
-    }
-
-    public String getWorkURL() {
-        return workURL;
-    }
-
-    public void setWorkURL(String workURL) {
-        this.workURL = addEndSlash(workURL);
     }
 }

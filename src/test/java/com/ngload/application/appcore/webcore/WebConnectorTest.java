@@ -1,21 +1,22 @@
 package com.ngload.application.appcore.webcore;
 
+import com.ngload.application.FakeServer;
 import com.ngload.application.HTMLGetter;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
-
 import static org.testng.Assert.assertEquals;
-import static spark.Spark.*;
 
 public class WebConnectorTest {
+    public static final Logger logger = LogManager.getLogger(WebConnectorTest.class.getName());
+
     private WebConnector connector;
-    private HTMLGetter htmlGetter = new HTMLGetter();
 
     @BeforeTest
     public void createTestConnection() {
-        port(8082);
-        get("/test", (req, res) -> htmlGetter.getBasicHTML());
+        FakeServer.runServer();
         connector = new WebConnector("http://localhost:8082");
     }
 
@@ -28,26 +29,17 @@ public class WebConnectorTest {
         };
     }
 
-    @DataProvider
-    public Object[][] prepareBaseURLS() {
-        return new Object[][]{
-                {"http://localhost:8802", "http://localhost:8802/"},
-                {"http://localhost:8802/", "http://localhost:8802/"},
-                {"http://localhost:8802//", "http://localhost:8802/"},
-                {"http://localhost:8802///", "http://localhost:8802/"},
-                {"http://test.ru/", "http://test.ru/"}
-        };
-    }
 
     @Test(dataProvider = "prepareEndPointsForHTML")
     public void getHTMLByURLTest(String url) {
         String html = connector.getHtmlByURL(url);
-        assertEquals(html, htmlGetter.getBasicHTML());
+        assertEquals(html, HTMLGetter.getBasicHTML());
     }
 
-    @Test(dataProvider = "prepareBaseURLS")
-    public void addEndSlashTest(String URL, String expected) {
-        connector.setWorkURL(URL);
-        assertEquals(connector.getWorkURL(), expected);
-    }
+    //TODO: check need it  or not
+//    @Test(dataProvider = "prepareBaseURLS")
+//    public void addEndSlashTest(String URL, String expected) {
+//        connector.setWorkURL(URL);
+//        assertEquals(connector.getWorkURL(), expected);
+//    }
 }
