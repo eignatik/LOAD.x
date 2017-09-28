@@ -1,4 +1,4 @@
-# LoadTestApp - version 0.2
+# NGLoad - version 0.2
 Application for load tests. It provides small library to test different sites in real time. You can get statistics of requests.
 The general opportunity is normally selection of different urls from you web-site, and loading on URL is equaled for every URL.
 So, you can use three types of testing: load, availability, and (in future) simulation. 
