@@ -4,11 +4,12 @@ The general opportunity is normally selection of different urls from you web-sit
 So, you can use three types of testing: load, availability, and (in future) simulation. 
 Load is basic test with a lot of users for your site. Availability provides statistics of URLs availability.  
 
-#How to use?
+## How to use?
 This LoadTest has small API to manipulate. It's developping right now. But there are a few API methods in previos versions that 
 mentioned in readme files in suitable branches. Version 0.2 is absolutely new version of this product. Link would be available soon.
 
-#Version 0.1 Release Notes
+# History
+## Version 0.1 Release Notes
 - have been added a three kinds of testing: availability, load, simulation
 - have been improved stable of threads execution
 - have been improved web core
