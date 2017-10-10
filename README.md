@@ -1,3 +1,6 @@
+[ ![Codeship Status for eignatik/NGLoad](https://app.codeship.com/projects/b2b34220-8fd1-0135-dea1-4e7f25354534/status?branch=develop)](https://app.codeship.com/projects/250072)
+[ ![Codeship Status for eignatik/NGLoad](https://app.codeship.com/projects/b2b34220-8fd1-0135-dea1-4e7f25354534/status?branch=master)](https://app.codeship.com/projects/250072)
+
 # NGLoad - version 0.2
 Application for load tests. It provides small library to test different sites in real time. You can get statistics of requests.
 The general opportunity is normally selection of different urls from you web-site, and loading on URL is equaled for every URL.
