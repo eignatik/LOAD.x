@@ -1,17 +1,20 @@
 package com.ngload.application.appcore.webcore;
 
-import com.ngload.application.appcore.webcore.entities.Link;
+import com.ngload.application.appcore.entities.Link;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
+/**
+ * @Deprecated should be removed and redesined
+ * Parser class that provides web page parsing and getting links from URLs
+ */
+@Deprecated
 public class Parser extends Thread {
     public static final Logger logger = LogManager.getLogger(Parser.class.getName());
     private static WebConnector connection;
