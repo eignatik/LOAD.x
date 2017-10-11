@@ -26,13 +26,13 @@ public class DurationTest {
         };
     }
 
-    @Test(enabled = true, dataProvider = "correctDurations")
+    @Test(enabled = false, dataProvider = "correctDurations")
     public void testIfParseCorrectly(String durationStr, int expectedMilis) {
         Duration duration = new Duration(durationStr);
         Assert.assertEquals(expectedMilis, duration.getDuration());
     }
 
-    @Test(enabled = true, dataProvider = "incorrectDurations", expectedExceptions = RuntimeException.class)
+    @Test(enabled = false, dataProvider = "incorrectDurations", expectedExceptions = RuntimeException.class)
     public void testIfThrowsRException(String durationStr) {
         Duration duration = new Duration(durationStr);
     }
