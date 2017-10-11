@@ -1,4 +1,4 @@
-package com.ngload.application;
+package testUtils;
 
 import static spark.Spark.get;
 import static spark.Spark.port;

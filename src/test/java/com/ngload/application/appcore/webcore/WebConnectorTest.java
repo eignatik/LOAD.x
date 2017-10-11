@@ -1,7 +1,7 @@
 package com.ngload.application.appcore.webcore;
 
-import com.ngload.application.FakeServer;
-import com.ngload.application.HTMLGetter;
+import testUtils.FakeServer;
+import testUtils.HTMLGetter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.testng.annotations.BeforeTest;

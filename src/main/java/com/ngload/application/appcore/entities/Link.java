@@ -1,5 +1,9 @@
-package com.ngload.application.appcore.webcore.entities;
+package com.ngload.application.appcore.entities;
 
+/**
+ * Entity represents web site link. Should be a part of tree or smth. like that
+ * TODO: analyze trees possibilities in this case
+ */
 public class Link {
     private String URL;
     private boolean isCorrect;

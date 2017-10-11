@@ -1,5 +1,9 @@
-package com.ngload.application.appcore.webcore.entities;
+package com.ngload.application.appcore.entities;
 
+/**
+ * @Deprecated Should be removed or moved to another package with a lot of changes
+ */
+@Deprecated
 public class RequestStatistics {
     private long requestCount;
     private long sumOfRequestCounts;

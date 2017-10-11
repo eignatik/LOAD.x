@@ -1,4 +1,4 @@
-package com.ngload.application;
+package testUtils;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

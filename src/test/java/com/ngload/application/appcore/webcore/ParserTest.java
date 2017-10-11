@@ -1,6 +1,6 @@
 package com.ngload.application.appcore.webcore;
 
-import com.ngload.application.FakeServer;
+import testUtils.FakeServer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.testng.Assert;
