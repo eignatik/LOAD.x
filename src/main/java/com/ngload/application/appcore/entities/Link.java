@@ -6,7 +6,7 @@ package com.ngload.application.appcore.entities;
  */
 public class Link {
     private String URL;
-    private boolean isCorrect;
+    private boolean isLinkCorrect;
 
     public Link(String URL) {
         this.URL = URL;
@@ -16,11 +16,11 @@ public class Link {
         return this.URL;
     }
 
-    public boolean isCorrect() {
-        return this.isCorrect;
+    public boolean isLinkCorrect() {
+        return this.isLinkCorrect;
     }
 
-    public void setCorrect(boolean isLinkCorrect) {
-        this.isCorrect = isLinkCorrect;
+    public void setLinkCorrect(boolean isLinkCorrect) {
+        this.isLinkCorrect = isLinkCorrect;
     }
 }
