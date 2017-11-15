@@ -6,6 +6,7 @@ import java.util.List;
 /**
  * @Extendable should be refactored at all
  */
+@Deprecated
 public class Page {
     private Link pageLink;
     private List<Link> links;
