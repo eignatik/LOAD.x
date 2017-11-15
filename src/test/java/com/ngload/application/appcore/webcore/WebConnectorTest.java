@@ -30,10 +30,10 @@ public class WebConnectorTest {
     }
 
 
-    @Test(dataProvider = "prepareEndPointsForHTML")
+    @Test(enabled = true, dataProvider = "prepareEndPointsForHTML")
     public void getHTMLByURLTest(String url) {
         String html = connector.getHtmlByURL(url);
-        assertEquals(html, HTMLGetter.getBasicHTML());
+        assertEquals(html, HTMLGetter.getHTML("html/test.html"));
     }
 
     //TODO: check need it  or not

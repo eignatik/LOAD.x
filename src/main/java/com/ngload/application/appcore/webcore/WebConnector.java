@@ -21,7 +21,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 public class WebConnector {
-    public static final Logger logger = LogManager.getLogger(WebConnector.class.getName());
+    private static final Logger logger = LogManager.getLogger(WebConnector.class.getName());
     private static int TIMEOUT_MS = 60000;
 
     private BasicCookieStore cookieStore;
