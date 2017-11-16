@@ -1,6 +1,6 @@
 package com.ngload.application.appcore.webcore;
 
-import testUtils.FakeServer;
+import testUtils.TestServer;
 import testUtils.HTMLGetter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -16,7 +16,7 @@ public class WebConnectorTest {
 
     @BeforeTest
     public void createTestConnection() {
-        FakeServer.runServer();
+        TestServer.runServer();
         connector = new WebConnector("http://localhost:8082");
     }
 

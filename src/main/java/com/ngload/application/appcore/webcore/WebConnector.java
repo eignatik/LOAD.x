@@ -29,7 +29,7 @@ public class WebConnector {
     private CloseableHttpClient httpClient;
     private RequestConfig requestConfig;
 
-    WebConnector(String workURL) {
+    public WebConnector(String workURL) {
         WebHelper.setWorkURL(workURL);
         cookieStore = new BasicCookieStore();
         requestConfig = RequestConfig.custom()
