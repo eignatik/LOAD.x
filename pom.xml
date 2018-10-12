@@ -9,8 +9,8 @@
     <version>0.2-SNAPSHOT</version>
     <properties>
         <mainClass>com.ngload.NGLoad</mainClass>
-        <programmVersionMajor>0</programmVersionMajor>
-        <programmVersionMinor>2</programmVersionMinor>
+        <programVersionMajor>0</programVersionMajor>
+        <programVersionMinor>2</programVersionMinor>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java-version>9</java-version>
         <log4j.version>2.7</log4j.version>
@@ -73,7 +73,7 @@
                             <mainClass>${mainClass}</mainClass>
                         </manifest>
                         <manifestEntries>
-                            <Version>${programmVersionMajor}.${programmVersionMinor}</Version>
+                            <Version>${programVersionMajor}.${programVersionMinor}</Version>
                         </manifestEntries>
                     </archive>
                 </configuration>
