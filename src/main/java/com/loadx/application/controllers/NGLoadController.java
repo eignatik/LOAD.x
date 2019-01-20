@@ -1,4 +1,4 @@
-package com.ngload.application.controllers;
+package com.loadx.application.controllers;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

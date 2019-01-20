@@ -4,15 +4,23 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>LoadTestApplication</groupId>
-    <artifactId>LTApp</artifactId>
+    <groupId>io.load-x</groupId>
+    <artifactId>loadx-core</artifactId>
     <version>0.2-SNAPSHOT</version>
     <properties>
-        <mainClass>com.ngload.NGLoad</mainClass>
-        <programmVersionMajor>0</programmVersionMajor>
-        <programmVersionMinor>2</programmVersionMinor>
+        <mainClass>com.loadx.NGLoad</mainClass>
+        <app.version.major>0</app.version.major>
+        <app.version.minor>2</app.version.minor>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java-version>9</java-version>
+
+        <!-- dependencies versions -->
+        <jsoup.version>1.11.3</jsoup.version>
+        <apache.http.version>4.5.6</apache.http.version>
+        <common-langs.version>3.8.1</common-langs.version>
+        <spark.java.version>2.7.2</spark.java.version>
+        <mockito.version>2.4.2</mockito.version>
+        <testng.version>6.8</testng.version>
         <log4j.version>2.7</log4j.version>
     </properties>
 
@@ -28,7 +36,6 @@
                     <encoding>${project.build.sourceEncoding}</encoding>
                 </configuration>
             </plugin>
-
 
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
@@ -70,7 +77,7 @@
                             <mainClass>${mainClass}</mainClass>
                         </manifest>
                         <manifestEntries>
-                            <Version>${programmVersionMajor}.${programmVersionMinor}</Version>
+                            <Version>${app.version.major}.${app.version.minor}</Version>
                         </manifestEntries>
                     </archive>
                 </configuration>
@@ -90,45 +97,46 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
-        <!-- Web part -->
 
+        <!-- Web part -->
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
-            <version>4.5.2</version>
+            <version>${apache.http.version}</version>
         </dependency>
 
         <dependency>
-            <!-- jsoup HTML parser library @ http://jsoup.org/ -->
             <groupId>org.jsoup</groupId>
             <artifactId>jsoup</artifactId>
-            <version>1.9.2</version>
+            <version>${jsoup.version}</version>
         </dependency>
 
         <!-- Tools -->
         <dependency>
-            <groupId>commons-lang</groupId>
-            <artifactId>commons-lang</artifactId>
-            <version>2.3</version>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>${common-langs.version}</version>
         </dependency>
 
-        <!-- Testing -->
+        <!-- Testing dependencies -->
         <dependency>
             <groupId>org.testng</groupId>
             <artifactId>testng</artifactId>
-            <version>6.8</version>
+            <version>${testng.version}</version>
             <scope>test</scope>
         </dependency>
+
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
-            <version>2.4.2</version>
+            <version>${mockito.version}</version>
             <scope>test</scope>
         </dependency>
+
         <dependency>
             <groupId>com.sparkjava</groupId>
             <artifactId>spark-core</artifactId>
-            <version>2.5.4</version>
+            <version>${spark.java.version}</version>
             <scope>test</scope>
         </dependency>
 
