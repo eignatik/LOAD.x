@@ -6,9 +6,5 @@ import static org.testng.Assert.*;
 
 public class WebsitesHttpConnectorTest {
 
-    @Test
-    public void test() {
-
-    }
 
 }
