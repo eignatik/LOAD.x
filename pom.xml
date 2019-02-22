@@ -6,11 +6,11 @@
 
     <groupId>org.load-x</groupId>
     <artifactId>loadx-core</artifactId>
-    <version>0.2-SNAPSHOT</version>
+    <version>0.1-SNAPSHOT</version>
     <properties>
         <mainClass>org.loadx.NGLoad</mainClass>
         <app.version.major>0</app.version.major>
-        <app.version.minor>2</app.version.minor>
+        <app.version.minor>1</app.version.minor>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java-version>9</java-version>
 
