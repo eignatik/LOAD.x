@@ -1,4 +1,4 @@
-package com.ngload;
+package org.loadx;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

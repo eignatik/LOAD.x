@@ -4,20 +4,24 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.ngload</groupId>
-    <artifactId>ngload</artifactId>
+    <groupId>org.load-x</groupId>
+    <artifactId>loadx-core</artifactId>
     <version>0.2-SNAPSHOT</version>
     <properties>
-        <mainClass>com.ngload.NGLoad</mainClass>
-        <programVersionMajor>0</programVersionMajor>
-        <programVersionMinor>2</programVersionMinor>
+        <mainClass>org.loadx.NGLoad</mainClass>
+        <app.version.major>0</app.version.major>
+        <app.version.minor>2</app.version.minor>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java-version>9</java-version>
+
+        <!-- dependencies versions -->
+        <jsoup.version>1.11.3</jsoup.version>
+        <apache.http.version>4.5.6</apache.http.version>
+        <common-langs.version>3.8.1</common-langs.version>
+        <spark.java.version>2.7.2</spark.java.version>
+        <mockito.version>2.4.2</mockito.version>
+        <testng.version>6.8</testng.version>
         <log4j.version>2.7</log4j.version>
-        <jsoup.version>1.11.2</jsoup.version>
-        <testng.version>6.14.3</testng.version>
-        <mockito.version>2.22.0</mockito.version>
-        <sparkjava.version>2.7.2</sparkjava.version>
     </properties>
 
     <build>
@@ -73,7 +77,7 @@
                             <mainClass>${mainClass}</mainClass>
                         </manifest>
                         <manifestEntries>
-                            <Version>${programVersionMajor}.${programVersionMinor}</Version>
+                            <Version>${app.version.major}.${app.version.minor}</Version>
                         </manifestEntries>
                     </archive>
                 </configuration>
@@ -84,7 +88,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.0.5.RELEASE</version>
+        <version>1.5.8.RELEASE</version>
     </parent>
 
     <dependencies>
@@ -96,6 +100,12 @@
 
         <!-- Web part -->
         <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>${apache.http.version}</version>
+        </dependency>
+
+        <dependency>
             <groupId>org.jsoup</groupId>
             <artifactId>jsoup</artifactId>
             <version>${jsoup.version}</version>
@@ -103,28 +113,30 @@
 
         <!-- Tools -->
         <dependency>
-            <groupId>commons-lang</groupId>
-            <artifactId>commons-lang</artifactId>
-            <version>2.3</version>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>${common-langs.version}</version>
         </dependency>
 
-        <!-- Testing -->
+        <!-- Testing dependencies -->
         <dependency>
             <groupId>org.testng</groupId>
             <artifactId>testng</artifactId>
             <version>${testng.version}</version>
             <scope>test</scope>
         </dependency>
+
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
             <version>${mockito.version}</version>
             <scope>test</scope>
         </dependency>
+
         <dependency>
             <groupId>com.sparkjava</groupId>
             <artifactId>spark-core</artifactId>
-            <version>${sparkjava.version}</version>
+            <version>${spark.java.version}</version>
             <scope>test</scope>
         </dependency>
 
@@ -134,6 +146,7 @@
             <artifactId>log4j-api</artifactId>
             <version>${log4j.version}</version>
         </dependency>
+
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-core</artifactId>
