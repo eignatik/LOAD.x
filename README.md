@@ -17,4 +17,4 @@ The results of all loading are saved in database and always can be saved, backed
 
 # History
 ## Version 0.0.1 Release Notes
-- created console dummy implementation *that are fully deprecated and already decommissioned*. 
+- created console dummy implementation *that is fully deprecated and already decommissioned*. 
