@@ -13,6 +13,13 @@ import org.springframework.util.Assert;
 
 import java.util.regex.Pattern;
 
+/**
+ * The http connector that provides configured http client via flexible builder.
+ *
+ * The httpClient is used in RequestExecutor classes.
+ * @see org.loadx.application.http.executor.RequestExecutor
+ * @see CloseableHttpClient
+ */
 final class WebsitesHttpConnector {
 
     private static final int DEFAULT_SOCKET_TIMEOUT = 60000;
@@ -38,6 +45,11 @@ final class WebsitesHttpConnector {
         return httpClient;
     }
 
+    /**
+     * Creates default connector with default properties for httpClient, cookieStore, configurations etc.
+     *
+     * @return the configured default instance of WebsitesHttpConnector.
+     */
     private static WebsitesHttpConnector createDefault() {
         WebsitesHttpConnector connector = new WebsitesHttpConnector();
         connector.cookieStore = new BasicCookieStore();
