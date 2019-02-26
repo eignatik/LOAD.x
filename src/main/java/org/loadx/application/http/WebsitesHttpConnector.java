@@ -9,9 +9,6 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
-import org.springframework.util.Assert;
-
-import java.util.regex.Pattern;
 
 /**
  * The http connector that provides configured http client via flexible builder.
@@ -25,9 +22,7 @@ public final class WebsitesHttpConnector {
     private static final int DEFAULT_SOCKET_TIMEOUT = 60000;
     private static final int DEFAULT_CONNECT_TIMEOUT = 30000;
     private static final int DEFAULT_CONNECTION_REQUEST_TIMEOUT = 60000;
-    private static final Pattern URL_PATTERN = Pattern.compile("(^(www|http:\\/\\/|https:\\/\\/).+\\.\\w+)$");
 
-    private String baseUrl;
     private CloseableHttpClient httpClient;
     private CookieStore cookieStore;
     private HttpContext httpContext;
@@ -35,10 +30,6 @@ public final class WebsitesHttpConnector {
 
     private WebsitesHttpConnector() {
         // private constructor for builder
-    }
-
-    public String getBaseUrl() {
-        return baseUrl;
     }
 
     public CloseableHttpClient getHttpClient() {
@@ -50,7 +41,7 @@ public final class WebsitesHttpConnector {
      *
      * @return the configured default instance of WebsitesHttpConnector.
      */
-    private static WebsitesHttpConnector createDefault() {
+    public static WebsitesHttpConnector createDefault() {
         WebsitesHttpConnector connector = new WebsitesHttpConnector();
         connector.cookieStore = new BasicCookieStore();
         connector.requestConfig = RequestConfig.custom()
@@ -66,52 +57,5 @@ public final class WebsitesHttpConnector {
         connector.httpContext = new BasicHttpContext();
         connector.httpContext.setAttribute(HttpClientContext.COOKIE_STORE, connector.cookieStore);
         return connector;
-    }
-
-    private static void validate(WebsitesHttpConnector connector) {
-        String baseUrl = connector.getBaseUrl();
-        Assert.notNull(baseUrl, "The base URL shouldn't be null");
-        Assert.isTrue(URL_PATTERN.matcher(baseUrl).matches(), "The base URL doesn't match the website pattern");
-    }
-
-    public static class ConnectorBuilder {
-        private WebsitesHttpConnector connector;
-
-        private ConnectorBuilder(WebsitesHttpConnector connector) {
-            this.connector = connector;
-        }
-
-        public static ConnectorBuilder createDefault() {
-            return new ConnectorBuilder(WebsitesHttpConnector.createDefault());
-        }
-
-        public static ConnectorBuilder createCustom() {
-            return new ConnectorBuilder(new WebsitesHttpConnector());
-        }
-
-        public ConnectorBuilder withCookieStore(CookieStore cookieStore) {
-            this.connector.cookieStore = cookieStore;
-            return this;
-        }
-
-        public ConnectorBuilder withHttpContext(HttpContext context) {
-            this.connector.httpContext = context;
-            return this;
-        }
-
-        public ConnectorBuilder withHttpClient(CloseableHttpClient httpClient) {
-            this.connector.httpClient = httpClient;
-            return this;
-        }
-
-        public ConnectorBuilder withBaseUrl(String baseUrl) {
-            connector.baseUrl = baseUrl;
-            return this;
-        }
-
-        public WebsitesHttpConnector build() {
-            validate(connector);
-            return connector;
-        }
     }
 }

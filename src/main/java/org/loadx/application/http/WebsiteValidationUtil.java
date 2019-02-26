@@ -8,6 +8,9 @@ import org.loadx.application.constants.CommonConstants;
 import org.loadx.application.exceptions.LoadxException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.Assert;
+
+import java.util.regex.Pattern;
 
 /**
  * Util class that provides methods for the web sites ownership validation.
@@ -18,6 +21,8 @@ import org.slf4j.LoggerFactory;
 public final class WebsiteValidationUtil {
 
     private static final Logger LOG = LoggerFactory.getLogger(WebsiteValidationUtil.class);
+    private static final Pattern URL_PATTERN = Pattern.compile("(^(www|http:\\/\\/|https:\\/\\/).+\\.\\w+)$");
+
 
     private WebsiteValidationUtil() {
         // private constructor for util class
@@ -32,6 +37,12 @@ public final class WebsiteValidationUtil {
         String hash = DigestUtils.md5Hex(url + url.length());
         LOG.info("Generating hash={} for url={}", hash, url);
         return hash;
+    }
+
+    public static boolean validateUrl(String baseUrl) {
+        Assert.notNull(baseUrl, "The base URL shouldn't be null");
+        Assert.isTrue(URL_PATTERN.matcher(baseUrl).matches(), "The base URL doesn't match the website pattern");
+        return true;
     }
 
     /**

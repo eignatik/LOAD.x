@@ -13,15 +13,21 @@ import java.util.Map;
  * Basic controller that provides the possibility to trigger execution jobs.
  * <p>
  * There are two way to trigger the job.
- * 1. Trigger /start endpoint to run job with default configuration
+ * 1. Trigger /load endpoint to run job with default configuration
  */
 
 @RestController
 public class NGLoadController {
 
-    @GetMapping("/start")
-    public @ResponseBody ResponseEntity execute() {
+    @GetMapping("/load")
+    public @ResponseBody ResponseEntity executeLoading() {
         return new ResponseEntity(HttpStatus.OK);
+    }
+
+    @PostMapping("/parsing")
+    public @ResponseBody ResponseEntity triggerParseTask(@RequestBody Map<String, String> payload) {
+
+        return null;
     }
 
     @GetMapping("/hashgen")

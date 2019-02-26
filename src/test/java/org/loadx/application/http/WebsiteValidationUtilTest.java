@@ -3,6 +3,7 @@ package org.loadx.application.http;
 import org.loadx.application.exceptions.LoadxException;
 import org.loadx.application.util.FileUtils;
 import org.testng.Assert;
+import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import static org.testng.Assert.assertFalse;
@@ -38,6 +39,41 @@ public class WebsiteValidationUtilTest {
     public void testValidateShouldThrowAnExceptionWhenPassedHashIsEmpty() {
         String emptyHash = "";
         WebsiteValidationUtil.validate(emptyHash, "dummyPageContent42");
+    }
+
+    @DataProvider(name = "correctUrls")
+    public Object[][] provideCorrectUrls() {
+        return new Object[][] {
+                {"www.example.com"},
+                {"http://example.com"},
+                {"https://example.com"},
+                {"http://www.example.com"},
+                {"http://afew.levels.com"},
+        };
+    }
+
+    @Test(dataProvider = "correctUrls")
+    public void testValidateUrlSucceedWithCorrectUrls(String baseUrl) {
+        Assert.assertTrue(WebsiteValidationUtil.validateUrl(baseUrl));
+    }
+
+    @DataProvider(name = "incorrectUrls")
+    public Object[][] provideIncorrectUrls() {
+        return new Object[][] {
+                {""},
+                {null},
+                {"incorrectSequnce"},
+                {"withoutProtocols.com"},
+                {"withoutProtocols.com"},
+                {"http.incorrectProtocols.com"},
+                {"htp//:incorrectProtocols.com"},
+                {"AAhttps://prefixesNotGood.com"},
+        };
+    }
+
+    @Test(dataProvider = "incorrectUrls", expectedExceptions = IllegalArgumentException.class)
+    public void testBuilderFailsValidationWhenBaseUrlDoesNotMatchPatternOfUrl(String baseUrl) {
+        WebsiteValidationUtil.validateUrl(baseUrl);
     }
 
 }
