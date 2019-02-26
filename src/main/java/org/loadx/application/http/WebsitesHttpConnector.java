@@ -20,7 +20,7 @@ import java.util.regex.Pattern;
  * @see org.loadx.application.http.executor.RequestExecutor
  * @see CloseableHttpClient
  */
-final class WebsitesHttpConnector {
+public final class WebsitesHttpConnector {
 
     private static final int DEFAULT_SOCKET_TIMEOUT = 60000;
     private static final int DEFAULT_CONNECT_TIMEOUT = 30000;
@@ -37,11 +37,11 @@ final class WebsitesHttpConnector {
         // private constructor for builder
     }
 
-    String getBaseUrl() {
+    public String getBaseUrl() {
         return baseUrl;
     }
 
-    CloseableHttpClient getHttpClient() {
+    public CloseableHttpClient getHttpClient() {
         return httpClient;
     }
 
@@ -74,42 +74,42 @@ final class WebsitesHttpConnector {
         Assert.isTrue(URL_PATTERN.matcher(baseUrl).matches(), "The base URL doesn't match the website pattern");
     }
 
-    static class ConnectorBuilder {
+    public static class ConnectorBuilder {
         private WebsitesHttpConnector connector;
 
         private ConnectorBuilder(WebsitesHttpConnector connector) {
             this.connector = connector;
         }
 
-        static ConnectorBuilder createDefault() {
+        public static ConnectorBuilder createDefault() {
             return new ConnectorBuilder(WebsitesHttpConnector.createDefault());
         }
 
-        static ConnectorBuilder createCustom() {
+        public static ConnectorBuilder createCustom() {
             return new ConnectorBuilder(new WebsitesHttpConnector());
         }
 
-        ConnectorBuilder withCookieStore(CookieStore cookieStore) {
+        public ConnectorBuilder withCookieStore(CookieStore cookieStore) {
             this.connector.cookieStore = cookieStore;
             return this;
         }
 
-        ConnectorBuilder withHttpContext(HttpContext context) {
+        public ConnectorBuilder withHttpContext(HttpContext context) {
             this.connector.httpContext = context;
             return this;
         }
 
-        ConnectorBuilder withHttpClient(CloseableHttpClient httpClient) {
+        public ConnectorBuilder withHttpClient(CloseableHttpClient httpClient) {
             this.connector.httpClient = httpClient;
             return this;
         }
 
-        ConnectorBuilder withBaseUrl(String baseUrl) {
+        public ConnectorBuilder withBaseUrl(String baseUrl) {
             connector.baseUrl = baseUrl;
             return this;
         }
 
-        WebsitesHttpConnector build() {
+        public WebsitesHttpConnector build() {
             validate(connector);
             return connector;
         }
