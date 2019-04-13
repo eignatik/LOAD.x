@@ -7,10 +7,17 @@ import org.loadx.application.exceptions.DataBaseConfigurationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Util class for getting session factory for hibernate.
+ */
 public class SessionFactoryUtil {
 
     private static final Logger LOG = LoggerFactory.getLogger(SessionFactoryUtil.class);
     private static final SessionFactory SESSION_FACTORY;
+
+    private SessionFactoryUtil() {
+        // hidden constructor for util class purposes
+    }
 
     static {
         try {
@@ -18,10 +25,9 @@ public class SessionFactoryUtil {
             SESSION_FACTORY = configuration
                     .configure()
                     .buildSessionFactory();
+            LOG.info("Session factory is configured and built");
         } catch (HibernateException e) {
-            String message = "Hibernate session factory couldn't be built.";
-            LOG.error(message, e);
-            throw new DataBaseConfigurationException(message, e);
+            throw new DataBaseConfigurationException("Hibernate session factory couldn't be built.", e);
         }
     }
 
