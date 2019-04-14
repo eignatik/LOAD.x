@@ -30,9 +30,9 @@ public class ApplicationConfig {
     @Autowired
     private Environment env;
 
-    @Bean(name = "loadTaskDao")
-    public Dao<LoadTask> loadTaskDao(SessionFactory sessionFactory) {
-        return new GenericDao<>(sessionFactory);
+    @Bean
+    public Dao dao(SessionFactory sessionFactory) {
+        return new GenericDao(sessionFactory);
     }
 
     @Bean
@@ -41,13 +41,8 @@ public class ApplicationConfig {
     }
 
     @Bean
-    public LoadPersistent loadPersister(
-            Dao<LoadTask> loadTaskDao,
-            Dao<LoadRequest> loadRequestDao,
-            Dao<ExecutionDetails> executionDetailsDao,
-            Dao<LoadingExecution> loadingExecutionDao,
-            Dao<TaskRequests> taskRequestsDao) {
-        return new LoadPersistent(loadTaskDao, loadRequestDao, executionDetailsDao, loadingExecutionDao, taskRequestsDao);
+    public LoadPersistent loadPersister(Dao dao) {
+        return new LoadPersistent(dao);
     }
 
     @Bean

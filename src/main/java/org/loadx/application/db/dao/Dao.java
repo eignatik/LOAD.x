@@ -4,7 +4,7 @@ import org.loadx.application.db.entity.LoadxEntity;
 
 import java.util.List;
 
-public interface Dao<T extends LoadxEntity> {
+public interface Dao {
 
     /**
      * Returns one row for given id and entity type.
@@ -13,7 +13,7 @@ public interface Dao<T extends LoadxEntity> {
      * @param type entity type.
      * @return item from database.
      */
-    T getById(int id, Class<T> type);
+    LoadxEntity getById(int id, Class type);
 
     /**
      * Returns all rows for given type of entity.
@@ -21,7 +21,7 @@ public interface Dao<T extends LoadxEntity> {
      * @param type entity for which row will be returned.
      * @return list of records for given type.
      */
-    List<T> getAll(Class<T> type);
+    List<LoadxEntity> getAll(Class type);
 
     /**
      * Saves the new object to database.
@@ -31,7 +31,7 @@ public interface Dao<T extends LoadxEntity> {
      * @param item object to insert to database
      * @return genereated identifier
      */
-    int save(T item);
+    int save(LoadxEntity item);
 
     /**
      * Saves the bunch of items to database.
@@ -41,19 +41,19 @@ public interface Dao<T extends LoadxEntity> {
      * @param items list of items to be persisted to database.
      * @return list of generated identifiers.
      */
-    List<Integer> save(List<T> items);
+    List<Integer> save(List<LoadxEntity> items);
 
     /**
      * Updates existing records in database.
      *
      * @param item record to be updated.
      */
-    void update(T item);
+    void update(LoadxEntity item);
 
     /**
      * Removes given item from database.
      *
      * @param item to be removed.
      */
-    void remove(T item);
+    void remove(LoadxEntity item);
 }

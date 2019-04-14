@@ -15,25 +15,15 @@ public class LoadPersistent {
 
     private static final Logger LOG = LoggerFactory.getLogger(LoadPersistent.class);
 
-    private Dao<LoadTask> loadTaskDao;
-    private Dao<LoadRequest> loadRequestDao;
-    private Dao<ExecutionDetails> executionDetailsDao;
-    private Dao<LoadingExecution> loadingExecutionDao;
-    private Dao<TaskRequests> taskRequestsDao;
+    private Dao dao;
 
     @Autowired
-    public LoadPersistent(
-            Dao<LoadTask> loadTaskDao, Dao<LoadRequest> loadRequestDao, Dao<ExecutionDetails> executionDetailsDao,
-            Dao<LoadingExecution> loadingExecutionDao, Dao<TaskRequests> taskRequestsDao) {
-        this.loadTaskDao = loadTaskDao;
-        this.loadRequestDao = loadRequestDao;
-        this.executionDetailsDao = executionDetailsDao;
-        this.loadingExecutionDao = loadingExecutionDao;
-        this.taskRequestsDao = taskRequestsDao;
+    public LoadPersistent(Dao dao) {
+        this.dao = dao;
     }
 
     public int save(LoadxEntity item) {
-        return selectDao(item).save(item);
+        return dao.save(item);
     }
 
     public List<Integer> save(List<LoadxEntity> items) {
@@ -41,19 +31,19 @@ public class LoadPersistent {
             LOG.info("Empty list of items passed to persistent module.");
             return Collections.emptyList();
         }
-        return selectDao(items.get(0)).save(items);
+        return dao.save(items);
     }
 
     public void update(LoadxEntity item) {
-        selectDao(item).update(item);
+        dao.update(item);
     }
 
     public void remove(LoadxEntity item) {
-        selectDao(item).remove(item);
+        dao.remove(item);
     }
 
     public void persistLoadTaskRequests(int loadTaskId, List<Integer> requestsIds) {
-        List<TaskRequests> linkedRequests = requestsIds.stream()
+        List<LoadxEntity> linkedRequests = requestsIds.stream()
                 .map(req -> {
                     TaskRequests taskRequests = new TaskRequests();
                     taskRequests.setLoadRequestId(req);
@@ -61,21 +51,6 @@ public class LoadPersistent {
                     return taskRequests;
                 })
                 .collect(Collectors.toList());
-        taskRequestsDao.save(linkedRequests);
-    }
-
-    private Dao selectDao(LoadxEntity entity) {
-        if (entity instanceof LoadTask) {
-            return loadTaskDao;
-        } else if (entity instanceof LoadRequest) {
-            return loadRequestDao;
-        } else if (entity instanceof ExecutionDetails) {
-            return executionDetailsDao;
-        } else if (entity instanceof LoadingExecution) {
-            return loadingExecutionDao;
-        } else if (entity instanceof TaskRequests) {
-            return taskRequestsDao;
-        }
-        throw new IllegalArgumentException("Given type of entity isn't compatible with current implementation");
+        dao.save(linkedRequests);
     }
 }

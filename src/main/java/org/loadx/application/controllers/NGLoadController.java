@@ -40,10 +40,15 @@ public class NGLoadController {
     public @ResponseBody ResponseEntity<String> addTask(@RequestBody String json) {
         boolean succeeded = processor.process(taskCreator.createMappingTask(json));
         if (succeeded) {
-            return new ResponseEntity("Given task is successfully added", HttpStatus.OK);
+            return new ResponseEntity<>("Given task is successfully added", HttpStatus.OK);
         } else {
-            return new ResponseEntity("Given task is failed to save", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("Given task is failed to save", HttpStatus.BAD_REQUEST);
         }
+    }
+
+    @PostMapping("/startLoading")
+    public @ResponseBody ResponseEntity<String> startLoading(@RequestBody String json) {
+        return new ResponseEntity<>("", HttpStatus.OK);
     }
 
     @GetMapping("/hashgen")
