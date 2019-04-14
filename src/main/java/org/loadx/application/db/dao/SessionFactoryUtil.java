@@ -1,6 +1,7 @@
-package org.loadx.application.db;
+package org.loadx.application.db.dao;
 
 import org.hibernate.HibernateException;
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 import org.loadx.application.exceptions.DataBaseConfigurationException;
@@ -10,7 +11,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Util class for getting session factory for hibernate.
  */
-public class SessionFactoryUtil {
+class SessionFactoryUtil {
 
     private static final Logger LOG = LoggerFactory.getLogger(SessionFactoryUtil.class);
     private static final SessionFactory SESSION_FACTORY;
@@ -31,7 +32,11 @@ public class SessionFactoryUtil {
         }
     }
 
-    public static SessionFactory getSessionFactory() {
+    static SessionFactory getSessionFactory() {
         return SESSION_FACTORY;
+    }
+
+    static Session getCurrentSession() {
+        return SESSION_FACTORY.getCurrentSession();
     }
 }
