@@ -1,11 +1,13 @@
 package org.loadx.application.db.entity;
 
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Entity
 @Table(name = "TASK_REQUESTS")
 public class TaskRequests implements LoadxEntity {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     private int loadTaskId;
     private int loadRequestId;

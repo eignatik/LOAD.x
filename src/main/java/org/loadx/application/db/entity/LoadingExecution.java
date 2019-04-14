@@ -1,12 +1,14 @@
 package org.loadx.application.db.entity;
 
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.util.Date;
 
 @Entity
 @Table(name = "LOADING_EXECUTION")
 public class LoadingExecution implements LoadxEntity {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     private int loadingTaskId;
     private Date startTime;

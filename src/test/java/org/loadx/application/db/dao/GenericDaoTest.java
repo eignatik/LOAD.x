@@ -1,14 +1,23 @@
 package org.loadx.application.db.dao;
 
+import org.loadx.application.config.ApplicationConfig;
 import org.loadx.application.db.entity.LoadTask;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Import;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.testng.AbstractTestNGSpringContextTests;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.util.List;
 
-public class GenericDaoTest {
+@Import(ApplicationConfig.class)
+public class GenericDaoTest extends AbstractTestNGSpringContextTests {
 
-    private Dao<LoadTask> dao = new GenericDao<>();
+    @Autowired
+    @Qualifier("loadTaskDao")
+    private Dao<LoadTask> dao;
 
     @Test
     public void testGetByIdReturnNotEmptyResult() {

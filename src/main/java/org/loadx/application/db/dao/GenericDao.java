@@ -1,11 +1,14 @@
 package org.loadx.application.db.dao;
 
 import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
 import org.loadx.application.db.entity.LoadxEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
@@ -21,8 +24,11 @@ import java.util.stream.Collectors;
  * @see LoadxEntity
  * @see Dao for detailed JavaDoc per method.
  */
+@Component
 @SuppressWarnings("unchecked")
 public class GenericDao<T extends LoadxEntity> implements Dao<T> {
+
+    @Autowired private SessionFactory sessionFactory;
 
     private static final Logger LOG = LoggerFactory.getLogger(GenericDao.class);
 
@@ -80,7 +86,8 @@ public class GenericDao<T extends LoadxEntity> implements Dao<T> {
     }
 
     private Session getSession() {
-        return SessionFactoryUtil.getCurrentSession();
+        return sessionFactory.getCurrentSession();
+//        return SessionFactoryUtil.getCurrentSession();
     }
 
     private CriteriaQuery<T> createCriteriaQuery(Class<T> type) {
