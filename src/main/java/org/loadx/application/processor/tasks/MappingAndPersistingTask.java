@@ -5,9 +5,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.loadx.application.constants.CommonConstants;
 import org.loadx.application.constants.LoadRequestFields;
 import org.loadx.application.constants.LoadTaskFields;
-import org.loadx.application.db.dao.Dao;
+import org.loadx.application.db.LoadPersistent;
 import org.loadx.application.db.entity.LoadRequest;
 import org.loadx.application.db.entity.LoadTask;
+import org.loadx.application.db.entity.LoadxEntity;
 import org.loadx.application.exceptions.MappingException;
 import org.loadx.application.util.TimeParser;
 
@@ -19,8 +20,7 @@ import java.util.stream.Collectors;
 class MappingAndPersistingTask implements Task {
 
     private String json;
-    private Dao<LoadTask> loadTaskDao;
-    private Dao<LoadRequest> loadRequestDao;
+    private LoadPersistent loadPersistent;
 
     private MappingAndPersistingTask() {
         // hidden constructor for builder purposes
@@ -36,8 +36,9 @@ class MappingAndPersistingTask implements Task {
 
         // TODO: validate parsedTask
 
-        loadTaskDao.save(mapToLoadTask(parsedTask));
-        loadRequestDao.save(mapToLoadRequests(parsedTask));
+        int loadTaskId = loadPersistent.save(mapToLoadTask(parsedTask));
+        List<Integer> addedRequestsIds = loadPersistent.save(mapToLoadRequests(parsedTask));
+        loadPersistent.persistLoadTaskRequests(loadTaskId, addedRequestsIds);
     }
 
     private Map<String, Object> parseJsonToMap(String json) {
@@ -66,7 +67,7 @@ class MappingAndPersistingTask implements Task {
         return loadTask;
     }
 
-    private List<LoadRequest> mapToLoadRequests(Map<String, Object> parsedTask) {
+    private List<LoadxEntity> mapToLoadRequests(Map<String, Object> parsedTask) {
         Map<String, Object> requests = (Map<String, Object>) parsedTask.get(LoadTaskFields.REQUESTS.getValue());
         return requests.keySet().stream()
                 .map(key -> mapToLoadRequest(key, requests))
@@ -99,13 +100,8 @@ class MappingAndPersistingTask implements Task {
             return this;
         }
 
-        MappingAndPersistingTaskBuilder withLoadTaskDao(Dao<LoadTask> loadTaskDao) {
-            task.loadTaskDao = loadTaskDao;
-            return this;
-        }
-
-        MappingAndPersistingTaskBuilder withLoadRequestDao(Dao<LoadRequest> loadRequestDao) {
-            task.loadRequestDao = loadRequestDao;
+        MappingAndPersistingTaskBuilder withLoadPersistent(LoadPersistent loadPersistent) {
+            task.loadPersistent = loadPersistent;
             return this;
         }
 
