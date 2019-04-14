@@ -11,6 +11,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 /**
  * Basic controller that provides the possibility to trigger execution jobs.
@@ -52,7 +54,8 @@ public class NGLoadController {
      * @return JSON mapped requests.
      */
     @GetMapping("/get/taskRequests")
-    public @ResponseBody ResponseEntity<String> getTaskRequests() {
+    public @ResponseBody
+    ResponseEntity<String> getTaskRequests() {
         return new ResponseEntity<>("", HttpStatus.OK);
     }
 
@@ -64,8 +67,8 @@ public class NGLoadController {
      */
     @PostMapping("/add/task")
     public @ResponseBody
-    ResponseEntity<String> addTask(@RequestBody String json) {
-        boolean succeeded = processor.process(taskCreator.createMappingTask(json));
+    ResponseEntity<String> addTask(@RequestBody String json) throws ExecutionException, InterruptedException {
+        boolean succeeded = processor.process(taskCreator.createMappingTask(json)).get();
         if (succeeded) {
             return new ResponseEntity<>("Given task is successfully added", HttpStatus.OK);
         } else {

@@ -15,9 +15,10 @@ import org.loadx.application.util.TimeParser;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
-class MappingAndPersistingTask implements Task {
+class MappingAndPersistingTask implements Task<Void> {
 
     private String json;
     private LoadPersistent loadPersistent;
@@ -31,7 +32,11 @@ class MappingAndPersistingTask implements Task {
     }
 
     @Override
-    public void execute() {
+    public CompletableFuture<Void> execute() {
+        return CompletableFuture.runAsync(this::parse);
+    }
+
+    private void parse() {
         Map<String, Object> parsedTask = parseJsonToMap(json);
 
         // TODO: validate parsedTask

@@ -5,21 +5,21 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import java.util.concurrent.CompletableFuture;
+
 @Component
 public class TaskProcessor {
 
     private static final Logger LOG = LoggerFactory.getLogger(TaskProcessor.class);
 
-    public boolean process(Task task) {
-        boolean success = true;
-        try {
-            task.execute();
-        } catch (Exception e) {
-            LOG.error(e.getMessage(), e);
-            success = false;
-        }
+    public CompletableFuture<Boolean> process(Task<?> task) {
+        return task.execute()
+                .thenApply(v -> true)
+                .exceptionally(e -> {
+                    LOG.error(e.getMessage(), e);
+                    return false;
+                });
 
-        return success;
     }
 
 }

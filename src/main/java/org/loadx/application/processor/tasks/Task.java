@@ -1,5 +1,7 @@
 package org.loadx.application.processor.tasks;
 
-public interface Task {
-    void execute();
+import java.util.concurrent.CompletableFuture;
+
+public interface Task<T> {
+    CompletableFuture<T> execute();
 }
