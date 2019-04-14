@@ -2,6 +2,7 @@ package org.loadx.application.controllers;
 
 import com.google.common.collect.ImmutableMap;
 import org.loadx.application.constants.JsonBodyConstants;
+import org.loadx.application.processor.TaskProcessor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.testng.Assert;
@@ -11,7 +12,7 @@ import java.util.Map;
 
 public class NGLoadControllerTest {
 
-    private NGLoadController controller = new NGLoadController();
+    private NGLoadController controller = new NGLoadController(new TaskProcessor());
 
     @Test
     public void testHashGenReturnsSuccessAndGeneratedHash() {
