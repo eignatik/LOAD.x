@@ -23,6 +23,7 @@
         <common-langs.version>3.8.1</common-langs.version>
         <collection.utils.version>4.3</collection.utils.version>
         <guava.version>19.0</guava.version>
+        <jackson.version>2.9.8</jackson.version>
         <spark.java.version>2.7.2</spark.java.version>
         <mockito.version>2.4.2</mockito.version>
         <testng.version>6.8</testng.version>
@@ -168,6 +169,11 @@
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
             <version>${guava.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>${jackson.version}</version>
         </dependency>
 
         <!-- Testing dependencies -->
