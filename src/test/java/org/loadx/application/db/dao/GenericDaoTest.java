@@ -5,7 +5,6 @@ import org.loadx.application.db.entity.LoadTask;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Import;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.testng.AbstractTestNGSpringContextTests;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -49,6 +48,8 @@ public class GenericDaoTest extends AbstractTestNGSpringContextTests {
         List<LoadTask> tasks = dao.getAll(LoadTask.class);
         Assert.assertNotNull(tasks);
         Assert.assertTrue(tasks.size() > 0);
+
+        tasks.forEach(item -> dao.remove(item));
     }
 
     @Test

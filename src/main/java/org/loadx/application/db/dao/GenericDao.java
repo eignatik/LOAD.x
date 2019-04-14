@@ -28,7 +28,12 @@ import java.util.stream.Collectors;
 @SuppressWarnings("unchecked")
 public class GenericDao<T extends LoadxEntity> implements Dao<T> {
 
-    @Autowired private SessionFactory sessionFactory;
+    private SessionFactory sessionFactory;
+
+    @Autowired
+    public GenericDao(SessionFactory sessionFactory) {
+        this.sessionFactory = sessionFactory;
+    }
 
     private static final Logger LOG = LoggerFactory.getLogger(GenericDao.class);
 
@@ -87,7 +92,6 @@ public class GenericDao<T extends LoadxEntity> implements Dao<T> {
 
     private Session getSession() {
         return sessionFactory.getCurrentSession();
-//        return SessionFactoryUtil.getCurrentSession();
     }
 
     private CriteriaQuery<T> createCriteriaQuery(Class<T> type) {

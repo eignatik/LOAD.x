@@ -28,8 +28,8 @@ public class ApplicationConfig {
     @Autowired private Environment env;
 
     @Bean(name = "loadTaskDao")
-    public Dao<LoadTask> loadTaskDao() {
-        return new GenericDao<>();
+    public Dao<LoadTask> loadTaskDao(SessionFactory sessionFactory) {
+        return new GenericDao<>(sessionFactory);
     }
 
     @Bean
