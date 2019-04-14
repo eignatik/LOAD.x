@@ -2,9 +2,11 @@ package org.loadx.application.config;
 
 import org.apache.tomcat.dbcp.dbcp.BasicDataSource;
 import org.hibernate.SessionFactory;
+import org.loadx.application.db.LoadPersistent;
 import org.loadx.application.db.dao.Dao;
 import org.loadx.application.db.dao.GenericDao;
-import org.loadx.application.db.entity.LoadTask;
+import org.loadx.application.db.entity.*;
+import org.loadx.application.processor.tasks.TaskCreator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -25,11 +27,22 @@ import java.util.Properties;
 @PropertySource("environment.properties")
 public class ApplicationConfig {
 
-    @Autowired private Environment env;
+    @Autowired
+    private Environment env;
 
-    @Bean(name = "loadTaskDao")
-    public Dao<LoadTask> loadTaskDao(SessionFactory sessionFactory) {
-        return new GenericDao<>(sessionFactory);
+    @Bean
+    public Dao dao(SessionFactory sessionFactory) {
+        return new GenericDao(sessionFactory);
+    }
+
+    @Bean
+    public TaskCreator taskCreator(LoadPersistent loadPersistent) {
+        return new TaskCreator(loadPersistent);
+    }
+
+    @Bean
+    public LoadPersistent loadPersister(Dao dao) {
+        return new LoadPersistent(dao);
     }
 
     @Bean
@@ -69,6 +82,7 @@ public class ApplicationConfig {
 
     /**
      * TODO: configure via ConfigurationProperties
+     *
      * @return
      */
     Properties hibernateProperties() {

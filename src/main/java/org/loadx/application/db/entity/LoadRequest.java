@@ -9,6 +9,7 @@ public class LoadRequest implements LoadxEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+    private String requestName;
     private String type;
     private String url;
     private int timeout;
@@ -43,5 +44,13 @@ public class LoadRequest implements LoadxEntity {
 
     public void setTimeout(int timeout) {
         this.timeout = timeout;
+    }
+
+    public String getRequestName() {
+        return requestName;
+    }
+
+    public void setRequestName(String requestName) {
+        this.requestName = requestName;
     }
 }

@@ -1,17 +1,30 @@
 package org.loadx.application.controllers;
 
 import com.google.common.collect.ImmutableMap;
+import org.junit.runner.RunWith;
 import org.loadx.application.constants.JsonBodyConstants;
+import org.loadx.application.processor.TaskProcessor;
+import org.loadx.application.processor.tasks.TaskCreator;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.testng.Assert;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import java.util.Map;
 
 public class NGLoadControllerTest {
 
-    private NGLoadController controller = new NGLoadController();
+    @Mock private NGLoadController controller;
+
+    @BeforeClass
+    public void setUp() {
+        MockitoAnnotations.initMocks(this);
+        Mockito.when(controller.generateHashForOwnership(Mockito.any())).thenCallRealMethod();
+    }
 
     @Test
     public void testHashGenReturnsSuccessAndGeneratedHash() {

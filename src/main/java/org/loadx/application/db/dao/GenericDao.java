@@ -20,13 +20,12 @@ import java.util.stream.Collectors;
  * <p>
  * The class provides with the CRUD operations in a generic way.
  *
- * @param <T> class implementing LoadxEntity
  * @see LoadxEntity
  * @see Dao for detailed JavaDoc per method.
  */
 @Component
 @SuppressWarnings("unchecked")
-public class GenericDao<T extends LoadxEntity> implements Dao<T> {
+public class GenericDao implements Dao {
 
     private SessionFactory sessionFactory;
 
@@ -37,25 +36,25 @@ public class GenericDao<T extends LoadxEntity> implements Dao<T> {
 
     private static final Logger LOG = LoggerFactory.getLogger(GenericDao.class);
 
-    public T getById(int id, Class<T> type) {
+    public LoadxEntity getById(int id, Class type) {
         Transaction transaction = getSession().beginTransaction();
-        T item = getSession().get(type, id);
+        LoadxEntity item = (LoadxEntity) getSession().get(type, id);
         transaction.commit();
         LOG.info("Fetched the record: item={}", item);
         return item;
     }
 
-    public List<T> getAll(Class<T> type) {
+    public List<LoadxEntity> getAll(Class type) {
         Transaction transaction = getSession().beginTransaction();
-        Query<T> query = getSession().createQuery(createCriteriaQuery(type));
-        List<T> items = query.getResultList();
+        Query<LoadxEntity> query = getSession().createQuery(createCriteriaQuery(type));
+        List<LoadxEntity> items = query.getResultList();
         transaction.commit();
         LOG.info("Fetched the records: items.size={}", items.size());
         return items;
     }
 
     @Override
-    public int save(T item) {
+    public int save(LoadxEntity item) {
         Transaction transaction = getSession().beginTransaction();
         int id = (Integer) getSession().save(item);
         transaction.commit();
@@ -64,7 +63,7 @@ public class GenericDao<T extends LoadxEntity> implements Dao<T> {
     }
 
     @Override
-    public List<Integer> save(List<T> items) {
+    public List<Integer> save(List<LoadxEntity> items) {
         Transaction transaction = getSession().beginTransaction();
         List<Integer> savedIds = items.stream()
                 .map(item -> (Integer) getSession().save(item))
@@ -75,7 +74,7 @@ public class GenericDao<T extends LoadxEntity> implements Dao<T> {
     }
 
     @Override
-    public void update(T item) {
+    public void update(LoadxEntity item) {
         Transaction transaction = getSession().beginTransaction();
         getSession().update(item);
         transaction.commit();
@@ -83,7 +82,7 @@ public class GenericDao<T extends LoadxEntity> implements Dao<T> {
     }
 
     @Override
-    public void remove(T item) {
+    public void remove(LoadxEntity item) {
         Transaction transaction = getSession().beginTransaction();
         getSession().delete(item);
         transaction.commit();
@@ -94,11 +93,11 @@ public class GenericDao<T extends LoadxEntity> implements Dao<T> {
         return sessionFactory.getCurrentSession();
     }
 
-    private CriteriaQuery<T> createCriteriaQuery(Class<T> type) {
-        CriteriaQuery<T> criteriaQuery = getSession()
+    private CriteriaQuery<LoadxEntity> createCriteriaQuery(Class<LoadxEntity> type) {
+        CriteriaQuery<LoadxEntity> criteriaQuery = getSession()
                 .getCriteriaBuilder()
                 .createQuery(type);
-        Root<T> rootItem = criteriaQuery.from(type);
+        Root<LoadxEntity> rootItem = criteriaQuery.from(type);
         criteriaQuery.select(rootItem);
         return criteriaQuery;
     }
