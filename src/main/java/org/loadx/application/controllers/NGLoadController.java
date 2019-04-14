@@ -1,18 +1,15 @@
 package org.loadx.application.controllers;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.StringUtils;
 import org.loadx.application.constants.JsonBodyConstants;
 import org.loadx.application.http.WebsiteValidationUtil;
 import org.loadx.application.processor.TaskProcessor;
-import org.loadx.application.processor.tasks.MappingAndPersistingTask;
+import org.loadx.application.processor.tasks.TaskCreator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
 import java.util.Map;
 
 /**
@@ -26,10 +23,12 @@ import java.util.Map;
 public class NGLoadController {
 
     private TaskProcessor processor;
+    private TaskCreator taskCreator;
 
     @Autowired
-    public NGLoadController(TaskProcessor processor) {
+    public NGLoadController(TaskProcessor processor, TaskCreator taskCreator) {
         this.processor = processor;
+        this.taskCreator = taskCreator;
     }
 
     @GetMapping("/health")
@@ -39,8 +38,7 @@ public class NGLoadController {
 
     @PostMapping("/addTask")
     public @ResponseBody ResponseEntity<String> addTask(@RequestBody String json) {
-        MappingAndPersistingTask task = MappingAndPersistingTask.createWithJson(json).build();
-        boolean succeeded = processor.process(task);
+        boolean succeeded = processor.process(taskCreator.createMappingTask(json));
         if (succeeded) {
             return new ResponseEntity("Given task is successfully added", HttpStatus.OK);
         } else {

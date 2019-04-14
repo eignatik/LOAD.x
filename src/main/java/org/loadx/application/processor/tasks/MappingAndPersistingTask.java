@@ -5,40 +5,56 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.loadx.application.constants.CommonConstants;
 import org.loadx.application.constants.LoadRequestFields;
 import org.loadx.application.constants.LoadTaskFields;
+import org.loadx.application.db.dao.Dao;
 import org.loadx.application.db.entity.LoadRequest;
 import org.loadx.application.db.entity.LoadTask;
 import org.loadx.application.exceptions.MappingException;
 import org.loadx.application.util.TimeParser;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class MappingAndPersistingTask implements Task {
+class MappingAndPersistingTask implements Task {
 
     private String json;
+    private Dao<LoadTask> loadTaskDao;
+    private Dao<LoadRequest> loadRequestDao;
 
-    /**
-     * hidden constructor for builder purposes
-     */
-    private MappingAndPersistingTask(String json) {
-        this.json = json;
+    private MappingAndPersistingTask() {
+        // hidden constructor for builder purposes
     }
 
-    public static MappingAndPersistingTaskBuilder createWithJson(String json) {
-        return new MappingAndPersistingTaskBuilder(json);
+    static MappingAndPersistingTaskBuilder create() {
+        return new MappingAndPersistingTaskBuilder();
     }
 
     @Override
     public void execute() {
-        Map<String, Object> parsedTask = parse(json);
+        Map<String, Object> parsedTask = parseJsonToMap(json);
 
         // TODO: validate parsedTask
 
-        // TODO: map to suitable objects
+        loadTaskDao.save(mapToLoadTask(parsedTask));
+        loadRequestDao.save(mapToLoadRequests(parsedTask));
+    }
+
+    private Map<String, Object> parseJsonToMap(String json) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        Map<String, Object> map;
+
+        try {
+            map = objectMapper.readValue(json, new TypeReference<Map<String, Object>>() {
+            });
+        } catch (IOException e) {
+            throw new MappingException("Failed to parse input json to map", e);
+        }
+
+        return map;
+    }
+
+    private LoadTask mapToLoadTask(Map<String, Object> parsedTask) {
         LoadTask loadTask = new LoadTask();
         loadTask.setBaseUrl((String) parsedTask.get(LoadTaskFields.BASE_URL.getValue()));
         int loadingTime = TimeParser.parseTime((String) parsedTask.get(LoadTaskFields.LOADING_TIME.getValue()));
@@ -47,58 +63,53 @@ public class MappingAndPersistingTask implements Task {
                 LoadTaskFields.PARALLEL_THRESHOLD.getValue(),
                 CommonConstants.DEFAULT_PARALLEL_THRESHOLD);
         loadTask.setParallelThreshold(threshold);
+        return loadTask;
+    }
 
-        Object requests = parsedTask.get(LoadTaskFields.REQUESTS.getValue());
-        List<Object> parsedRequests = new ArrayList<>();
-        if (requests instanceof List) {
-            parsedRequests = (List<Object>) requests;
-        }
-
-        List<LoadRequest> loadRequests = parsedRequests.stream()
-                .map(request -> {
-                    Map<String, Object> requestParams = new HashMap<>();
-                    if (request instanceof Map) {
-                        requestParams = (Map<String, Object>) request;
-                    }
-                    return requestParams;
-                })
-                .map(request -> {
-                    LoadRequest loadRequest = new LoadRequest();
-                    loadRequest.setType((String) request.get(LoadRequestFields.TYPE.getValue()));
-                    loadRequest.setTimeout((Integer) request.getOrDefault(
-                            LoadRequestFields.TYPE.getValue(),
-                            CommonConstants.DEFAULT_LOAD_REQUEST_TIMEOUT));
-                    loadRequest.setUrl((String) request.get(LoadRequestFields.URL.getValue()));
-                    return loadRequest;
-                })
+    private List<LoadRequest> mapToLoadRequests(Map<String, Object> parsedTask) {
+        Map<String, Object> requests = (Map<String, Object>) parsedTask.get(LoadTaskFields.REQUESTS.getValue());
+        return requests.keySet().stream()
+                .map(key -> mapToLoadRequest(key, requests))
                 .collect(Collectors.toList());
-
-
-        // TODO: write to the database
     }
 
-    private Map<String, Object> parse(String json) {
-        ObjectMapper objectMapper = new ObjectMapper();
-        Map<String, Object> map;
-
-        try {
-            map = objectMapper.readValue(json, new TypeReference<Map<String, Object>>() {
-            });
-        } catch (IOException e) {
-            throw new MappingException("", e);
-        }
-
-        return map;
+    private LoadRequest mapToLoadRequest(String requestName, Map<String, Object> requests) {
+        LoadRequest request = new LoadRequest();
+        Map<String, Object> requestParams = (Map<String, Object>) requests.get(requestName);
+        request.setUrl((String) requestParams.get(LoadRequestFields.URL.getValue()));
+        request.setType((String) requestParams.get(LoadRequestFields.TYPE.getValue()));
+        int timeout = (Integer) requestParams.getOrDefault(
+                LoadRequestFields.TIMEOUT.getValue(),
+                CommonConstants.DEFAULT_LOAD_REQUEST_TIMEOUT
+        );
+        request.setTimeout(timeout);
+        request.setRequestName(requestName);
+        return request;
     }
 
-    public static class MappingAndPersistingTaskBuilder {
+    static class MappingAndPersistingTaskBuilder {
         private MappingAndPersistingTask task;
 
-        private MappingAndPersistingTaskBuilder(String json) {
-            task = new MappingAndPersistingTask(json);
+        private MappingAndPersistingTaskBuilder() {
+            task = new MappingAndPersistingTask();
         }
 
-        public MappingAndPersistingTask build() {
+        MappingAndPersistingTaskBuilder withJson(String json) {
+            task.json = json;
+            return this;
+        }
+
+        MappingAndPersistingTaskBuilder withLoadTaskDao(Dao<LoadTask> loadTaskDao) {
+            task.loadTaskDao = loadTaskDao;
+            return this;
+        }
+
+        MappingAndPersistingTaskBuilder withLoadRequestDao(Dao<LoadRequest> loadRequestDao) {
+            task.loadRequestDao = loadRequestDao;
+            return this;
+        }
+
+        MappingAndPersistingTask build() {
             return task;
         }
     }

@@ -4,7 +4,9 @@ import org.apache.tomcat.dbcp.dbcp.BasicDataSource;
 import org.hibernate.SessionFactory;
 import org.loadx.application.db.dao.Dao;
 import org.loadx.application.db.dao.GenericDao;
+import org.loadx.application.db.entity.LoadRequest;
 import org.loadx.application.db.entity.LoadTask;
+import org.loadx.application.processor.tasks.TaskCreator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -30,6 +32,11 @@ public class ApplicationConfig {
     @Bean(name = "loadTaskDao")
     public Dao<LoadTask> loadTaskDao(SessionFactory sessionFactory) {
         return new GenericDao<>(sessionFactory);
+    }
+
+    @Bean
+    public TaskCreator taskCreator(Dao<LoadTask> loadTaskDao, Dao<LoadRequest> loadRequestDao) {
+        return new TaskCreator(loadTaskDao, loadRequestDao);
     }
 
     @Bean
