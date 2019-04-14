@@ -30,15 +30,17 @@ public class GenericDao<T extends LoadxEntity> implements Dao<T> {
         Transaction transaction = getSession().beginTransaction();
         T item = getSession().get(type, id);
         transaction.commit();
+        LOG.info("Fetched the record: item={}", item);
         return item;
     }
 
     public List<T> getAll(Class<T> type) {
         Transaction transaction = getSession().beginTransaction();
         Query<T> query = getSession().createQuery(createCriteriaQuery(type));
-        List<T> resultList = query.getResultList();
+        List<T> items = query.getResultList();
         transaction.commit();
-        return resultList;
+        LOG.info("Fetched the records: items.size={}", items.size());
+        return items;
     }
 
     @Override
@@ -46,6 +48,7 @@ public class GenericDao<T extends LoadxEntity> implements Dao<T> {
         Transaction transaction = getSession().beginTransaction();
         int id = (Integer) getSession().save(item);
         transaction.commit();
+        LOG.info("The item is saved and id generated: id={}", id);
         return id;
     }
 
@@ -56,6 +59,7 @@ public class GenericDao<T extends LoadxEntity> implements Dao<T> {
                 .map(item -> (Integer) getSession().save(item))
                 .collect(Collectors.toList());
         transaction.commit();
+        LOG.info("The items were saved and ids generated: savedIds.size={}", savedIds.size());
         return savedIds;
     }
 
@@ -64,6 +68,7 @@ public class GenericDao<T extends LoadxEntity> implements Dao<T> {
         Transaction transaction = getSession().beginTransaction();
         getSession().update(item);
         transaction.commit();
+        LOG.info("The item updated: id={}, entityClass={}", item.getId(), item.getClass().getSimpleName());
     }
 
     @Override
@@ -71,7 +76,7 @@ public class GenericDao<T extends LoadxEntity> implements Dao<T> {
         Transaction transaction = getSession().beginTransaction();
         getSession().delete(item);
         transaction.commit();
-        LOG.info("Item from DB: " + item + " has been removed.");
+        LOG.info("Item from DB removed: id={}, entityClass={}", item.getId(), item.getClass().getSimpleName());
     }
 
     private Session getSession() {
