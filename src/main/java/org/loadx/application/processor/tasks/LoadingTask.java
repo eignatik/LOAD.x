@@ -33,9 +33,10 @@ class LoadingTask implements Task<Integer> {
      */
     @Override
     public CompletableFuture<Integer> execute() {
-//        LoadingExecution execution = new LoadingExecution();
-//        execution.setLoadingTaskId(10);
-        Integer id = loadTask.getId();
+        LoadingExecution execution = new LoadingExecution();
+        execution.setLoadingTaskId(loadTask.getId());
+
+        int executionId = persistent.save(execution);
 
         // submit loading requests in thread pool etc
 //        CompletableFuture
@@ -76,7 +77,7 @@ class LoadingTask implements Task<Integer> {
 
 
         CompletableFuture<Integer> future = new CompletableFuture<>();
-        future.complete(id);
+        future.complete(executionId);
 
         return future;
     }
