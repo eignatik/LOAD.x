@@ -2,13 +2,13 @@ package org.loadx.application.config;
 
 import org.apache.tomcat.dbcp.dbcp.BasicDataSource;
 import org.hibernate.SessionFactory;
-import org.loadx.application.db.LoadPersistent;
 import org.loadx.application.db.dao.Dao;
-import org.loadx.application.db.dao.GenericDao;
+import org.loadx.application.db.dao.LoadxDao;
+import org.loadx.application.db.dao.LoadxDataHelper;
+import org.loadx.application.db.dao.TaskRequestsDao;
 import org.loadx.application.db.entity.*;
 import org.loadx.application.processor.tasks.TaskCreator;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
@@ -23,46 +23,74 @@ import java.util.Properties;
 
 @Configuration
 @EnableTransactionManagement
-@EnableConfigurationProperties
 @PropertySource("environment.properties")
 public class ApplicationConfig {
+
+    private static final String PACKAGE_TO_SCAN = "org.loadx.application.db";
 
     @Autowired
     private Environment env;
 
     @Bean
-    public Dao dao(SessionFactory sessionFactory) {
-        return new GenericDao(sessionFactory);
+    public Dao<LoadTask> loadTaskDao(SessionFactory sessionFactory) {
+        return new LoadxDao<>(sessionFactory);
     }
 
     @Bean
-    public TaskCreator taskCreator(LoadPersistent loadPersistent) {
-        return new TaskCreator(loadPersistent);
+    public Dao<LoadRequest> loadRequestDao(SessionFactory sessionFactory) {
+        return new LoadxDao<>(sessionFactory);
     }
 
     @Bean
-    public LoadPersistent loadPersister(Dao dao) {
-        return new LoadPersistent(dao);
+    public Dao<ExecutionDetails> executionDetailsDao(SessionFactory sessionFactory) {
+        return new LoadxDao<>(sessionFactory);
     }
 
     @Bean
-    public LocalSessionFactoryBean sessionFactory() {
+    public Dao<LoadingExecution> loadingExecutionDao(SessionFactory sessionFactory) {
+        return new LoadxDao<>(sessionFactory);
+    }
+
+    @Bean
+    public Dao<TaskRequests> taskRequestsDao(SessionFactory sessionFactory) {
+        return new TaskRequestsDao(sessionFactory);
+    }
+
+    @Bean
+    public LoadxDataHelper loadxDataHelper(Dao<LoadTask> loadTaskDao, Dao<LoadRequest> loadRequestDao,
+                                           Dao<ExecutionDetails> executionDetailsDao,
+                                           Dao<LoadingExecution> loadingExecutionDao, Dao<TaskRequests> taskRequestsDao,
+                                           SessionFactory sessionFactory) {
+        return new LoadxDataHelper(
+                loadTaskDao, loadRequestDao, executionDetailsDao, loadingExecutionDao, taskRequestsDao, sessionFactory);
+    }
+
+    @Bean
+    public TaskCreator taskCreator(LoadxDataHelper loadxDataHelper, VertxProperties vertxProperties) {
+        return new TaskCreator(loadxDataHelper, vertxProperties);
+    }
+
+    @Bean
+    public VertxProperties vertxProperties() {
+        return new VertxProperties();
+    }
+
+    @Bean
+    public LocalSessionFactoryBean sessionFactory(DataSource restDataSource, Properties dataBaseProperties) {
         LocalSessionFactoryBean sessionFactory = new LocalSessionFactoryBean();
-        sessionFactory.setDataSource(restDataSource());
-        sessionFactory.setPackagesToScan("org.loadx.application.db");
-        sessionFactory.setHibernateProperties(hibernateProperties());
-
+        sessionFactory.setDataSource(restDataSource);
+        sessionFactory.setPackagesToScan(PACKAGE_TO_SCAN);
+        sessionFactory.setHibernateProperties(dataBaseProperties);
         return sessionFactory;
     }
 
     @Bean
-    public DataSource restDataSource() {
+    public DataSource restDataSource(Properties dataBaseProperties) {
         BasicDataSource dataSource = new BasicDataSource();
-        dataSource.setDriverClassName(env.getProperty("hibernate.driver.class"));
-        dataSource.setUrl(env.getProperty("hibernate.db.path"));
+        dataSource.setDriverClassName(dataBaseProperties.getProperty("hibernate.connection.driver_class"));
+        dataSource.setUrl(dataBaseProperties.getProperty("hibernate.connection.url"));
 //        dataSource.setUsername(env.getProperty("jdbc.user"));
 //        dataSource.setPassword(env.getProperty("jdbc.pass"));
-
         return dataSource;
     }
 
@@ -80,22 +108,24 @@ public class ApplicationConfig {
         return new PersistenceExceptionTranslationPostProcessor();
     }
 
-    /**
-     * TODO: configure via ConfigurationProperties
-     *
-     * @return
-     */
-    Properties hibernateProperties() {
-        return new Properties() {
-            {
-                setProperty("hibernate.connection.driver_class", env.getProperty("hibernate.driver.class"));
-                setProperty("hibernate.connection.url", env.getProperty("hibernate.db.path"));
-                setProperty("hibernate.connection.pool_size", env.getProperty("hibernate.connection.pool"));
-                setProperty("hibernate.current_session_context_class", env.getProperty("hibernate.current.session.context.class"));
-                setProperty("hibernate.show_sql", env.getProperty("hibernate.show.sql"));
-                setProperty("hibernate.dialect", env.getProperty("hibernate.dialect"));
-            }
-        };
+    @Bean
+    Properties dataBaseProperties() {
+        Properties properties = new Properties();
+        properties.setProperty("hibernate.connection.driver_class", env.getProperty("hibernate.driver.class"));
+        properties.setProperty("hibernate.connection.pool_size", env.getProperty("hibernate.connection.pool"));
+        properties.setProperty("hibernate.connection.url", env.getProperty("hibernate.db.path"));
+        properties.setProperty(
+                "hibernate.current_session_context_class", env.getProperty("hibernate.current.session.context.class"));
+        properties.setProperty("hibernate.show_sql", env.getProperty("hibernate.show.sql"));
+        properties.setProperty("hibernate.dialect", env.getProperty("hibernate.dialect"));
+
+        properties.setProperty(
+                "hibernate.cache.use_second_level_cache", env.getProperty("hibernate.cache.use_second_level_cache"));
+        properties.setProperty(
+                "hibernate.cache.region.factory_class", env.getProperty("hibernate.cache.region.factory_class"));
+        properties.setProperty(
+                "hibernate.javax.cache.provider", env.getProperty("hibernate.javax.cache.provider"));
+        return properties;
     }
 
 }

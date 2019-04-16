@@ -7,6 +7,8 @@ public final class JsonBodyConstants {
      */
     public static final String URL = "url";
 
+    public static final String TASK_ID = "taskId";
+
     private JsonBodyConstants() {
         // hidden constructor for utility class
     }

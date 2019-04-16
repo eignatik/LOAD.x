@@ -1,16 +1,19 @@
 package org.loadx.application.controllers;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.StringUtils;
 import org.loadx.application.constants.JsonBodyConstants;
 import org.loadx.application.http.WebsiteValidationUtil;
 import org.loadx.application.processor.TaskProcessor;
 import org.loadx.application.processor.tasks.TaskCreator;
+import org.loadx.application.util.MappingUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 
 /**
  * Basic controller that provides the possibility to trigger execution jobs.
@@ -52,7 +55,8 @@ public class NGLoadController {
      * @return JSON mapped requests.
      */
     @GetMapping("/get/taskRequests")
-    public @ResponseBody ResponseEntity<String> getTaskRequests() {
+    public @ResponseBody
+    ResponseEntity<String> getTaskRequests() {
         return new ResponseEntity<>("", HttpStatus.OK);
     }
 
@@ -64,12 +68,21 @@ public class NGLoadController {
      */
     @PostMapping("/add/task")
     public @ResponseBody
-    ResponseEntity<String> addTask(@RequestBody String json) {
-        boolean succeeded = processor.process(taskCreator.createMappingTask(json));
-        if (succeeded) {
-            return new ResponseEntity<>("Given task is successfully added", HttpStatus.OK);
+    ResponseEntity<String> addTask(@RequestBody String json) throws ExecutionException, InterruptedException {
+        int taskId = processor.process(taskCreator.createMappingTask(json)).get();
+        if (taskId != 0) {
+            String response = new ObjectMapper().createObjectNode()
+                    .put("message", "Given task is successfully added")
+                    .put("taskId", taskId)
+                    .put("status", "SUCCESS")
+                    .toString();
+            return new ResponseEntity<>(response, HttpStatus.OK);
         } else {
-            return new ResponseEntity<>("Given task is failed to save", HttpStatus.BAD_REQUEST);
+            String response = new ObjectMapper().createObjectNode()
+                    .put("message", "Given task is failed to save")
+                    .put("status", "ERROR")
+                    .toString();
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -77,12 +90,28 @@ public class NGLoadController {
      * Starts loading for given executions.
      *
      * @param json with executions to apply.
-     * @return TODO: decide how to return status etc.
+     * @return json with execution task identifier.
      */
     @PostMapping("/startLoading")
     public @ResponseBody
-    ResponseEntity<String> startLoading(@RequestBody String json) {
-        return new ResponseEntity<>("", HttpStatus.OK);
+    ResponseEntity<String> startLoading(@RequestBody String json) throws ExecutionException, InterruptedException {
+        if (StringUtils.isEmpty(json)) {
+            return new ResponseEntity<>("Passed request has empty body", HttpStatus.BAD_REQUEST);
+        }
+        Map<String, Object> input = MappingUtil.parseJsonToMap(json);
+        if (!input.containsKey(JsonBodyConstants.TASK_ID)) {
+            return new ResponseEntity<>(
+                    "Passed request doesn't contain mandatory field taskId", HttpStatus.BAD_REQUEST);
+        }
+        int taskId = (Integer) input.get(JsonBodyConstants.TASK_ID);
+        int executionId = processor.process(taskCreator.createLoadingTask(taskId)).get();
+        String response = new ObjectMapper().createObjectNode()
+                .put("message", "Loading execution has started")
+                .put("taskId", taskId)
+                .put("executionId", executionId)
+                .put("status", "STARTED")
+                .toString();
+        return new ResponseEntity<>(response, HttpStatus.ACCEPTED);
     }
 
     /**
