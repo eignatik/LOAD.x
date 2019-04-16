@@ -11,6 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Collections;
 
+/**
+ * Creator for tasks to have tasks creation details encapsulated.
+ */
 public class TaskCreator {
 
     private LoadxDataHelper dataHelper;
@@ -22,6 +25,14 @@ public class TaskCreator {
         this.vertxProperties = vertxProperties;
     }
 
+    /**
+     * Creates the mapping task based on input json.
+     * <p>
+     * Task is for mapping loading configurations from JSON to domain objects.
+     *
+     * @param json JSON to be used for mapping to real objects.
+     * @return configured task for mapping.
+     */
     public Task createMappingTask(String json) {
         return MappingAndPersistingTask.create()
                 .withJson(json)
@@ -29,6 +40,12 @@ public class TaskCreator {
                 .build();
     }
 
+    /**
+     * Creates a task for loading based on given load task id.
+     *
+     * @param taskId LoadTask id to be used for configuring the execution.
+     * @return task configured for the loading.
+     */
     public Task createLoadingTask(int taskId) {
         LoadTask loadTask = dataHelper.getLoadTaskDao().getById(taskId, LoadTask.class);
 

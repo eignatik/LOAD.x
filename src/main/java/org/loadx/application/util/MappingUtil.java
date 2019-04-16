@@ -7,6 +7,9 @@ import org.loadx.application.exceptions.MappingException;
 import java.io.IOException;
 import java.util.Map;
 
+/**
+ * Util class provides with methods that help to map objects from json and opposite.
+ */
 public final class MappingUtil {
 
     private MappingUtil() {

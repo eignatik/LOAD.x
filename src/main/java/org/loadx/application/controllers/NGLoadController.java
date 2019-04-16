@@ -90,7 +90,7 @@ public class NGLoadController {
      * Starts loading for given executions.
      *
      * @param json with executions to apply.
-     * @return TODO: decide how to return status etc.
+     * @return json with execution task identifier.
      */
     @PostMapping("/startLoading")
     public @ResponseBody
