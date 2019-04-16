@@ -118,6 +118,11 @@ public class ApplicationConfig {
                 "hibernate.current_session_context_class", env.getProperty("hibernate.current.session.context.class"));
         properties.setProperty("hibernate.show_sql", env.getProperty("hibernate.show.sql"));
         properties.setProperty("hibernate.dialect", env.getProperty("hibernate.dialect"));
+
+        properties.setProperty(
+                "hibernate.cache.use_second_level_cache", env.getProperty("hibernate.cache.use_second_level_cache"));
+        properties.setProperty(
+                "hibernate.cache.region.factory_class", env.getProperty("hibernate.cache.region.factory_class"));
         return properties;
     }
 
