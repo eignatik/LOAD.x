@@ -71,11 +71,10 @@ class LoadingTask implements Task {
                 details.setRequestId(loadRequestId);
                 details.setTimeElapsed((int) (requestEnd - requestStart)); //TODO AMAZING! Rework to have LONG instead
                 if (res.failed()) {
-                    Throwable cause = res.cause(); // exception of Queue as well might be here
+                    Throwable cause = res.cause(); // exception of Queue might be here as well
                     LOG.warn("The request failed: executionId={}, loadRequestId={}, statusCode={}",
                             executionId, loadRequestId, res.result().statusCode(), cause);
                     details.setLoadingStatus("FAILED");
-
                     // TODO: check if the root cause is about exceeding the maxWaitQueue size and make a pause for some time
                 } else {
                     HttpResponse<Buffer> result = res.result();
@@ -84,7 +83,7 @@ class LoadingTask implements Task {
                     details.setResponseCode(result.statusCode());
                     details.setLoadingStatus("SUCCESS");
                 }
-
+                loadxDataHelper.getExecutionDetailsDao().save(details);
             });
 
             if (reqIndex >= requests.size()) {
