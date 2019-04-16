@@ -1,5 +1,6 @@
 package org.loadx.application.controllers;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.StringUtils;
 import org.loadx.application.constants.JsonBodyConstants;
 import org.loadx.application.http.WebsiteValidationUtil;
@@ -12,7 +13,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 /**
@@ -69,11 +69,20 @@ public class NGLoadController {
     @PostMapping("/add/task")
     public @ResponseBody
     ResponseEntity<String> addTask(@RequestBody String json) throws ExecutionException, InterruptedException {
-        boolean succeeded = processor.process(taskCreator.createMappingTask(json)).get();
-        if (succeeded) {
-            return new ResponseEntity<>("Given task is successfully added", HttpStatus.OK);
+        int taskId = processor.process(taskCreator.createMappingTask(json)).get();
+        if (taskId != 0) {
+            String response = new ObjectMapper().createObjectNode()
+                    .put("message", "Given task is successfully added")
+                    .put("taskId", taskId)
+                    .put("status", "SUCCESS")
+                    .toString();
+            return new ResponseEntity<>(response, HttpStatus.OK);
         } else {
-            return new ResponseEntity<>("Given task is failed to save", HttpStatus.BAD_REQUEST);
+            String response = new ObjectMapper().createObjectNode()
+                    .put("message", "Given task is failed to save")
+                    .put("status", "ERROR")
+                    .toString();
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -85,7 +94,7 @@ public class NGLoadController {
      */
     @PostMapping("/startLoading")
     public @ResponseBody
-    ResponseEntity<String> startLoading(@RequestBody String json) {
+    ResponseEntity<String> startLoading(@RequestBody String json) throws ExecutionException, InterruptedException {
         if (StringUtils.isEmpty(json)) {
             return new ResponseEntity<>("Passed request has empty body", HttpStatus.BAD_REQUEST);
         }
@@ -95,8 +104,14 @@ public class NGLoadController {
                     "Passed request doesn't contain mandatory field taskId", HttpStatus.BAD_REQUEST);
         }
         int taskId = (Integer) input.get(JsonBodyConstants.TASK_ID);
-        CompletableFuture<Boolean> loadingTask = processor.process(taskCreator.createLoadingTask(taskId));
-        return new ResponseEntity<>("Loading task submitted.", HttpStatus.ACCEPTED);
+        int executionId = processor.process(taskCreator.createLoadingTask(taskId)).get();
+        String response = new ObjectMapper().createObjectNode()
+                .put("message", "Loading execution has started")
+                .put("taskId", taskId)
+                .put("executionId", executionId)
+                .put("status", "STARTED")
+                .toString();
+        return new ResponseEntity<>(response, HttpStatus.ACCEPTED);
     }
 
     /**

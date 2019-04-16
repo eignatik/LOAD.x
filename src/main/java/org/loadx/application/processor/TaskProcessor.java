@@ -12,12 +12,12 @@ public class TaskProcessor {
 
     private static final Logger LOG = LoggerFactory.getLogger(TaskProcessor.class);
 
-    public CompletableFuture<Boolean> process(Task<?> task) {
+    public CompletableFuture<Integer> process(Task<?> task) {
         return task.execute()
-                .thenApply(v -> true)
+                .thenApply(v -> 10)
                 .exceptionally(e -> {
                     LOG.error(e.getMessage(), e);
-                    return false;
+                    return 0;
                 });
 
     }
