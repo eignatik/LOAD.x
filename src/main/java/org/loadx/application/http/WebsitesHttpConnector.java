@@ -9,12 +9,11 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
+import org.loadx.application.config.HttpProperties;
 
 /**
  * The http connector that provides configured http client via flexible builder.
  *
- * The httpClient is used in RequestExecutor classes.
- * @see org.loadx.application.http.executor.RequestExecutor
  * @see CloseableHttpClient
  */
 public final class WebsitesHttpConnector {
@@ -42,13 +41,33 @@ public final class WebsitesHttpConnector {
      * @return the configured default instance of WebsitesHttpConnector.
      */
     public static WebsitesHttpConnector createDefault() {
+        return create(new HttpProperties());
+    }
+
+    /**
+     * Creates connector with custom http client properties.
+     *
+     * @param properties properties containing http config.
+     * @return configured instance of WebSiteHttpConnector.
+     */
+    public static WebsitesHttpConnector createWithProperties(HttpProperties properties) {
+        return create(properties);
+    }
+
+    private static WebsitesHttpConnector create(HttpProperties properties) {
         WebsitesHttpConnector connector = new WebsitesHttpConnector();
         connector.cookieStore = new BasicCookieStore();
         connector.requestConfig = RequestConfig.custom()
                 .setCookieSpec(CookieSpecs.STANDARD)
-                .setSocketTimeout(DEFAULT_SOCKET_TIMEOUT)
-                .setConnectTimeout(DEFAULT_CONNECT_TIMEOUT)
-                .setConnectionRequestTimeout(DEFAULT_CONNECTION_REQUEST_TIMEOUT)
+                .setSocketTimeout(
+                        properties.getSocketTimeout() == 0 ?
+                                DEFAULT_SOCKET_TIMEOUT : properties.getSocketTimeout())
+                .setConnectTimeout(
+                        properties.getConnectTimeout() == 0 ?
+                                DEFAULT_CONNECT_TIMEOUT : properties.getConnectTimeout())
+                .setConnectionRequestTimeout(
+                        properties.getConnectionRequestTimeout() == 0 ?
+                                DEFAULT_CONNECTION_REQUEST_TIMEOUT : properties.getConnectionRequestTimeout())
                 .build();
         connector.httpClient = HttpClients.custom()
                 .setDefaultCookieStore(connector.cookieStore)

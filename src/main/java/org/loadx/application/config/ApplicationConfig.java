@@ -6,8 +6,10 @@ import org.loadx.application.db.LoadPersistent;
 import org.loadx.application.db.dao.Dao;
 import org.loadx.application.db.dao.GenericDao;
 import org.loadx.application.db.entity.*;
+import org.loadx.application.http.WebsitesHttpConnector;
 import org.loadx.application.processor.tasks.TaskCreator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -23,9 +25,10 @@ import java.util.Properties;
 
 @Configuration
 @EnableTransactionManagement
-@EnableConfigurationProperties
 @PropertySource("environment.properties")
 public class ApplicationConfig {
+
+    private static final String PACKAGE_TO_SCAN = "org.loadx.application.db";
 
     @Autowired
     private Environment env;
@@ -36,8 +39,8 @@ public class ApplicationConfig {
     }
 
     @Bean
-    public TaskCreator taskCreator(LoadPersistent loadPersistent) {
-        return new TaskCreator(loadPersistent);
+    public TaskCreator taskCreator(LoadPersistent loadPersistent, WebsitesHttpConnector httpConnector) {
+        return new TaskCreator(loadPersistent, httpConnector);
     }
 
     @Bean
@@ -46,23 +49,31 @@ public class ApplicationConfig {
     }
 
     @Bean
-    public LocalSessionFactoryBean sessionFactory() {
-        LocalSessionFactoryBean sessionFactory = new LocalSessionFactoryBean();
-        sessionFactory.setDataSource(restDataSource());
-        sessionFactory.setPackagesToScan("org.loadx.application.db");
-        sessionFactory.setHibernateProperties(hibernateProperties());
+    public WebsitesHttpConnector httpConnector(HttpProperties httpClientProperties) {
+        return WebsitesHttpConnector.createWithProperties(httpClientProperties);
+    }
 
+    @Bean
+    public HttpProperties httpClientProperties() {
+        return new HttpProperties();
+    }
+
+    @Bean
+    public LocalSessionFactoryBean sessionFactory(DataSource restDataSource, Properties dataBaseProperties) {
+        LocalSessionFactoryBean sessionFactory = new LocalSessionFactoryBean();
+        sessionFactory.setDataSource(restDataSource);
+        sessionFactory.setPackagesToScan(PACKAGE_TO_SCAN);
+        sessionFactory.setHibernateProperties(dataBaseProperties);
         return sessionFactory;
     }
 
     @Bean
-    public DataSource restDataSource() {
+    public DataSource restDataSource(Properties dataBaseProperties) {
         BasicDataSource dataSource = new BasicDataSource();
-        dataSource.setDriverClassName(env.getProperty("hibernate.driver.class"));
-        dataSource.setUrl(env.getProperty("hibernate.db.path"));
+        dataSource.setDriverClassName(dataBaseProperties.getProperty("hibernate.driver.class"));
+        dataSource.setUrl(dataBaseProperties.getProperty("hibernate.db.path"));
 //        dataSource.setUsername(env.getProperty("jdbc.user"));
 //        dataSource.setPassword(env.getProperty("jdbc.pass"));
-
         return dataSource;
     }
 
@@ -80,22 +91,17 @@ public class ApplicationConfig {
         return new PersistenceExceptionTranslationPostProcessor();
     }
 
-    /**
-     * TODO: configure via ConfigurationProperties
-     *
-     * @return
-     */
-    Properties hibernateProperties() {
-        return new Properties() {
-            {
-                setProperty("hibernate.connection.driver_class", env.getProperty("hibernate.driver.class"));
-                setProperty("hibernate.connection.url", env.getProperty("hibernate.db.path"));
-                setProperty("hibernate.connection.pool_size", env.getProperty("hibernate.connection.pool"));
-                setProperty("hibernate.current_session_context_class", env.getProperty("hibernate.current.session.context.class"));
-                setProperty("hibernate.show_sql", env.getProperty("hibernate.show.sql"));
-                setProperty("hibernate.dialect", env.getProperty("hibernate.dialect"));
-            }
-        };
+    @Bean
+    Properties dataBaseProperties() {
+        Properties properties = new Properties();
+        properties.setProperty("hibernate.connection.driver_class", env.getProperty("hibernate.driver.class"));
+        properties.setProperty("hibernate.connection.pool_size", env.getProperty("hibernate.connection.pool"));
+        properties.setProperty("hibernate.connection.url", env.getProperty("hibernate.db.path"));
+        properties.setProperty(
+                "hibernate.current_session_context_class", env.getProperty("hibernate.current.session.context.class"));
+        properties.setProperty("hibernate.show_sql", env.getProperty("hibernate.show.sql"));
+        properties.setProperty("hibernate.dialect", env.getProperty("hibernate.dialect"));
+        return properties;
     }
 
 }
