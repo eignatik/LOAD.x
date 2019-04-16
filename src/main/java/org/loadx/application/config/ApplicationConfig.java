@@ -67,8 +67,8 @@ public class ApplicationConfig {
     @Bean
     public DataSource restDataSource(Properties dataBaseProperties) {
         BasicDataSource dataSource = new BasicDataSource();
-        dataSource.setDriverClassName(dataBaseProperties.getProperty("hibernate.driver.class"));
-        dataSource.setUrl(dataBaseProperties.getProperty("hibernate.db.path"));
+        dataSource.setDriverClassName(dataBaseProperties.getProperty("hibernate.connection.driver_class"));
+        dataSource.setUrl(dataBaseProperties.getProperty("hibernate.connection.url"));
 //        dataSource.setUsername(env.getProperty("jdbc.user"));
 //        dataSource.setPassword(env.getProperty("jdbc.pass"));
         return dataSource;
