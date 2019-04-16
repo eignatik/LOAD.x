@@ -14,7 +14,7 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
-class MappingAndPersistingTask implements Task<Integer> {
+class MappingAndPersistingTask implements Task {
 
     private String json;
     private LoadxDataHelper dataHelper;

@@ -12,9 +12,8 @@ public class TaskProcessor {
 
     private static final Logger LOG = LoggerFactory.getLogger(TaskProcessor.class);
 
-    public CompletableFuture<Integer> process(Task<?> task) {
+    public CompletableFuture<Integer> process(Task task) {
         return task.execute()
-                .thenApply(v -> 10)
                 .exceptionally(e -> {
                     LOG.error(e.getMessage(), e);
                     return 0;
