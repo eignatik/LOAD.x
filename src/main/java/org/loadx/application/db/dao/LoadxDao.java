@@ -64,7 +64,7 @@ public class LoadxDao<T extends LoadxEntity> implements Dao<T> {
         Transaction transaction = getSession().beginTransaction();
         int id = (Integer) getSession().save(item);
         transaction.commit();
-        LOG.info("The item is saved and id generated: id={}", id);
+        LOG.info("The item is saved and id generated: id={}, entity={}", id, item.getClass().getSimpleName());
         return id;
     }
 

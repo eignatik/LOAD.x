@@ -52,13 +52,14 @@ public class TaskCreator {
         Vertx vertx = Vertx.vertx(new VertxOptions().setWorkerPoolSize(100));
         WebClientOptions options = new WebClientOptions()
                 .setConnectTimeout(vertxProperties.getConnectTimeout())
+                .setIdleTimeout(2000)
                 .setMaxPoolSize(loadTask.getParallelThreshold())
                 .setMaxWaitQueueSize(1000);
         WebClient client = WebClient.create(vertx, options);
 
         return LoadingTask.create()
                 .withDataHelper(dataHelper)
-                .withLoadRequests(Collections.emptyList())
+                .withLoadRequests(dataHelper.getLoadRequestsByTaskId(loadTask.getId()))
                 .withLoadTask(loadTask)
                 .withWebClient(client)
                 .build();

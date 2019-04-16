@@ -17,6 +17,7 @@
         <!-- dependencies versions -->
         <jsoup.version>1.11.3</jsoup.version>
         <hibernate.version>5.4.2.Final</hibernate.version>
+        <ehcache.version>3.7.0</ehcache.version>
         <jdbc.driver.version>3.8.11.2</jdbc.driver.version>
         <sqlite.dialect.version>0.1.0</sqlite.dialect.version>
         <apache.http.version>4.5.6</apache.http.version>
@@ -131,8 +132,13 @@
         </dependency>
         <dependency>
             <groupId>org.hibernate</groupId>
-            <artifactId>hibernate-ehcache</artifactId>
+            <artifactId>hibernate-jcache</artifactId>
             <version>${hibernate.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.ehcache</groupId>
+            <artifactId>ehcache</artifactId>
+            <version>${ehcache.version}</version>
         </dependency>
         <dependency>
             <groupId>org.xerial</groupId>

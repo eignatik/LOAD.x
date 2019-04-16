@@ -1,6 +1,7 @@
 package org.loadx.application.processor.tasks;
 
 import io.vertx.core.buffer.Buffer;
+import io.vertx.core.http.ConnectionPoolTooBusyException;
 import io.vertx.ext.web.client.HttpRequest;
 import io.vertx.ext.web.client.HttpResponse;
 import io.vertx.ext.web.client.WebClient;
@@ -58,6 +59,7 @@ class LoadingTask implements Task {
         long startTime = System.currentTimeMillis();
         long currentTime;
         boolean finished = false;
+        boolean paused = false;
         int reqIndex = 0;
         List<Integer> requestIds = new ArrayList<>(requests.keySet());
         while (!finished) {
@@ -72,8 +74,11 @@ class LoadingTask implements Task {
                 details.setTimeElapsed((int) (requestEnd - requestStart)); //TODO AMAZING! Rework to have LONG instead
                 if (res.failed()) {
                     Throwable cause = res.cause(); // exception of Queue might be here as well
-                    LOG.warn("The request failed: executionId={}, loadRequestId={}, statusCode={}",
-                            executionId, loadRequestId, res.result().statusCode(), cause);
+                    if (cause instanceof ConnectionPoolTooBusyException) {
+                        LOG.warn("The connection pool exceeded the max queue size. Making a pause");
+                    }
+                    LOG.trace("The request failed: executionId={}, loadRequestId={}",
+                            executionId, loadRequestId, cause);
                     details.setLoadingStatus("FAILED");
                     // TODO: check if the root cause is about exceeding the maxWaitQueue size and make a pause for some time
                 } else {

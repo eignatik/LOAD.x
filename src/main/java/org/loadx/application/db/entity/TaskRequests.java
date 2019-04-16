@@ -9,6 +9,7 @@ public class TaskRequests implements LoadxEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+    @Column(name = "loadTaskid")
     private int loadTaskId;
     private int loadRequestId;
 

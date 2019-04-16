@@ -123,6 +123,8 @@ public class ApplicationConfig {
                 "hibernate.cache.use_second_level_cache", env.getProperty("hibernate.cache.use_second_level_cache"));
         properties.setProperty(
                 "hibernate.cache.region.factory_class", env.getProperty("hibernate.cache.region.factory_class"));
+        properties.setProperty(
+                "hibernate.javax.cache.provider", env.getProperty("hibernate.javax.cache.provider"));
         return properties;
     }
 

@@ -60,7 +60,7 @@ public class LoadxDataHelper {
         Transaction transaction = session.beginTransaction();
 
         Query<LoadRequest> query = session.createQuery("from LoadRequest as lr " +
-                "where lr.id in (from TaskRequests as tr where tr.loadTaskId = :taskId)");
+                "where lr.id in (select tr.loadRequestId from TaskRequests as tr where tr.loadTaskId = :taskId)");
         query.setParameter("taskId", taskId);
 
         List<LoadRequest> resultList = query.getResultList();
