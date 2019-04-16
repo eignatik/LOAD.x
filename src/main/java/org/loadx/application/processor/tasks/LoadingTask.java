@@ -1,5 +1,6 @@
 package org.loadx.application.processor.tasks;
 
+import io.vertx.core.AsyncResult;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.ConnectionPoolTooBusyException;
 import io.vertx.ext.web.client.HttpRequest;
@@ -56,49 +57,49 @@ class LoadingTask implements Task {
 
     private void launchLoading(Map<Integer, HttpRequest<Buffer>> requests, int executionId) {
         int executionTime = loadTask.getLoadingTime();
-        long startTime = System.currentTimeMillis();
-        long currentTime;
         boolean finished = false;
-        boolean paused = false;
         int reqIndex = 0;
         List<Integer> requestIds = new ArrayList<>(requests.keySet());
+        long startTime = System.currentTimeMillis();
         while (!finished) {
             Integer loadRequestId = requestIds.get(reqIndex++);
-            HttpRequest<Buffer> req = requests.get(loadRequestId);
-            long requestStart = System.currentTimeMillis();
-            req.send(res -> {
-                long requestEnd = System.currentTimeMillis();
-                ExecutionDetails details = new ExecutionDetails();
-                details.setExecutionId(executionId);
-                details.setRequestId(loadRequestId);
-                details.setTimeElapsed((int) (requestEnd - requestStart)); //TODO AMAZING! Rework to have LONG instead
-                if (res.failed()) {
-                    Throwable cause = res.cause(); // exception of Queue might be here as well
-                    if (cause instanceof ConnectionPoolTooBusyException) {
-                        LOG.warn("The connection pool exceeded the max queue size. Making a pause");
-                    }
-                    LOG.trace("The request failed: executionId={}, loadRequestId={}",
-                            executionId, loadRequestId, cause);
-                    details.setLoadingStatus("FAILED");
-                    // TODO: check if the root cause is about exceeding the maxWaitQueue size and make a pause for some time
-                } else {
-                    HttpResponse<Buffer> result = res.result();
-                    LOG.info("The request executed: executionId={}, loadRequestId={}, statusCode={}",
-                            executionId, loadRequestId, res.result().statusCode());
-                    details.setResponseCode(result.statusCode());
-                    details.setLoadingStatus("SUCCESS");
-                }
-                loadxDataHelper.getExecutionDetailsDao().save(details);
-            });
+            requests.get(loadRequestId)
+                    .send(res -> requestCallback(res, executionId, loadRequestId, System.currentTimeMillis()));
 
             if (reqIndex >= requests.size()) {
                 reqIndex = 0;
             }
-            currentTime = System.currentTimeMillis() - startTime;
-            if (currentTime >= executionTime) {
+
+            if (System.currentTimeMillis() - startTime >= executionTime) {
                 finished = true;
             }
         }
+    }
+
+    private void requestCallback(AsyncResult<HttpResponse<Buffer>> response,
+                                 int executionId, int loadRequestId, long reqStartTimestamp) {
+        long reqEndTimestamp = System.currentTimeMillis();
+        ExecutionDetails details = new ExecutionDetails();
+        details.setExecutionId(executionId);
+        details.setRequestId(loadRequestId);
+        details.setTimeElapsed((int) (reqEndTimestamp - reqStartTimestamp)); //TODO AMAZING! Rework to have LONG instead
+        if (response.failed()) {
+            details.setLoadingStatus("FAILED");
+            //TODO: add cause or error message field to database
+            Throwable cause = response.cause();
+            if (cause instanceof ConnectionPoolTooBusyException) {
+                LOG.warn("The connection pool exceeded the max queue size. Making a pause");
+            }
+            LOG.trace("The request failed: executionId={}, loadRequestId={}",
+                    executionId, loadRequestId, cause);
+        } else {
+            HttpResponse<Buffer> result = response.result();
+            LOG.info("The request executed: executionId={}, loadRequestId={}, statusCode={}",
+                    executionId, loadRequestId, response.result().statusCode());
+            details.setResponseCode(result.statusCode());
+            details.setLoadingStatus("SUCCESS");
+        }
+        loadxDataHelper.getExecutionDetailsDao().save(details);
     }
 
     static class LoadingTaskBuilder {
