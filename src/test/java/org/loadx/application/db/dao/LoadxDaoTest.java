@@ -1,6 +1,8 @@
 package org.loadx.application.db.dao;
 
 import org.loadx.application.config.ApplicationConfig;
+import org.loadx.application.constants.RequestType;
+import org.loadx.application.db.entity.LoadRequest;
 import org.loadx.application.db.entity.LoadTask;
 import org.loadx.application.db.entity.LoadxEntity;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,13 +12,14 @@ import org.springframework.test.context.testng.AbstractTestNGSpringContextTests;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Import(ApplicationConfig.class)
-public class GenericDaoTest extends AbstractTestNGSpringContextTests {
+public class LoadxDaoTest extends AbstractTestNGSpringContextTests {
 
     @Autowired
-    private Dao dao;
+    private Dao<LoadTask> dao;
 
     @Test
     public void testGetByIdReturnNotEmptyResult() {
@@ -27,7 +30,7 @@ public class GenericDaoTest extends AbstractTestNGSpringContextTests {
 
         int id = dao.save(task);
 
-        LoadTask item = (LoadTask) dao.getById(id, LoadTask.class);
+        LoadTask item = dao.getById(id, LoadTask.class);
         Assert.assertNotNull(item);
         Assert.assertEquals(item.getBaseUrl(), "testUrl");
         Assert.assertEquals(item.getLoadingTime(), 10000);
@@ -45,7 +48,7 @@ public class GenericDaoTest extends AbstractTestNGSpringContextTests {
 
         dao.save(task);
 
-        List<LoadTask> tasks = (List<LoadTask>)(Object) dao.getAll(LoadTask.class);
+        List<LoadTask> tasks = dao.getAll(LoadTask.class);
         Assert.assertNotNull(tasks);
         Assert.assertTrue(tasks.size() > 0);
 
@@ -61,7 +64,7 @@ public class GenericDaoTest extends AbstractTestNGSpringContextTests {
 
         int result = dao.save(task);
 
-        LoadTask savedItem = (LoadTask) dao.getById(result, LoadTask.class);
+        LoadTask savedItem = dao.getById(result, LoadTask.class);
         Assert.assertNotNull(savedItem);
         Assert.assertEquals(savedItem.getBaseUrl(), "testBaseUrl1");
 
@@ -80,14 +83,14 @@ public class GenericDaoTest extends AbstractTestNGSpringContextTests {
         task1.setLoadingTime(200);
         task1.setParallelThreshold(4);
 
-        List<LoadxEntity> tasks = List.of(task, task1);
+        List<LoadTask> tasks = List.of(task, task1);
 
         List<Integer> ids = dao.save(tasks);
 
         Assert.assertNotNull(ids, "Records should be persisted");
 
         for (Integer id : ids) {
-            LoadTask item = (LoadTask) dao.getById(id, LoadTask.class);
+            LoadTask item = dao.getById(id, LoadTask.class);
             Assert.assertNotNull(item, "The record should be persisted");
             dao.remove(item);
         }
@@ -102,12 +105,12 @@ public class GenericDaoTest extends AbstractTestNGSpringContextTests {
 
         int id = dao.save(task);
 
-        LoadTask fetched = (LoadTask) dao.getById(id, LoadTask.class);
+        LoadTask fetched = dao.getById(id, LoadTask.class);
         final String changedValue = "changed-value";
         fetched.setBaseUrl(changedValue);
 
         dao.update(fetched);
-        fetched = (LoadTask) dao.getById(id, LoadTask.class);
+        fetched = dao.getById(id, LoadTask.class);
 
         Assert.assertEquals(fetched.getBaseUrl(), changedValue);
 

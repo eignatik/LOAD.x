@@ -4,6 +4,9 @@ import org.apache.tomcat.dbcp.dbcp.BasicDataSource;
 import org.hibernate.SessionFactory;
 import org.loadx.application.db.dao.Dao;
 import org.loadx.application.db.dao.LoadxDao;
+import org.loadx.application.db.dao.LoadxDataHelper;
+import org.loadx.application.db.dao.TaskRequestsDao;
+import org.loadx.application.db.entity.*;
 import org.loadx.application.http.WebsitesHttpConnector;
 import org.loadx.application.processor.tasks.TaskCreator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,13 +33,42 @@ public class ApplicationConfig {
     private Environment env;
 
     @Bean
-    public Dao dao(SessionFactory sessionFactory) {
-        return new LoadxDao(sessionFactory);
+    public Dao<LoadTask> loadTaskDao(SessionFactory sessionFactory) {
+        return new LoadxDao<>(sessionFactory);
     }
 
     @Bean
-    public TaskCreator taskCreator(Dao dao, WebsitesHttpConnector httpConnector) {
-        return new TaskCreator(dao, httpConnector);
+    public Dao<LoadRequest> loadRequestDao(SessionFactory sessionFactory) {
+        return new LoadxDao<>(sessionFactory);
+    }
+
+    @Bean
+    public Dao<ExecutionDetails> executionDetailsDao(SessionFactory sessionFactory) {
+        return new LoadxDao<>(sessionFactory);
+    }
+
+    @Bean
+    public Dao<LoadingExecution> loadingExecutionDao(SessionFactory sessionFactory) {
+        return new LoadxDao<>(sessionFactory);
+    }
+
+    @Bean
+    public Dao<TaskRequests> taskRequestsDao(SessionFactory sessionFactory) {
+        return new TaskRequestsDao(sessionFactory);
+    }
+
+    @Bean
+    public LoadxDataHelper loadxDataHelper(Dao<LoadTask> loadTaskDao, Dao<LoadRequest> loadRequestDao,
+                                           Dao<ExecutionDetails> executionDetailsDao,
+                                           Dao<LoadingExecution> loadingExecutionDao, Dao<TaskRequests> taskRequestsDao,
+                                           SessionFactory sessionFactory) {
+        return new LoadxDataHelper(
+                loadTaskDao, loadRequestDao, executionDetailsDao, loadingExecutionDao, taskRequestsDao, sessionFactory);
+    }
+
+    @Bean
+    public TaskCreator taskCreator(LoadxDataHelper loadxDataHelper, WebsitesHttpConnector httpConnector) {
+        return new TaskCreator(loadxDataHelper, httpConnector);
     }
 
     @Bean

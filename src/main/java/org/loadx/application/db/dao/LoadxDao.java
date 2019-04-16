@@ -5,6 +5,7 @@ import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
 import org.loadx.application.db.entity.LoadRequest;
+import org.loadx.application.db.entity.LoadTask;
 import org.loadx.application.db.entity.LoadxEntity;
 import org.loadx.application.db.entity.TaskRequests;
 import org.slf4j.Logger;
@@ -12,7 +13,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.ParameterExpression;
 import javax.persistence.criteria.Root;
 import java.util.Collections;
 import java.util.List;
@@ -28,7 +31,7 @@ import java.util.stream.Collectors;
  */
 @Component
 @SuppressWarnings("unchecked")
-public class LoadxDao implements Dao {
+public class LoadxDao<T extends LoadxEntity> implements Dao<T> {
 
     private SessionFactory sessionFactory;
 
@@ -39,20 +42,25 @@ public class LoadxDao implements Dao {
 
     private static final Logger LOG = LoggerFactory.getLogger(LoadxDao.class);
 
-    public LoadxEntity getById(int id, Class type) {
+    public T getById(int id, Class<T> type) {
         Transaction transaction = getSession().beginTransaction();
-        LoadxEntity item = (LoadxEntity) getSession().get(type, id);
+        T item = (T) getSession().get(type, id);
         transaction.commit();
         LOG.info("Fetched the record: item={}", item);
         return item;
     }
 
-    public List<LoadxEntity> getAll(Class type) {
-        return getAllByQuery(createCriteriaQuery(type), type);
+    public List<T> getAll(Class type) {
+        Transaction transaction = getSession().beginTransaction();
+        Query<T> query = getSession().createQuery(createCriteriaQuery(type));
+        List<T> items = query.getResultList();
+        transaction.commit();
+        LOG.info("Fetched the records: items.size={}", items.size());
+        return items;
     }
 
     @Override
-    public int save(LoadxEntity item) {
+    public int save(T item) {
         Transaction transaction = getSession().beginTransaction();
         int id = (Integer) getSession().save(item);
         transaction.commit();
@@ -61,7 +69,7 @@ public class LoadxDao implements Dao {
     }
 
     @Override
-    public List<Integer> save(List<LoadxEntity> items) {
+    public List<Integer> save(List<T> items) {
         Transaction transaction = getSession().beginTransaction();
         List<Integer> savedIds = items.stream()
                 .map(item -> (Integer) getSession().save(item))
@@ -72,7 +80,7 @@ public class LoadxDao implements Dao {
     }
 
     @Override
-    public void update(LoadxEntity item) {
+    public void update(T item) {
         Transaction transaction = getSession().beginTransaction();
         getSession().update(item);
         transaction.commit();
@@ -88,40 +96,29 @@ public class LoadxDao implements Dao {
     }
 
     @Override
-    public void persistLoadTaskRequests(int loadTaskId, List<Integer> requestsIds) {
-        List<LoadxEntity> linkedRequests = requestsIds.stream()
-                .map(req -> {
-                    TaskRequests taskRequests = new TaskRequests();
-                    taskRequests.setLoadRequestId(req);
-                    taskRequests.setLoadTaskId(loadTaskId);
-                    return taskRequests;
-                })
+    public void remove(List<T> items) {
+        Transaction transaction = getSession().beginTransaction();
+        items.forEach(item -> getSession().delete("", item));
+        transaction.commit();
+        LOG.info("Removed items: count=", items.size());
+    }
+
+    @Override
+    public List<Integer> saveAll(List<T> items) {
+        return items.stream()
+                .map(item -> (Integer) getSession().save(item))
                 .collect(Collectors.toList());
-        save(linkedRequests);
     }
 
-    public List<LoadRequest> getLoadRequestsByTaskId(int taskId) {
-        return Collections.emptyList();
-    }
-
-    private Session getSession() {
+    protected Session getSession() {
         return sessionFactory.getCurrentSession();
     }
 
-    private List<LoadxEntity> getAllByQuery(CriteriaQuery<LoadxEntity> criteriaQuery, Class type) {
-        Transaction transaction = getSession().beginTransaction();
-        Query<LoadxEntity> query = getSession().createQuery(criteriaQuery);
-        List<LoadxEntity> items = query.getResultList();
-        transaction.commit();
-        LOG.info("Fetched the records: items.size={}", items.size());
-        return items;
-    }
-
-    private CriteriaQuery<LoadxEntity> createCriteriaQuery(Class<LoadxEntity> type) {
-        CriteriaQuery<LoadxEntity> criteriaQuery = getSession()
+    private CriteriaQuery<T> createCriteriaQuery(Class<T> type) {
+        CriteriaQuery<T> criteriaQuery = getSession()
                 .getCriteriaBuilder()
                 .createQuery(type);
-        Root<LoadxEntity> rootItem = criteriaQuery.from(type);
+        Root<T> rootItem = criteriaQuery.from(type);
         criteriaQuery.select(rootItem);
         return criteriaQuery;
     }

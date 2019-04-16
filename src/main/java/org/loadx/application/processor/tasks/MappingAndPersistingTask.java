@@ -3,10 +3,9 @@ package org.loadx.application.processor.tasks;
 import org.loadx.application.constants.CommonConstants;
 import org.loadx.application.constants.LoadRequestFields;
 import org.loadx.application.constants.LoadTaskFields;
-import org.loadx.application.db.dao.Dao;
+import org.loadx.application.db.dao.LoadxDataHelper;
 import org.loadx.application.db.entity.LoadRequest;
 import org.loadx.application.db.entity.LoadTask;
-import org.loadx.application.db.entity.LoadxEntity;
 import org.loadx.application.util.MappingUtil;
 import org.loadx.application.util.TimeParser;
 
@@ -18,7 +17,7 @@ import java.util.stream.Collectors;
 class MappingAndPersistingTask implements Task<Void> {
 
     private String json;
-    private Dao dao;
+    private LoadxDataHelper dataHelper;
 
     private MappingAndPersistingTask() {
         // hidden constructor for builder purposes
@@ -33,14 +32,13 @@ class MappingAndPersistingTask implements Task<Void> {
         return CompletableFuture.runAsync(this::parse);
     }
 
-    private void parse() {
+    private int parse() {
         Map<String, Object> parsedTask = MappingUtil.parseJsonToMap(json);
 
         // TODO: validate parsedTask
 
-        int loadTaskId = dao.save(mapToLoadTask(parsedTask));
-        List<Integer> addedRequestsIds = dao.save(mapToLoadRequests(parsedTask));
-        dao.persistLoadTaskRequests(loadTaskId, addedRequestsIds);
+        // TODO: return task id somehow
+        return dataHelper.persistLoadTaskRequests(mapToLoadTask(parsedTask), mapToLoadRequests(parsedTask));
     }
 
     private LoadTask mapToLoadTask(Map<String, Object> parsedTask) {
@@ -55,7 +53,7 @@ class MappingAndPersistingTask implements Task<Void> {
         return loadTask;
     }
 
-    private List<LoadxEntity> mapToLoadRequests(Map<String, Object> parsedTask) {
+    private List<LoadRequest> mapToLoadRequests(Map<String, Object> parsedTask) {
         Map<String, Object> requests = (Map<String, Object>) parsedTask.get(LoadTaskFields.REQUESTS.getValue());
         return requests.keySet().stream()
                 .map(key -> mapToLoadRequest(key, requests))
@@ -88,8 +86,8 @@ class MappingAndPersistingTask implements Task<Void> {
             return this;
         }
 
-        MappingAndPersistingTaskBuilder withDao(Dao dao) {
-            task.dao = dao;
+        MappingAndPersistingTaskBuilder withDataHelper(LoadxDataHelper dataHelper) {
+            task.dataHelper = dataHelper;
             return this;
         }
 

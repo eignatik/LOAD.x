@@ -2,7 +2,7 @@ package org.loadx.application.processor.tasks;
 
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpUriRequest;
-import org.loadx.application.db.dao.Dao;
+import org.loadx.application.db.dao.LoadxDataHelper;
 import org.loadx.application.db.entity.ExecutionDetails;
 import org.loadx.application.db.entity.LoadRequest;
 import org.loadx.application.db.entity.LoadTask;
@@ -19,7 +19,7 @@ class LoadingTask implements Task<Integer> {
 
     private static final Logger LOG = LoggerFactory.getLogger(LoadingTask.class);
 
-    private Dao dao;
+    private LoadxDataHelper loadxDataHelper;
     private LoadTask loadTask;
     private List<LoadRequest> loadRequests;
     private WebsitesHttpConnector connector;
@@ -36,7 +36,7 @@ class LoadingTask implements Task<Integer> {
         LoadingExecution execution = new LoadingExecution();
         execution.setLoadingTaskId(loadTask.getId());
 
-        int executionId = dao.save(execution);
+        int executionId = loadxDataHelper.getLoadingExecutionDao().save(execution);
 
         // submit loading requests in thread pool etc
 //        CompletableFuture
@@ -89,8 +89,8 @@ class LoadingTask implements Task<Integer> {
             task = new LoadingTask();
         }
 
-        public LoadingTaskBuilder withDao(Dao dao) {
-            task.dao = dao;
+        public LoadingTaskBuilder withDataHelper(LoadxDataHelper loadxDataHelper) {
+            task.loadxDataHelper = loadxDataHelper;
             return this;
         }
 
