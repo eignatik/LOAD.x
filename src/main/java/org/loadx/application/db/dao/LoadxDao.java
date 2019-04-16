@@ -4,7 +4,9 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
+import org.loadx.application.db.entity.LoadRequest;
 import org.loadx.application.db.entity.LoadxEntity;
+import org.loadx.application.db.entity.TaskRequests;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,11 +14,12 @@ import org.springframework.stereotype.Component;
 
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Generic GenericDao class for all entities.
+ * Generic LoadxDao class for all entities.
  * <p>
  * The class provides with the CRUD operations in a generic way.
  *
@@ -25,16 +28,16 @@ import java.util.stream.Collectors;
  */
 @Component
 @SuppressWarnings("unchecked")
-public class GenericDao implements Dao {
+public class LoadxDao implements Dao {
 
     private SessionFactory sessionFactory;
 
     @Autowired
-    public GenericDao(SessionFactory sessionFactory) {
+    public LoadxDao(SessionFactory sessionFactory) {
         this.sessionFactory = sessionFactory;
     }
 
-    private static final Logger LOG = LoggerFactory.getLogger(GenericDao.class);
+    private static final Logger LOG = LoggerFactory.getLogger(LoadxDao.class);
 
     public LoadxEntity getById(int id, Class type) {
         Transaction transaction = getSession().beginTransaction();
@@ -45,12 +48,7 @@ public class GenericDao implements Dao {
     }
 
     public List<LoadxEntity> getAll(Class type) {
-        Transaction transaction = getSession().beginTransaction();
-        Query<LoadxEntity> query = getSession().createQuery(createCriteriaQuery(type));
-        List<LoadxEntity> items = query.getResultList();
-        transaction.commit();
-        LOG.info("Fetched the records: items.size={}", items.size());
-        return items;
+        return getAllByQuery(createCriteriaQuery(type), type);
     }
 
     @Override
@@ -89,8 +87,34 @@ public class GenericDao implements Dao {
         LOG.info("Item from DB removed: id={}, entityClass={}", item.getId(), item.getClass().getSimpleName());
     }
 
+    @Override
+    public void persistLoadTaskRequests(int loadTaskId, List<Integer> requestsIds) {
+        List<LoadxEntity> linkedRequests = requestsIds.stream()
+                .map(req -> {
+                    TaskRequests taskRequests = new TaskRequests();
+                    taskRequests.setLoadRequestId(req);
+                    taskRequests.setLoadTaskId(loadTaskId);
+                    return taskRequests;
+                })
+                .collect(Collectors.toList());
+        save(linkedRequests);
+    }
+
+    public List<LoadRequest> getLoadRequestsByTaskId(int taskId) {
+        return Collections.emptyList();
+    }
+
     private Session getSession() {
         return sessionFactory.getCurrentSession();
+    }
+
+    private List<LoadxEntity> getAllByQuery(CriteriaQuery<LoadxEntity> criteriaQuery, Class type) {
+        Transaction transaction = getSession().beginTransaction();
+        Query<LoadxEntity> query = getSession().createQuery(criteriaQuery);
+        List<LoadxEntity> items = query.getResultList();
+        transaction.commit();
+        LOG.info("Fetched the records: items.size={}", items.size());
+        return items;
     }
 
     private CriteriaQuery<LoadxEntity> createCriteriaQuery(Class<LoadxEntity> type) {

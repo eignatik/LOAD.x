@@ -1,5 +1,6 @@
 package org.loadx.application.db.dao;
 
+import org.loadx.application.db.entity.LoadRequest;
 import org.loadx.application.db.entity.LoadxEntity;
 
 import java.util.List;
@@ -56,4 +57,8 @@ public interface Dao {
      * @param item to be removed.
      */
     void remove(LoadxEntity item);
+
+    void persistLoadTaskRequests(int loadTaskId, List<Integer> ids);
+    List<LoadRequest> getLoadRequestsByTaskId(int taskId);
+
 }

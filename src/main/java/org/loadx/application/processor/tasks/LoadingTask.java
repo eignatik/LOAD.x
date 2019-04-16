@@ -2,7 +2,7 @@ package org.loadx.application.processor.tasks;
 
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpUriRequest;
-import org.loadx.application.db.LoadPersistent;
+import org.loadx.application.db.dao.Dao;
 import org.loadx.application.db.entity.ExecutionDetails;
 import org.loadx.application.db.entity.LoadRequest;
 import org.loadx.application.db.entity.LoadTask;
@@ -19,12 +19,12 @@ class LoadingTask implements Task<Integer> {
 
     private static final Logger LOG = LoggerFactory.getLogger(LoadingTask.class);
 
-    private LoadPersistent persistent;
+    private Dao dao;
     private LoadTask loadTask;
     private List<LoadRequest> loadRequests;
     private WebsitesHttpConnector connector;
 
-    public static LoadingTaskBuilder create() {
+    static LoadingTaskBuilder create() {
         return new LoadingTaskBuilder();
     }
 
@@ -36,7 +36,7 @@ class LoadingTask implements Task<Integer> {
         LoadingExecution execution = new LoadingExecution();
         execution.setLoadingTaskId(loadTask.getId());
 
-        int executionId = persistent.save(execution);
+        int executionId = dao.save(execution);
 
         // submit loading requests in thread pool etc
 //        CompletableFuture
@@ -89,8 +89,8 @@ class LoadingTask implements Task<Integer> {
             task = new LoadingTask();
         }
 
-        public LoadingTaskBuilder withLoadPersistent(LoadPersistent persistent) {
-            task.persistent = persistent;
+        public LoadingTaskBuilder withDao(Dao dao) {
+            task.dao = dao;
             return this;
         }
 

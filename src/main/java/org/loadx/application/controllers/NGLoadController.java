@@ -5,6 +5,7 @@ import org.loadx.application.constants.JsonBodyConstants;
 import org.loadx.application.http.WebsiteValidationUtil;
 import org.loadx.application.processor.TaskProcessor;
 import org.loadx.application.processor.tasks.TaskCreator;
+import org.loadx.application.util.MappingUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -85,7 +86,17 @@ public class NGLoadController {
     @PostMapping("/startLoading")
     public @ResponseBody
     ResponseEntity<String> startLoading(@RequestBody String json) {
-        return new ResponseEntity<>("", HttpStatus.OK);
+        if (StringUtils.isEmpty(json)) {
+            return new ResponseEntity<>("Passed request has empty body", HttpStatus.BAD_REQUEST);
+        }
+        Map<String, Object> input = MappingUtil.parseJsonToMap(json);
+        if (!input.containsKey(JsonBodyConstants.TASK_ID)) {
+            return new ResponseEntity<>(
+                    "Passed request doesn't contain mandatory field taskId", HttpStatus.BAD_REQUEST);
+        }
+        int taskId = (Integer) input.get(JsonBodyConstants.TASK_ID);
+        CompletableFuture<Boolean> loadingTask = processor.process(taskCreator.createLoadingTask(taskId));
+        return new ResponseEntity<>("Loading task submitted.", HttpStatus.ACCEPTED);
     }
 
     /**

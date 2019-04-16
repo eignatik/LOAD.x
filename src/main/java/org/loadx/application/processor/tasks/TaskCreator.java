@@ -1,6 +1,7 @@
 package org.loadx.application.processor.tasks;
 
-import org.loadx.application.db.LoadPersistent;
+import org.loadx.application.db.dao.Dao;
+import org.loadx.application.db.entity.LoadTask;
 import org.loadx.application.http.WebsitesHttpConnector;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -8,28 +9,28 @@ import java.util.Collections;
 
 public class TaskCreator {
 
-    private LoadPersistent loadPersistent;
-    private WebsitesHttpConnector connector;
+    private Dao dao;
+    private WebsitesHttpConnector httpConnector;
 
     @Autowired
-    public TaskCreator(LoadPersistent loadPersistent, WebsitesHttpConnector connector) {
-        this.loadPersistent = loadPersistent;
-        this.connector = connector;
+    public TaskCreator(Dao dao, WebsitesHttpConnector httpConnector) {
+        this.dao = dao;
+        this.httpConnector = httpConnector;
     }
 
     public Task createMappingTask(String json) {
         return MappingAndPersistingTask.create()
                 .withJson(json)
-                .withLoadPersistent(loadPersistent)
+                .withDao(dao)
                 .build();
     }
 
-    public Task createLoadingTask(String json) {
+    public Task createLoadingTask(int taskId) {
         return LoadingTask.create()
-                .withLoadPersistent(loadPersistent)
+                .withDao(dao)
                 .withLoadRequests(Collections.emptyList())
-                .withLoadTask(null)
-                .withConnector(connector)
+                .withLoadTask((LoadTask) dao.getById(taskId, LoadTask.class))
+                .withConnector(httpConnector)
                 .build();
     }
 

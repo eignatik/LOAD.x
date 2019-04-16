@@ -1,18 +1,15 @@
 package org.loadx.application.processor.tasks;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.loadx.application.constants.CommonConstants;
 import org.loadx.application.constants.LoadRequestFields;
 import org.loadx.application.constants.LoadTaskFields;
-import org.loadx.application.db.LoadPersistent;
+import org.loadx.application.db.dao.Dao;
 import org.loadx.application.db.entity.LoadRequest;
 import org.loadx.application.db.entity.LoadTask;
 import org.loadx.application.db.entity.LoadxEntity;
-import org.loadx.application.exceptions.MappingException;
+import org.loadx.application.util.MappingUtil;
 import org.loadx.application.util.TimeParser;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -21,7 +18,7 @@ import java.util.stream.Collectors;
 class MappingAndPersistingTask implements Task<Void> {
 
     private String json;
-    private LoadPersistent loadPersistent;
+    private Dao dao;
 
     private MappingAndPersistingTask() {
         // hidden constructor for builder purposes
@@ -37,27 +34,13 @@ class MappingAndPersistingTask implements Task<Void> {
     }
 
     private void parse() {
-        Map<String, Object> parsedTask = parseJsonToMap(json);
+        Map<String, Object> parsedTask = MappingUtil.parseJsonToMap(json);
 
         // TODO: validate parsedTask
 
-        int loadTaskId = loadPersistent.save(mapToLoadTask(parsedTask));
-        List<Integer> addedRequestsIds = loadPersistent.save(mapToLoadRequests(parsedTask));
-        loadPersistent.persistLoadTaskRequests(loadTaskId, addedRequestsIds);
-    }
-
-    private Map<String, Object> parseJsonToMap(String json) {
-        ObjectMapper objectMapper = new ObjectMapper();
-        Map<String, Object> map;
-
-        try {
-            map = objectMapper.readValue(json, new TypeReference<Map<String, Object>>() {
-            });
-        } catch (IOException e) {
-            throw new MappingException("Failed to parse input json to map", e);
-        }
-
-        return map;
+        int loadTaskId = dao.save(mapToLoadTask(parsedTask));
+        List<Integer> addedRequestsIds = dao.save(mapToLoadRequests(parsedTask));
+        dao.persistLoadTaskRequests(loadTaskId, addedRequestsIds);
     }
 
     private LoadTask mapToLoadTask(Map<String, Object> parsedTask) {
@@ -105,8 +88,8 @@ class MappingAndPersistingTask implements Task<Void> {
             return this;
         }
 
-        MappingAndPersistingTaskBuilder withLoadPersistent(LoadPersistent loadPersistent) {
-            task.loadPersistent = loadPersistent;
+        MappingAndPersistingTaskBuilder withDao(Dao dao) {
+            task.dao = dao;
             return this;
         }
 

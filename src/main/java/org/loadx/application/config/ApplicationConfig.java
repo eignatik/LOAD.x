@@ -2,9 +2,8 @@ package org.loadx.application.config;
 
 import org.apache.tomcat.dbcp.dbcp.BasicDataSource;
 import org.hibernate.SessionFactory;
-import org.loadx.application.db.LoadPersistent;
 import org.loadx.application.db.dao.Dao;
-import org.loadx.application.db.dao.GenericDao;
+import org.loadx.application.db.dao.LoadxDao;
 import org.loadx.application.http.WebsitesHttpConnector;
 import org.loadx.application.processor.tasks.TaskCreator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,17 +31,12 @@ public class ApplicationConfig {
 
     @Bean
     public Dao dao(SessionFactory sessionFactory) {
-        return new GenericDao(sessionFactory);
+        return new LoadxDao(sessionFactory);
     }
 
     @Bean
-    public TaskCreator taskCreator(LoadPersistent loadPersistent, WebsitesHttpConnector httpConnector) {
-        return new TaskCreator(loadPersistent, httpConnector);
-    }
-
-    @Bean
-    public LoadPersistent loadPersister(Dao dao) {
-        return new LoadPersistent(dao);
+    public TaskCreator taskCreator(Dao dao, WebsitesHttpConnector httpConnector) {
+        return new TaskCreator(dao, httpConnector);
     }
 
     @Bean
