@@ -7,7 +7,6 @@ import org.loadx.application.db.dao.LoadxDao;
 import org.loadx.application.db.dao.LoadxDataHelper;
 import org.loadx.application.db.dao.TaskRequestsDao;
 import org.loadx.application.db.entity.*;
-import org.loadx.application.http.WebsitesHttpConnector;
 import org.loadx.application.processor.tasks.TaskCreator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -67,18 +66,13 @@ public class ApplicationConfig {
     }
 
     @Bean
-    public TaskCreator taskCreator(LoadxDataHelper loadxDataHelper, WebsitesHttpConnector httpConnector) {
-        return new TaskCreator(loadxDataHelper, httpConnector);
+    public TaskCreator taskCreator(LoadxDataHelper loadxDataHelper, VertxProperties vertxProperties) {
+        return new TaskCreator(loadxDataHelper, vertxProperties);
     }
 
     @Bean
-    public WebsitesHttpConnector httpConnector(HttpProperties httpClientProperties) {
-        return WebsitesHttpConnector.createWithProperties(httpClientProperties);
-    }
-
-    @Bean
-    public HttpProperties httpClientProperties() {
-        return new HttpProperties();
+    public VertxProperties vertxProperties() {
+        return new VertxProperties();
     }
 
     @Bean

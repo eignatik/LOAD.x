@@ -5,6 +5,7 @@ import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.ext.web.client.HttpRequest;
+import io.vertx.ext.web.client.HttpResponse;
 import io.vertx.ext.web.client.WebClient;
 import io.vertx.ext.web.client.WebClientOptions;
 import org.apache.http.client.methods.HttpGet;
@@ -14,13 +15,16 @@ import org.loadx.application.db.entity.ExecutionDetails;
 import org.loadx.application.db.entity.LoadRequest;
 import org.loadx.application.db.entity.LoadTask;
 import org.loadx.application.db.entity.LoadingExecution;
-import org.loadx.application.http.WebsitesHttpConnector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 class LoadingTask implements Task {
 
@@ -29,7 +33,7 @@ class LoadingTask implements Task {
     private LoadxDataHelper loadxDataHelper;
     private LoadTask loadTask;
     private List<LoadRequest> loadRequests;
-    private WebsitesHttpConnector connector;
+    private WebClient webClient;
 
     static LoadingTaskBuilder create() {
         return new LoadingTaskBuilder();
@@ -42,79 +46,57 @@ class LoadingTask implements Task {
     public CompletableFuture<Integer> execute() {
         LoadingExecution execution = new LoadingExecution();
         execution.setLoadingTaskId(loadTask.getId());
-
         int executionId = loadxDataHelper.getLoadingExecutionDao().save(execution);
 
-        // submit loading requests in thread pool etc
-//        CompletableFuture
+        Map<Integer, HttpRequest<Buffer>> vertxRequests = loadRequests.stream()
+                .collect(Collectors.toMap(LoadRequest::getId, req -> webClient.get(loadTask.getBaseUrl(), req.getUrl())));
 
-        // get pool capacity in runtime (if no available threads, wait don't create new requests
-
-        Vertx vertx = Vertx.vertx(new VertxOptions().setWorkerPoolSize(100));
-        WebClientOptions options = new WebClientOptions()
-                .setConnectTimeout(15000)
-                .setMaxPoolSize(loadTask.getParallelThreshold())
-                .setMaxWaitQueueSize(1000);
-        WebClient client = WebClient.create(vertx, options);
-
-        int i = 0;
-        while (true) {
-            LoadRequest loadRequest = loadRequests.get(i);
-
-            HttpRequest<Buffer> httpRequest = client.get(8080, loadTask.getBaseUrl(), loadRequest.getUrl());
-
-            httpRequest.send(res -> {
-                if (res.failed()) {
-                    Throwable cause = res.cause(); // exception of Queue as well might be here
-                }
-                String header = res.result().getHeader("x-response-time");
-            });
-
-
-            //res is async result. Need to learn more how to export result.
-            // send should return exception if queue is overfilled
-
-            // check pool and wait before submitting
-            // put something to the queue and check  this queue for threshold
-//            HttpUriRequest request = new HttpGet(loadTask.getBaseUrl() + loadRequest.getUrl());
-//            CompletableFuture
-//                    .supplyAsync(() -> {
-//                        try {
-//                            HttpRequest<Buffer> httpRequest = client.get(8080, loadTask.getBaseUrl(), loadRequest.getUrl());
-//                            httpRequest.send(v -> System.out.println(v));
-//                            httpRequest.
-//                            return connector.getHttpClient().execute(request);
-//                        } catch (IOException e) {
-//                            throw new RuntimeException(e);
-//                            // todo: handle exception properly, with adding info to statistics/db, exceptionally
-//                        }
-//                    })
-//                    .thenApply(res -> {
-//                        ExecutionDetails details = new ExecutionDetails();
-//                        // todo: fill that shit
-//                        return details;
-//                    })
-//                    .thenRun(() -> {
-//                        // todo: write to buffer
-//                    })
-//                    .exceptionally(v -> {
-//                        LOG.error("You are fucked up");
-//                        // todo: some shit happened, write it somewhere
-//                        return null;
-//                    });
-            // TEMP BREAK
-
-            // check if exception happen or something, make pause for some time and then continue submitting
-
-
-            break;
-            //check time
-        }
+        CompletableFuture.runAsync(() -> launchLoading(vertxRequests, executionId));
 
         CompletableFuture<Integer> future = new CompletableFuture<>();
         future.complete(executionId);
 
         return future;
+    }
+
+    private void launchLoading(Map<Integer, HttpRequest<Buffer>> requests, int executionId) {
+        int executionTime = loadTask.getLoadingTime();
+        long startTime = System.currentTimeMillis();
+        long currentTime = 0;
+        boolean finished = false;
+        int reqIndex = 0;
+        List<Integer> requestIds = new ArrayList<>(requests.keySet());
+        while (!finished) {
+            Integer loadRequestId = requestIds.get(reqIndex++);
+            HttpRequest<Buffer> req = requests.get(loadRequestId);
+            long requestStart = System.currentTimeMillis();
+            req.send(res -> {
+                long requestEnd = System.currentTimeMillis();
+                ExecutionDetails details = new ExecutionDetails();
+                details.setExecutionId(executionId);
+                details.setRequestId(loadRequestId);
+                details.setTimeElapsed((int) (requestEnd - requestStart)); //TODO AMAZING! Rework to have LONG instead
+                if (res.failed()) {
+                    Throwable cause = res.cause(); // exception of Queue as well might be here
+                    details.setLoadingStatus("FAILED");
+
+                    // TODO: check if the root cause is about exceeding the maxWaitQueue size and make a pause for some time
+                } else {
+                    HttpResponse<Buffer> result = res.result();
+                    details.setResponseCode(result.statusCode());
+                    details.setLoadingStatus("SUCCESS");
+                }
+
+            });
+
+            if (reqIndex >= requests.size()) {
+                reqIndex = 0;
+            }
+            currentTime = System.currentTimeMillis() - startTime;
+            if (currentTime >= executionTime) {
+                finished = true;
+            }
+        }
     }
 
     public static class LoadingTaskBuilder {
@@ -139,8 +121,14 @@ class LoadingTask implements Task {
             return this;
         }
 
-        public LoadingTaskBuilder withConnector(WebsitesHttpConnector connector) {
-            task.connector = connector;
+        /**
+         * TODO: create a facade or abstractopn for clients to swap clients if required.
+         *
+         * @param webClient
+         * @return
+         */
+        public LoadingTaskBuilder withWebClient(WebClient webClient) {
+            task.webClient = webClient;
             return this;
         }
 
