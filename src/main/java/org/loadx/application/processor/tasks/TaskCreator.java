@@ -9,8 +9,6 @@ import org.loadx.application.db.dao.LoadxDataHelper;
 import org.loadx.application.db.entity.LoadTask;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.Collections;
-
 /**
  * Creator for tasks to have tasks creation details encapsulated.
  */
@@ -52,9 +50,9 @@ public class TaskCreator {
         Vertx vertx = Vertx.vertx(new VertxOptions().setWorkerPoolSize(100));
         WebClientOptions options = new WebClientOptions()
                 .setConnectTimeout(vertxProperties.getConnectTimeout())
-                .setIdleTimeout(2000)
+                .setIdleTimeout(vertxProperties.getIdleTimeout())
                 .setMaxPoolSize(loadTask.getParallelThreshold())
-                .setMaxWaitQueueSize(1000);
+                .setMaxWaitQueueSize(vertxProperties.getMaxWaitQueue());
         WebClient client = WebClient.create(vertx, options);
 
         return LoadingTask.create()
@@ -62,6 +60,7 @@ public class TaskCreator {
                 .withLoadRequests(dataHelper.getLoadRequestsByTaskId(loadTask.getId()))
                 .withLoadTask(loadTask)
                 .withWebClient(client)
+                .withMaxQueueSize(vertxProperties.getMaxWaitQueue())
                 .build();
     }
 
