@@ -1,8 +1,8 @@
-package org.loadx.application.http.IT.websiteValidation;
+package org.loadx.application.IT.websiteValidation;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.loadx.application.http.IT.testServer.TestServerApplication;
+import org.loadx.application.IT.testServer.TestServerApplication;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 

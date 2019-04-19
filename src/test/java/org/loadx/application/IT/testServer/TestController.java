@@ -1,4 +1,4 @@
-package org.loadx.application.http.IT.testServer;
+package org.loadx.application.IT.testServer;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;

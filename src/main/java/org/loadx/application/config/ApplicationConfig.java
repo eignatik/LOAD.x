@@ -1,5 +1,9 @@
 package org.loadx.application.config;
 
+import io.vertx.core.Vertx;
+import io.vertx.core.VertxOptions;
+import io.vertx.ext.web.client.WebClient;
+import io.vertx.ext.web.client.WebClientOptions;
 import org.apache.tomcat.dbcp.dbcp.BasicDataSource;
 import org.hibernate.SessionFactory;
 import org.loadx.application.db.dao.Dao;
@@ -7,6 +11,7 @@ import org.loadx.application.db.dao.LoadxDao;
 import org.loadx.application.db.dao.LoadxDataHelper;
 import org.loadx.application.db.dao.TaskRequestsDao;
 import org.loadx.application.db.entity.*;
+import org.loadx.application.http.HttpClientManager;
 import org.loadx.application.processor.tasks.TaskCreator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -66,8 +71,13 @@ public class ApplicationConfig {
     }
 
     @Bean
-    public TaskCreator taskCreator(LoadxDataHelper loadxDataHelper, VertxProperties vertxProperties) {
-        return new TaskCreator(loadxDataHelper, vertxProperties);
+    public TaskCreator taskCreator(LoadxDataHelper loadxDataHelper, HttpClientManager httpClientManager) {
+        return new TaskCreator(loadxDataHelper, httpClientManager);
+    }
+
+    @Bean
+    public HttpClientManager httpClientManager(VertxProperties vertxProperties) {
+        return new HttpClientManager(vertxProperties);
     }
 
     @Bean

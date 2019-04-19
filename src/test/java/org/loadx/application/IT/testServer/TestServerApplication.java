@@ -1,4 +1,4 @@
-package org.loadx.application.http.IT.testServer;
+package org.loadx.application.IT.testServer;
 
 
 import org.loadx.application.config.ApplicationConfig;
