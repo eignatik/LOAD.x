@@ -12,6 +12,7 @@ import org.loadx.application.db.dao.LoadxDataHelper;
 import org.loadx.application.db.dao.TaskRequestsDao;
 import org.loadx.application.db.entity.*;
 import org.loadx.application.http.HttpClientManager;
+import org.loadx.application.processor.TaskProcessor;
 import org.loadx.application.processor.tasks.TaskCreator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -73,6 +74,11 @@ public class ApplicationConfig {
     @Bean
     public TaskCreator taskCreator(LoadxDataHelper loadxDataHelper, HttpClientManager httpClientManager) {
         return new TaskCreator(loadxDataHelper, httpClientManager);
+    }
+
+    @Bean
+    public TaskProcessor processor() {
+        return new TaskProcessor();
     }
 
     @Bean

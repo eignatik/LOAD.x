@@ -15,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -44,6 +45,7 @@ class LoadingTask implements Task {
     public CompletableFuture<Integer> execute() {
         LoadingExecution execution = new LoadingExecution();
         execution.setLoadingTaskId(loadTask.getId());
+        execution.setStartTime(new Date());
         int executionId = loadxDataHelper.getLoadingExecutionDao().save(execution);
 
         // TODO: validate ownership of the web-server to be tested.
@@ -89,6 +91,10 @@ class LoadingTask implements Task {
                 finished = true;
             }
         }
+
+        LoadingExecution execution = loadxDataHelper.getLoadingExecutionDao().getById(executionId, LoadingExecution.class);
+        execution.setEndTime(new Date());
+        loadxDataHelper.getLoadingExecutionDao().update(execution);
     }
 
     private void requestCallback(AsyncResult<HttpResponse<Buffer>> response,
