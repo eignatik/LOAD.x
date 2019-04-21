@@ -1,0 +1,28 @@
+// Sample of the JSON configuration
+
+{
+  "baseUrl" : "http://localhost",
+  "basePort" : 8080,
+  "loadingTime" : "20m 10s", // might be "h m s"
+  "parallelRequestsThreshold" : 10, // max amount of parallel request per url
+  "requests" : {
+    "request1" : {
+      "type" : "GET", // get requests should be implemtented first, while post requests can wait
+      "url" : "/health",
+      "timeout" : 15000, // time after which the application will mark the server failed to respond (with suitable error code)
+      "expectedResult" : "{}" // optional for this moment
+    },
+    "request2" : {
+      "type" : "POST",
+      "url" : "/start",
+      "application-type" : "application/JSON",
+      "body" : "{\"testData\" : \"someData\"}",
+      "timeout": 30000
+    },
+    "request3" : { // it's possible to name requests, not just request1 etc
+      "type" : "GET",
+      "url" : "/health?id=5&cat=3", // it's possible to pass query parameters
+      "timeout" : 15000 // time after which the application will mark the server failed to respond (with suitable error code)
+    }
+  }
+}
