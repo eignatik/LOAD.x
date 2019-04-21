@@ -2,4 +2,6 @@ BEGIN TRANSACTION;
 
 ALTER TABLE LOAD_TASK ADD basePort integer NULL;
 
+INSERT INTO SCHEMA (scriptNumber) values ('0003');
+
 COMMIT;

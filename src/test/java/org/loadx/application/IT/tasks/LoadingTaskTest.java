@@ -1,8 +1,5 @@
 package org.loadx.application.IT.tasks;
 
-import io.vertx.core.buffer.Buffer;
-import io.vertx.ext.web.client.HttpRequest;
-import io.vertx.ext.web.client.WebClient;
 import org.loadx.application.IT.testServer.TestServerSupport;
 import org.loadx.application.constants.RequestType;
 import org.loadx.application.db.dao.LoadxDataHelper;
@@ -10,7 +7,6 @@ import org.loadx.application.db.entity.ExecutionDetails;
 import org.loadx.application.db.entity.LoadRequest;
 import org.loadx.application.db.entity.LoadTask;
 import org.loadx.application.db.entity.LoadingExecution;
-import org.loadx.application.http.HttpClientManager;
 import org.loadx.application.processor.TaskProcessor;
 import org.loadx.application.processor.tasks.Task;
 import org.loadx.application.processor.tasks.TaskCreator;
@@ -41,7 +37,8 @@ public class LoadingTaskTest extends TestServerSupport {
         LoadTask task = new LoadTask();
         task.setParallelThreshold(5);
         task.setLoadingTime(executionTime);
-        task.setBaseUrl("localhost:" + port);
+        task.setBaseUrl("localhost");
+        task.setBasePort(port);
 
         LoadRequest request = new LoadRequest();
         request.setUrl(TEST_ENDPOINT);
