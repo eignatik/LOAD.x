@@ -22,19 +22,18 @@ public class HttpClientIT extends TestServerSupport {
     private HttpClientManager httpClientManager;
 
     @Test
-    public void testVertxClient() throws InterruptedException, ExecutionException {
+    public void testVertxClient() throws InterruptedException {
         WebClient client = httpClientManager.createClient(1);
 
         HttpRequest<Buffer> httpRequest = client.get(port, "localhost", "/test");
 
-        CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
-            httpRequest.send(res -> {
-                LOG.info("The request succeeded: res.succeeded={}", res.succeeded());
-                Assert.assertTrue(res.succeeded(), "Request should be completed successfully.");
-            });
+        httpRequest.send(res -> {
+            LOG.info("The request succeeded: res.succeeded={}", res.succeeded());
+            Assert.assertTrue(res.succeeded(), "Request should be completed successfully.");
         });
 
-        future.get();
+        Thread.sleep(1000);
+
     }
 
 }

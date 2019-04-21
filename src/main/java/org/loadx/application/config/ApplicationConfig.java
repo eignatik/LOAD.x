@@ -6,10 +6,7 @@ import io.vertx.ext.web.client.WebClient;
 import io.vertx.ext.web.client.WebClientOptions;
 import org.apache.tomcat.dbcp.dbcp.BasicDataSource;
 import org.hibernate.SessionFactory;
-import org.loadx.application.db.dao.Dao;
-import org.loadx.application.db.dao.LoadxDao;
-import org.loadx.application.db.dao.LoadxDataHelper;
-import org.loadx.application.db.dao.TaskRequestsDao;
+import org.loadx.application.db.dao.*;
 import org.loadx.application.db.entity.*;
 import org.loadx.application.http.HttpClientManager;
 import org.loadx.application.processor.TaskProcessor;
@@ -49,7 +46,7 @@ public class ApplicationConfig {
 
     @Bean
     public Dao<ExecutionDetails> executionDetailsDao(SessionFactory sessionFactory) {
-        return new LoadxDao<>(sessionFactory);
+        return new ExecutionDetailsDao(sessionFactory);
     }
 
     @Bean

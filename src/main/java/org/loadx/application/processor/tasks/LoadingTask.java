@@ -11,6 +11,7 @@ import org.loadx.application.db.entity.ExecutionDetails;
 import org.loadx.application.db.entity.LoadRequest;
 import org.loadx.application.db.entity.LoadTask;
 import org.loadx.application.db.entity.LoadingExecution;
+import org.loadx.application.util.UrlParserUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,7 +26,7 @@ import java.util.stream.Collectors;
 class LoadingTask implements Task {
 
     private static final Logger LOG = LoggerFactory.getLogger(LoadingTask.class);
-    private static final int PAUSE_TIMEOUT = 1000;
+    private static final int PAUSE_TIMEOUT = 2000;
 
     private AtomicInteger currentQueueSize = new AtomicInteger();
     private LoadxDataHelper loadxDataHelper;
@@ -53,8 +54,8 @@ class LoadingTask implements Task {
         Map<Integer, HttpRequest<Buffer>> vertxRequests = loadRequests.stream()
                 .collect(Collectors.toMap(
                         LoadRequest::getId,
-                        req -> webClient.get(loadTask.getBaseUrl(), req.getUrl())
-                ));
+                        this::mapLoadRequestToVertxRequest)
+                );
 
         CompletableFuture.runAsync(() -> launchLoading(vertxRequests, executionId));
 
@@ -62,6 +63,17 @@ class LoadingTask implements Task {
         future.complete(executionId);
 
         return future;
+    }
+
+    private HttpRequest<Buffer> mapLoadRequestToVertxRequest(LoadRequest request) {
+        HttpRequest<Buffer> bufferHttpRequest = webClient.get(loadTask.getBaseUrl(), request.getUrl());
+
+        String baseUrl = loadTask.getBaseUrl();
+        if (UrlParserUtil.hasPort(baseUrl)) {
+            bufferHttpRequest.port(UrlParserUtil.getPort(baseUrl));
+        }
+
+        return bufferHttpRequest;
     }
 
     private void launchLoading(Map<Integer, HttpRequest<Buffer>> requests, int executionId) {

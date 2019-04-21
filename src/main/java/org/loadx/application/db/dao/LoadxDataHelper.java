@@ -77,8 +77,8 @@ public class LoadxDataHelper {
         return loadRequestDao;
     }
 
-    public Dao<ExecutionDetails> getExecutionDetailsDao() {
-        return executionDetailsDao;
+    public ExecutionDetailsDao getExecutionDetailsDao() {
+        return (ExecutionDetailsDao) executionDetailsDao;
     }
 
     public Dao<LoadingExecution> getLoadingExecutionDao() {
