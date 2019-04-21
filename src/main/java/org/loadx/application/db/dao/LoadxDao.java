@@ -4,10 +4,7 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
-import org.loadx.application.db.entity.LoadRequest;
-import org.loadx.application.db.entity.LoadTask;
-import org.loadx.application.db.entity.LoadxEntity;
-import org.loadx.application.db.entity.TaskRequests;
+import org.loadx.application.db.entity.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,7 +41,7 @@ public class LoadxDao<T extends LoadxEntity> implements Dao<T> {
 
     public T getById(int id, Class<T> type) {
         Transaction transaction = getSession().beginTransaction();
-        T item = (T) getSession().get(type, id);
+        T item = getSession().get(type, id);
         transaction.commit();
         LOG.info("Fetched the record: item={}", item);
         return item;
@@ -98,9 +95,18 @@ public class LoadxDao<T extends LoadxEntity> implements Dao<T> {
     @Override
     public void remove(List<T> items) {
         Transaction transaction = getSession().beginTransaction();
-        items.forEach(item -> getSession().delete("", item));
+        items.forEach(item -> getSession().delete(item));
         transaction.commit();
         LOG.info("Removed items: count=", items.size());
+    }
+
+    @Override
+    public void remove(int id, Class<T> type) {
+        Transaction transaction = getSession().beginTransaction();
+        T item = getSession().get(type, id);
+        getSession().delete(item);
+        transaction.commit();
+        LOG.info("Removed item: id={}", id);
     }
 
     @Override

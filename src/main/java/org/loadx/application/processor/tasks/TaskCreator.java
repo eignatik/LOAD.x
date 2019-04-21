@@ -1,15 +1,9 @@
 package org.loadx.application.processor.tasks;
 
-import io.vertx.core.Vertx;
-import io.vertx.core.VertxOptions;
-import io.vertx.ext.web.client.WebClient;
-import io.vertx.ext.web.client.WebClientOptions;
-import org.loadx.application.config.VertxProperties;
 import org.loadx.application.db.dao.LoadxDataHelper;
 import org.loadx.application.db.entity.LoadTask;
+import org.loadx.application.http.HttpClientManager;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import java.util.Collections;
 
 /**
  * Creator for tasks to have tasks creation details encapsulated.
@@ -17,12 +11,12 @@ import java.util.Collections;
 public class TaskCreator {
 
     private LoadxDataHelper dataHelper;
-    private VertxProperties vertxProperties;
+    private HttpClientManager httpClientManager;
 
     @Autowired
-    public TaskCreator(LoadxDataHelper loadxDataHelper, VertxProperties vertxProperties) {
+    public TaskCreator(LoadxDataHelper loadxDataHelper, HttpClientManager httpClientManager) {
         this.dataHelper = loadxDataHelper;
-        this.vertxProperties = vertxProperties;
+        this.httpClientManager = httpClientManager;
     }
 
     /**
@@ -49,19 +43,12 @@ public class TaskCreator {
     public Task createLoadingTask(int taskId) {
         LoadTask loadTask = dataHelper.getLoadTaskDao().getById(taskId, LoadTask.class);
 
-        Vertx vertx = Vertx.vertx(new VertxOptions().setWorkerPoolSize(100));
-        WebClientOptions options = new WebClientOptions()
-                .setConnectTimeout(vertxProperties.getConnectTimeout())
-                .setIdleTimeout(2000)
-                .setMaxPoolSize(loadTask.getParallelThreshold())
-                .setMaxWaitQueueSize(1000);
-        WebClient client = WebClient.create(vertx, options);
-
         return LoadingTask.create()
                 .withDataHelper(dataHelper)
                 .withLoadRequests(dataHelper.getLoadRequestsByTaskId(loadTask.getId()))
                 .withLoadTask(loadTask)
-                .withWebClient(client)
+                .withWebClient(httpClientManager.createClient(loadTask.getParallelThreshold()))
+                .withMaxQueueSize(httpClientManager.getProperties().getMaxWaitQueue())
                 .build();
     }
 

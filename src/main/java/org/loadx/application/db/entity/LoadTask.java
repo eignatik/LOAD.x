@@ -12,6 +12,7 @@ public class LoadTask implements LoadxEntity {
     private String baseUrl;
     private int loadingTime;
     private int parallelThreshold;
+    private int basePort;
 
     public int getId() {
         return id;
@@ -44,4 +45,13 @@ public class LoadTask implements LoadxEntity {
     public void setParallelThreshold(int parallelThreshold) {
         this.parallelThreshold = parallelThreshold;
     }
+
+    public int getBasePort() {
+        return basePort;
+    }
+
+    public void setBasePort(int basePort) {
+        this.basePort = basePort;
+    }
+
 }

@@ -12,7 +12,6 @@ import java.util.concurrent.CompletableFuture;
  *
  * @see org.loadx.application.processor.tasks.TaskCreator
  */
-@Component
 public class TaskProcessor {
 
     private static final Logger LOG = LoggerFactory.getLogger(TaskProcessor.class);

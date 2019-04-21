@@ -1,4 +1,4 @@
-package org.loadx.application.http.IT.websiteValidation;
+package org.loadx.application.IT.websiteValidation;
 
 import org.loadx.application.util.FileUtils;
 import org.springframework.web.bind.annotation.GetMapping;

@@ -50,7 +50,7 @@ public class LoadxDataHelper {
 
         taskRequestsDao.saveAll(linkedRequests);
         transaction.commit();
-        LOG.info("Task and request are saved successfully.");
+        LOG.info("Task and request are saved successfully: loadTaskId={}, requests={}", loadTaskId, linkedRequests.size());
 
         return loadTaskId;
     }
@@ -69,6 +69,27 @@ public class LoadxDataHelper {
         return resultList;
     }
 
+    public void deleteExecution(int executionId) {
+        ((ExecutionDetailsDao) executionDetailsDao).deleteDetailsByExecutionId(executionId);
+        loadingExecutionDao.remove(executionId, LoadingExecution.class);
+    }
+
+    public void deleteTask(int taskId) {
+        Session session = sessionFactory.getCurrentSession();
+        Transaction transaction = session.beginTransaction();
+
+        Query<LoadRequest> query = session.createQuery("delete from LoadRequest as lr " +
+                "where lr.id in (select tr.loadRequestId from TaskRequests as tr where tr.loadTaskId = :taskId)");
+        query.setParameter("taskId", taskId);
+
+        int deletedRows = query.executeUpdate();
+        LOG.info("Deleted load task: taskId={}, requests={}", taskId, deletedRows);
+        transaction.commit();
+
+        loadTaskDao.remove(taskId, LoadTask.class);
+        ((TaskRequestsDao) taskRequestsDao).removeRequestsByTaskId(taskId);
+    }
+
     public Dao<LoadTask> getLoadTaskDao() {
         return loadTaskDao;
     }
@@ -77,8 +98,8 @@ public class LoadxDataHelper {
         return loadRequestDao;
     }
 
-    public Dao<ExecutionDetails> getExecutionDetailsDao() {
-        return executionDetailsDao;
+    public ExecutionDetailsDao getExecutionDetailsDao() {
+        return (ExecutionDetailsDao) executionDetailsDao;
     }
 
     public Dao<LoadingExecution> getLoadingExecutionDao() {
