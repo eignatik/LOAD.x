@@ -4,6 +4,7 @@ public enum LoadTaskFields {
     BASE_URL("baseUrl", true),
     LOADING_TIME("loadingTime", true),
     PARALLEL_THRESHOLD("parallelRequestsThreshold", false),
+    PORT("basePort", false),
     REQUESTS("requests", true);
 
     private String value;

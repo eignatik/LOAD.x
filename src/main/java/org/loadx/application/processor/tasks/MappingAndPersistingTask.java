@@ -8,6 +8,7 @@ import org.loadx.application.db.entity.LoadRequest;
 import org.loadx.application.db.entity.LoadTask;
 import org.loadx.application.util.MappingUtil;
 import org.loadx.application.util.TimeParser;
+import org.loadx.application.util.UrlParserUtil;
 
 import java.util.List;
 import java.util.Map;
@@ -37,7 +38,6 @@ class MappingAndPersistingTask implements Task {
 
         // TODO: validate parsedTask
 
-        // TODO: return task id somehow
         return dataHelper.persistLoadTaskRequests(mapToLoadTask(parsedTask), mapToLoadRequests(parsedTask));
     }
 
@@ -50,6 +50,11 @@ class MappingAndPersistingTask implements Task {
                 LoadTaskFields.PARALLEL_THRESHOLD.getValue(),
                 CommonConstants.DEFAULT_PARALLEL_THRESHOLD);
         loadTask.setParallelThreshold(threshold);
+
+        int port = (int) parsedTask.getOrDefault(
+                LoadTaskFields.PORT.getValue(),
+                0);
+        loadTask.setBasePort(port);
         return loadTask;
     }
 

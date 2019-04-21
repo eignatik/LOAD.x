@@ -1,7 +1,8 @@
 // Sample of the JSON configuration
 
 {
-  "baseUrl" : "http://localhost:8080",
+  "baseUrl" : "http://localhost",
+  "basePort" : 8080,
   "loadingTime" : "20m 10s", // might be "h m s"
   "parallelRequestsThreshold" : 10, // max amount of parallel request per url
   "requests" : {

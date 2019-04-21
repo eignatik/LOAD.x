@@ -68,9 +68,8 @@ class LoadingTask implements Task {
     private HttpRequest<Buffer> mapLoadRequestToVertxRequest(LoadRequest request) {
         HttpRequest<Buffer> bufferHttpRequest = webClient.get(loadTask.getBaseUrl(), request.getUrl());
 
-        String baseUrl = loadTask.getBaseUrl();
-        if (UrlParserUtil.hasPort(baseUrl)) {
-            bufferHttpRequest.port(UrlParserUtil.getPort(baseUrl));
+        if (loadTask.getBasePort() != 0) {
+            bufferHttpRequest.port(loadTask.getBasePort());
         }
 
         return bufferHttpRequest;
