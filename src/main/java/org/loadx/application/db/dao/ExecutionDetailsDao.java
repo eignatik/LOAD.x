@@ -26,4 +26,13 @@ public class ExecutionDetailsDao extends LoadxDao<ExecutionDetails> {
         LOG.info("Fetched records: fetched={}, executionId={}", details.size(), executionId);
         return details;
     }
+
+    void deleteDetailsByExecutionId(int executionId) {
+        Transaction transaction = getSession().beginTransaction();
+        Query<ExecutionDetails> query = getSession().createQuery("delete from  ExecutionDetails where executionId = :executionId");
+        query.setParameter("executionId", executionId);
+        int deletedRows = query.executeUpdate();
+        transaction.commit();
+        LOG.info("Deleted records: deletedRows={}, executionId={}", deletedRows, executionId);
+    }
 }

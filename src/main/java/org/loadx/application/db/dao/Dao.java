@@ -58,10 +58,17 @@ public interface Dao<T extends LoadxEntity> {
     void remove(T item);
 
     /**
-     * TODO: write javadoc
-     * @param items
+     * Removes all elements in DB according to the given list of items.
+     * @param items to be deleted.
      */
     void remove(List<T> items);
+
+    /**
+     * Removes the record with given id.
+     * @param id row identifier to be deleted.
+     * @param type the class of entity to be removed.
+     */
+    void remove(int id, Class<T> type);
 
     /**
      * Saves all outside of transaction.
